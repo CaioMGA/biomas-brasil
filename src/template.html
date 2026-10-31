@@ -950,7 +950,7 @@ document.getElementById("exReset").addEventListener("click", () => animateExag(E
 // x, y = deslocamento do texto em unidades do mapa (x para leste, y para sul; 1 unidade ≈ 1,11 km), preso à geografia.
 const LABEL_CFG = __LABELCFG__;
 const LABHOOK = {};   // ponte com o mapa 3D (converte um ponto da tela em ponto do terreno)
-const LABUI = { all: false, sel: null, rivers: false };   // modo lab: mostrar todos os textos / texto selecionado (sempre visível)
+const LABUI = { all: false, sel: null, rivers: false, sat: 1 };   // modo lab: mostrar todos os textos / texto selecionado (sempre visível)
 const LABELS = new Map();
 const cfgGet = id => Object.assign({ r: 0, s: 1, a: 0, l: 0, x: 0, y: 0 }, LABEL_CFG[id]);
 const labOff = id => { const c = LABEL_CFG[id]; return c && (c.x || c.y) ? { x: (c.x || 0) * WORLD_W / MAPW, z: id.startsWith("geo:") ? 0 : (c.y || 0) * WORLD_H / MAPH } : { x: 0, z: 0 }; };   // nomes dos paralelos: o espaço até a linha é fixo (GEO_PAD), só o x vale
@@ -1071,7 +1071,7 @@ async function init3d() {
   })];
   const uniforms = {
     uH: { value: hTex }, uId: { value: iTex }, uM1: { value: emptyMask }, uM2: { value: emptyMask },
-    uEx: { value: EX0 * exagVal }, uShade: { value: SHADE_BOOST }, uL1: { value: 0 }, uL2: { value: 0 }, uLA: { value: LIFT },
+    uEx: { value: EX0 * exagVal }, uShade: { value: SHADE_BOOST }, uSat: { value: 1 }, uL1: { value: 0 }, uL2: { value: 0 }, uLA: { value: LIFT },
     uTexel: { value: new THREE.Vector2(1 / DW, 1 / DH) }, uIdTexel: { value: new THREE.Vector2(1 / IW, 1 / IH) },
     uCol: { value: cols }, uW: { value: [0, 0, 0, 0, 0, 0, 0, 0] }, uDim: { value: 0 }, uHover: { value: 0 }, uHoverId: { value: 0 }, uHoverA: { value: 0 }, uGlowK: { value: 1 },
     uTexW: { value: WORLD_W / DW }, uTime: { value: 0 },
@@ -1092,7 +1092,7 @@ async function init3d() {
     fragmentShader: `
       precision highp float;
       uniform sampler2D uH, uId; uniform vec2 uTexel, uIdTexel; uniform vec3 uCol[8]; uniform float uW[8];
-      uniform float uDim, uHover, uHoverId, uHoverA, uEx, uShade, uTexW, uTime, uElev, uSt, uRv;
+      uniform float uSat, uDim, uHover, uHoverId, uHoverA, uEx, uShade, uTexW, uTime, uElev, uSt, uRv;
       varying vec2 vUv;
       float idAt(vec2 t) { return floor(texture2D(uId, t).r * 255.0 + 0.5); }
       float wOf(float b) { float r = 0.0; for (int i = 1; i < 8; i++) { if (abs(b - float(i)) < 0.5) r = uW[i]; } return r; }
@@ -1137,6 +1137,7 @@ async function init3d() {
         c = mix(c, soft, w * uDim * (1.0 - foreign));
         float sel = w * uDim;
         c += sel * 0.05 * (0.6 + 0.4 * sin(uTime * 2.0)) * (1.0 - foreign);
+        c = mix(vec3(dot(c, vec3(0.299, 0.587, 0.114))), c, uSat);   // uSat < 1: terreno dessaturado (lab de rios)
         gl_FragColor = vec4(c, mix(1.0, 0.84 * min(1.0, w), foreign));
       }`
   });
@@ -1596,6 +1597,7 @@ async function init3d() {
     uniforms.uHoverId.value = hoverId; uniforms.uHoverA.value = hoverA; uniforms.uTime.value = T;
     elevV += ((layerOn.relevo ? 1 : 0) - elevV) * ease; uniforms.uElev.value = elevV;
     uniforms.uSt.value += ((layerOn.estados ? 1 : 0) - uniforms.uSt.value) * ease;
+    uniforms.uSat.value = LABUI.sat;
     uniforms.uRv.value += ((layerOn.rios ? 1 : 0) - uniforms.uRv.value) * ease;
     uniforms.uEq.value += ((layerOn.equador ? 1 : 0) - uniforms.uEq.value) * ease;
     uniforms.uTr.value += ((layerOn.tropico ? 1 : 0) - uniforms.uTr.value) * ease;
@@ -1945,6 +1947,7 @@ function drawFx(dt) {
   });
 
   document.body.classList.add("lab-rios"); panel.hidden = false;
+  LABUI.sat = .12;   // mapa dessaturado: os rios (azul e verde-limão) se destacam
   LABUI.rivers = true;   // todos os nomes de rio visíveis no mapa, em qualquer zoom e com qualquer bioma
   LAYER_DEFS.forEach(([k, nome]) => {   // camadas ativas: só Rios e Nome dos rios
     const want = k === "rios" || k === "nomesRios";
