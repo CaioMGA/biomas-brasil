@@ -1,0 +1,431 @@
+{
+ "intro": "Seis grandes paisagens, um mar de biodiversidade e muito para descobrir.",
+ "secoes": [
+  {
+   "id": "abertura",
+   "titulo": "Bem-vindo ao Brasil dos biomas",
+   "p": [
+    "O Brasil é um dos países com maior biodiversidade do planeta. Em um território de mais de 8,5 milhões de quilômetros quadrados cabem florestas úmidas, savanas, campos, sertões, planícies alagadas e um litoral de mais de sete mil quilômetros. Para entender essa variedade, o IBGE divide o território em seis biomas continentais, e trata à parte o Sistema Costeiro-Marinho.",
+    "Um bioma é um grande conjunto de paisagens com clima, solo, vegetação e fauna parecidos, que formam uma unidade reconhecível. A Amazônia é o maior, com quase metade do território. O Cerrado vem em seguida, com cerca de um quarto. A Mata Atlântica, a Caatinga, o Pampa e o Pantanal completam o mapa.",
+    "Cada bioma tem seu ritmo. A Amazônia vive da chuva constante e dos rios. O Cerrado, da alternância entre verão chuvoso e inverno seco. A Mata Atlântica, da umidade que o mar joga contra as serras. A Caatinga, da chuva escassa e irregular. O Pampa, das quatro estações e do vento. O Pantanal, do sobe e desce das águas. E o mar, das marés e das correntes.",
+    "Neste atlas, você pode explorar o relevo em 3D, ligar e desligar camadas como rios, divisas e capitais e, em cada bioma, clicar em Mergulhar para entrar no modo leitura. São textos, fichas de espécies, vídeos e um quiz que vale um selo no seu passaporte. Tudo é no seu ritmo, e o progresso fica salvo no seu navegador.",
+    "Vale lembrar que as fronteiras entre biomas não são muros. Há faixas de transição, como o Cerrado com a Amazônia, e espécies que passam de um para outro. O que o mapa mostra é uma simplificação útil, feita pelo IBGE, para estudar, comparar e proteger."
+   ]
+  }
+ ],
+ "leitura": {
+  "autor": "Gonçalves Dias",
+  "obra": "Canção do Exílio (1843)",
+  "texto": "Minha terra tem palmeiras,\nOnde canta o Sabiá;\nAs aves, que aqui gorjeiam,\nNão gorjeiam como lá."
+ },
+ "videos": [
+  {
+   "id": "uHYgh89B67w",
+   "tipo": "Educativo",
+   "canal": "IBGE",
+   "titulo": "O que é Bioma e quais são os 6 Biomas brasileiros? (IBGE Explica)",
+   "dur": "5:52"
+  }
+ ],
+ "glossario": [
+  {
+   "t": "Bioma",
+   "d": "Grande conjunto de paisagens com clima, vegetação e fauna parecidos, que formam uma unidade reconhecível."
+  },
+  {
+   "t": "Biodiversidade",
+   "d": "Variedade da vida: espécies, genes e ecossistemas."
+  },
+  {
+   "t": "Endemismo",
+   "d": "Quando uma espécie só existe em um lugar. A Caatinga, por exemplo, é um bioma que só existe no Brasil."
+  },
+  {
+   "t": "Hotspot de biodiversidade",
+   "d": "Região com enorme riqueza de espécies, muitas só encontradas ali, e com grande pressão sobre a vegetação. O Cerrado e a Mata Atlântica são hotspots."
+  },
+  {
+   "t": "Fitofisionomia",
+   "d": "O aspecto geral da vegetação, como floresta, campo ou savana."
+  },
+  {
+   "t": "Savana",
+   "d": "Vegetação de árvores esparsas entre gramíneas, típica de clima com estação seca. O Cerrado é a savana brasileira."
+  },
+  {
+   "t": "Caducifólia",
+   "d": "Planta que perde as folhas numa estação do ano, em geral na seca."
+  },
+  {
+   "t": "Xilopódio",
+   "d": "Estrutura subterrânea que guarda reservas e gemas, e permite que a planta rebrote depois do fogo."
+  },
+  {
+   "t": "Várzea e igapó",
+   "d": "Florestas alagadas da Amazônia. A várzea é inundada por rios de água barrenta, e o igapó por rios de água escura e ácida."
+  },
+  {
+   "t": "Manguezal",
+   "d": "Ambiente costeiro de solo lodoso e água salobra, com árvores de raízes aéreas, berçário de peixes e crustáceos."
+  },
+  {
+   "t": "Restinga",
+   "d": "Vegetação que cresce sobre areia perto do mar, resistente ao sal e ao vento."
+  },
+  {
+   "t": "Bacia hidrográfica",
+   "d": "Área que escoa suas águas para um mesmo rio e seus afluentes."
+  },
+  {
+   "t": "Aquífero",
+   "d": "Camada de rocha ou solo que armazena água subterrânea."
+  },
+  {
+   "t": "Unidade de conservação",
+   "d": "Área protegida por lei, como parques nacionais, reservas e áreas de proteção ambiental."
+  },
+  {
+   "t": "RPPN",
+   "d": "Reserva Particular do Patrimônio Natural: área privada protegida em caráter perpétuo pelo próprio proprietário."
+  },
+  {
+   "t": "Manejo",
+   "d": "Uso planejado de um recurso natural, para que ele continue disponível. Inclui manejo do fogo, da pesca e do pasto."
+  }
+ ],
+ "linha": [
+  {
+   "a": "Há milhares de anos",
+   "t": "Povos indígenas ocupam e manejam todos os biomas: plantam, queimam com cuidado, pescam e criam florestas de espécies úteis."
+  },
+  {
+   "a": "1500",
+   "t": "Os portugueses chegam pela costa da atual Bahia. A primeira mata que encontram é a Mata Atlântica, e o pau-brasil dá nome à terra."
+  },
+  {
+   "a": "1808",
+   "t": "É criado o Jardim Botânico do Rio de Janeiro, um dos mais antigos centros de estudo de plantas do país."
+  },
+  {
+   "a": "1861",
+   "t": "Começa o reflorestamento da Floresta da Tijuca, no Rio, para recuperar nascentes que abasteciam a cidade."
+  },
+  {
+   "a": "1937",
+   "t": "É criado o Parque Nacional do Itatiaia, o primeiro do Brasil."
+  },
+  {
+   "a": "1973",
+   "t": "É fundada a Embrapa, que depois transforma a agricultura nos solos do Cerrado."
+  },
+  {
+   "a": "1981",
+   "t": "A Lei da Política Nacional do Meio Ambiente cria as bases da proteção ambiental no país."
+  },
+  {
+   "a": "1988",
+   "t": "A Constituição dedica um capítulo ao meio ambiente e declara a Floresta Amazônica, a Mata Atlântica, a Serra do Mar, o Pantanal e a Zona Costeira patrimônio nacional."
+  },
+  {
+   "a": "1992",
+   "t": "A Rio-92 reúne o mundo no Rio de Janeiro e lança a Convenção sobre Diversidade Biológica."
+  },
+  {
+   "a": "2000",
+   "t": "A lei do SNUC cria o Sistema Nacional de Unidades de Conservação."
+  },
+  {
+   "a": "2004",
+   "t": "O IBGE publica o primeiro Mapa de Biomas do Brasil."
+  },
+  {
+   "a": "2019",
+   "t": "O IBGE atualiza os limites dos biomas na escala 1:250 000, base deste atlas."
+  },
+  {
+   "a": "2025",
+   "t": "Belém, na Amazônia, sedia a COP30, a conferência do clima da ONU."
+  }
+ ],
+ "quiz": [
+  {
+   "q": "Quantos são os biomas continentais do Brasil, segundo o IBGE?",
+   "o": [
+    "Três",
+    "Quatro",
+    "Seis",
+    "Dez"
+   ],
+   "c": 2,
+   "e": "Amazônia, Cerrado, Mata Atlântica, Caatinga, Pampa e Pantanal. O mar é tratado à parte, como Sistema Costeiro-Marinho."
+  },
+  {
+   "q": "Qual é o maior bioma do Brasil?",
+   "o": [
+    "Cerrado",
+    "Amazônia",
+    "Mata Atlântica",
+    "Caatinga"
+   ],
+   "c": 1,
+   "e": "A Amazônia ocupa quase metade do território."
+  },
+  {
+   "q": "Qual bioma existe só no Brasil?",
+   "o": [
+    "Pampa",
+    "Pantanal",
+    "Caatinga",
+    "Cerrado"
+   ],
+   "c": 2,
+   "e": "A Caatinga é o único bioma exclusivamente brasileiro."
+  },
+  {
+   "q": "Qual bioma tem mais espécies de plantas, algas e fungos registradas?",
+   "o": [
+    "Amazônia",
+    "Mata Atlântica",
+    "Cerrado",
+    "Pampa"
+   ],
+   "c": 1,
+   "e": "Apesar de bem menor, a Mata Atlântica supera a Amazônia nessa contagem."
+  },
+  {
+   "q": "Que bioma é chamado de berço das águas?",
+   "o": [
+    "Pantanal",
+    "Cerrado",
+    "Pampa",
+    "Caatinga"
+   ],
+   "c": 1,
+   "e": "Dele saem rios que alimentam várias bacias do país."
+  },
+  {
+   "q": "Em qual estado existe o Pampa brasileiro?",
+   "o": [
+    "Mato Grosso",
+    "Bahia",
+    "Rio Grande do Sul",
+    "Pará"
+   ],
+   "c": 2,
+   "e": "Só no Rio Grande do Sul."
+  },
+  {
+   "q": "O que caracteriza o Pantanal?",
+   "o": [
+    "Uma planície alagável.",
+    "Um deserto.",
+    "Uma floresta de araucária.",
+    "Um conjunto de ilhas."
+   ],
+   "c": 0,
+   "e": "O sobe e desce das águas é o centro da vida ali."
+  },
+  {
+   "q": "Qual foi o primeiro parque nacional do Brasil?",
+   "o": [
+    "Iguaçu",
+    "Itatiaia",
+    "Chapada dos Veadeiros",
+    "Lençóis Maranhenses"
+   ],
+   "c": 1,
+   "e": "O Parque Nacional do Itatiaia, criado em 1937."
+  },
+  {
+   "q": "O que é um manguezal?",
+   "o": [
+    "Uma floresta de altitude.",
+    "Um ambiente costeiro de lodo salobro, com raízes aéreas.",
+    "Um tipo de savana.",
+    "Um campo de dunas."
+   ],
+   "c": 1,
+   "e": "É berçário de muitas espécies de peixes e crustáceos."
+  },
+  {
+   "q": "Qual a principal razão de os biomas serem desenhados como mapa?",
+   "o": [
+    "Para dividir o país em estados.",
+    "Para estudar, comparar e proteger paisagens parecidas.",
+    "Para marcar rios.",
+    "Para criar fronteiras."
+   ],
+   "c": 1,
+   "e": "O mapa é uma simplificação útil, e as fronteiras entre biomas são faixas de transição."
+  }
+ ],
+ "fontes": "Texto escrito a partir de conhecimento geral de divulgação e de materiais do IBGE, do MMA e do ICMBio. A Canção do Exílio está em domínio público.",
+ "creditos": [
+  {
+   "t": "Mapa: limites e território (governo brasileiro)",
+   "i": [
+    {
+     "n": "IBGE: Biomas e Sistema Costeiro-Marinho do Brasil (1:250 000, 2019)",
+     "u": "https://www.ibge.gov.br/geociencias/informacoes-ambientais/vegetacao/15842-biomas.html",
+     "d": "limites dos biomas, áreas, estados e vegetação."
+    },
+    {
+     "n": "IBGE: Malha territorial, unidades da federação (2022)",
+     "u": "https://www.ibge.gov.br/geociencias/organizacao-do-territorio/malhas-territoriais.html",
+     "d": "divisas estaduais, siglas e capitais."
+    },
+    {
+     "n": "geobr / Ipea",
+     "u": "https://github.com/ipeaGIT/geobr",
+     "d": "pacote que distribui os dados geográficos do IBGE usados para o contorno dos biomas."
+    }
+   ]
+  },
+  {
+   "t": "Mapa: relevo, clima, rios e cidades",
+   "i": [
+    {
+     "n": "AWS Terrain Tiles (SRTM, GMTED e ETOPO1)",
+     "u": "https://registry.opendata.aws/terrain-tiles/",
+     "d": "relevo em 3D."
+    },
+    {
+     "n": "WorldClim 2.1 (Fick e Hijmans, 2017)",
+     "u": "https://www.worldclim.org/",
+     "d": "chuva média mensal e anual, 1970–2000."
+    },
+    {
+     "n": "Natural Earth (domínio público)",
+     "u": "https://www.naturalearthdata.com/",
+     "d": "fronteiras, países vizinhos, rios e cidades, escala 1:10m."
+    },
+    {
+     "n": "RESOLVE Ecoregions 2017 (WWF)",
+     "u": "https://ecoregions.appspot.com/",
+     "d": "extensão aproximada dos biomas fora do Brasil."
+    },
+    {
+     "n": "Flora e Funga do Brasil 2020, Jardim Botânico do Rio de Janeiro",
+     "u": "https://floradobrasil.jbrj.gov.br/",
+     "d": "contagem de espécies de plantas, algas e fungos."
+    }
+   ]
+  },
+  {
+   "t": "Textos e informações (instituições e programas)",
+   "i": [
+    {
+     "n": "Ministério do Meio Ambiente e Mudança do Clima (MMA)",
+     "u": "https://www.gov.br/mma/",
+     "d": "biomas, unidades de conservação, políticas ambientais."
+    },
+    {
+     "n": "ICMBio",
+     "u": "https://www.gov.br/icmbio/",
+     "d": "parques nacionais, fauna e unidades de conservação, incluindo o Projeto Peixe-Boi."
+    },
+    {
+     "n": "Embrapa, incluindo Embrapa Cerrados, Semiárido e Pantanal",
+     "u": "https://www.embrapa.br/",
+     "d": "pesquisa agropecuária e manejo nos biomas."
+    },
+    {
+     "n": "INPA",
+     "u": "https://www.gov.br/inpa/",
+     "d": "pesquisa na Amazônia."
+    },
+    {
+     "n": "Museu Paraense Emílio Goeldi",
+     "u": "https://www.gov.br/museugoeldi/",
+     "d": "pesquisa na Amazônia."
+    },
+    {
+     "n": "Iphan",
+     "u": "https://www.gov.br/iphan/",
+     "d": "patrimônio cultural, como as Missões e a tradição doceira de Pelotas."
+    },
+    {
+     "n": "Unesco, Lista do Patrimônio Mundial",
+     "u": "https://whc.unesco.org/",
+     "d": "sítios naturais e culturais citados."
+    },
+    {
+     "n": "Convenção de Ramsar",
+     "u": "https://www.ramsar.org/",
+     "d": "zonas úmidas de importância internacional."
+    },
+    {
+     "n": "Fundação SOS Mata Atlântica",
+     "u": "https://www.sosma.org.br/",
+     "d": "Mata Atlântica."
+    },
+    {
+     "n": "Associação Mico-Leão-Dourado",
+     "u": "https://www.micoleao.org.br/",
+     "d": "conservação do mico-leão-dourado."
+    },
+    {
+     "n": "Projeto Tamar",
+     "u": "https://www.tamar.org.br/",
+     "d": "tartarugas marinhas."
+    },
+    {
+     "n": "Articulação Semiárido Brasileiro (ASA)",
+     "u": "https://www.asabrasil.org.br/",
+     "d": "cisternas e convivência com o semiárido."
+    },
+    {
+     "n": "Sesc Pantanal",
+     "u": "https://www.sescpantanal.com.br/",
+     "d": "reserva particular do Pantanal."
+    },
+    {
+     "n": "WWF-Brasil",
+     "u": "https://www.wwf.org.br/",
+     "d": "Cerrado e demais biomas."
+    }
+   ]
+  },
+  {
+   "t": "Textos literários em domínio público",
+   "i": [
+    {
+     "n": "Euclides da Cunha, Os Sertões (1902)",
+     "u": "",
+     "d": "trecho na Caatinga."
+    },
+    {
+     "n": "José de Alencar, Iracema (1865)",
+     "u": "",
+     "d": "trecho no Costeiro-marinho."
+    },
+    {
+     "n": "Gonçalves Dias, Canção do Exílio (1843)",
+     "u": "",
+     "d": "trecho na abertura do Brasil."
+    }
+   ]
+  },
+  {
+   "t": "Tecnologia e tipografia",
+   "i": [
+    {
+     "n": "three.js",
+     "u": "https://threejs.org/",
+     "d": "mapa 3D."
+    },
+    {
+     "n": "Instrument Serif e Instrument Sans, via Google Fonts (licença SIL OFL)",
+     "u": "https://fonts.google.com/",
+     "d": "tipografia."
+    },
+    {
+     "n": "YouTube (player incorporado em modo de privacidade aprimorada)",
+     "u": "https://www.youtube.com/",
+     "d": "exibição dos vídeos."
+    }
+   ]
+  }
+ ],
+ "creditos_nota": "Os textos foram redigidos para este atlas a partir de informações de divulgação pública dessas instituições e não reproduzem trechos delas. Antes de publicar, confira os números e as datas nas fontes originais. Nenhuma foto é usada; as fichas de espécies trazem apenas texto."
+}

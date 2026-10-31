@@ -186,7 +186,7 @@ for f in json.load(open(rivers_f))["features"] + EXTRA_RIVERS:
                     else: add(label, r, dp(run, .9))
                 run = []
 NEIGH = {"Uruguay": "Uruguai", "Argentina": "Argentina", "Paraguay": "Paraguai", "Bolivia": "Bolívia", "Peru": "Peru", "Colombia": "Colômbia",
-         "Venezuela": "Venezuela", "Guyana": "Guiana", "Suriname": "Suriname"}
+         "Venezuela": "Venezuela", "Guyana": "Guiana", "Suriname": "Suriname", "Chile": "Chile", "Ecuador": "Equador"}
 if COUNTRIES_F:   # contorno de cada país vizinho (terra e costa, dentro do quadro do mapa) e um nome por país
     res["countries"], res["cl"] = [], []
     for f in json.load(open(COUNTRIES_F))["features"]:

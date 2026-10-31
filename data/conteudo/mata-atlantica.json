@@ -1,0 +1,70 @@
+{
+  "intro": "A floresta que o Brasil encontrou primeiro, e onde vive a maior parte dos brasileiros.",
+  "secoes": [
+    {
+      "id": "paisagem", "titulo": "Paisagem e clima", "chuva": true,
+      "p": [
+        "A Mata Atlântica acompanha o litoral do Rio Grande do Sul ao Rio Grande do Norte e entra para o interior em Minas Gerais, Mato Grosso do Sul e Goiás. Ocupa cerca de 13% do território, mas é o bioma com mais espécies de plantas, algas e fungos registradas no país. Foi a primeira paisagem que os europeus viram ao chegar, em 1500, e hoje é onde vive a maior parte da população brasileira.",
+        "O nome esconde um conjunto de ambientes. Há a floresta ombrófila densa, úmida e alta, que cobre as encostas da Serra do Mar; a floresta com araucárias, nos planaltos frios do Sul; as florestas estacionais, que perdem parte das folhas na estação seca; os campos de altitude, nos topos de serras como a Mantiqueira; e, na beira do mar, as restingas e os manguezais.",
+        "O clima é variado. No litoral, a umidade que sobe do oceano e bate nas serras faz chover muito, e o gráfico acima mostra isso. Mais ao sul há invernos frios, com geada, e mais ao interior estações secas. Nas montanhas, a neblina se prende na copa das árvores e nutre as epífitas, plantas que crescem sobre outras, como bromélias e orquídeas.",
+        "Essa diversidade se vê até no detalhe: em um único hectare de mata no sul da Bahia foram contadas mais de 450 espécies de árvores, um dos maiores números já registrados no mundo."
+      ]
+    },
+    {
+      "id": "gente", "titulo": "Gente e culturas",
+      "p": [
+        "Os povos indígenas da Mata Atlântica incluem os Guarani, os Pataxó, os Tupinikim, os Kaingang, os Krenak e os Xokleng. Muitos deles perderam grandes parte das terras no passado, mas continuam presentes e reivindicam seus territórios, mantendo línguas e rituais.",
+        "No litoral vivem os caiçaras, descendentes de indígenas, portugueses e africanos, que pescam, plantam mandioca e mantêm tradições como o fandango caiçara, dança de sapateado ao som de viola e rabeca. No Vale do Ribeira, entre São Paulo e Paraná, ficam comunidades quilombolas que preservam um dos maiores remanescentes de Mata Atlântica do país. Na Serra Catarinense e no Paraná, os tropeiros e os criadores marcaram a cultura serrana, e o pinhão, semente da araucária, aparece em inúmeros pratos.",
+        "A comida é variada: moqueca capixaba, feita na panela de barro; o barreado, cozido no Paraná; o azul-marinho, peixe com banana-da-terra de Ubatuba; o tutu à mineira; o feijão-tropeiro; o pinhão cozido na chapa. A festa do Divino em Paraty, o carnaval do Rio, a festa de Iemanjá, o boi-de-mamão de Santa Catarina e as folias de Reis fazem parte do calendário.",
+        "No folclore, o Saci-pererê, que apronta travessuras numa perna só, nasceu em histórias de fazendas e matas do Sul e do Sudeste. A Caipora e o Boitatá, serpente de fogo, também são figuras antigas, guardiãs da mata contra quem a ataca."
+      ]
+    },
+    {
+      "id": "agua", "titulo": "Água: das serras ao mar",
+      "p": [
+        "A Mata Atlântica protege nascentes de rios que abastecem mais de 100 milhões de pessoas, entre elas as regiões metropolitanas de São Paulo, do Rio de Janeiro e de Belo Horizonte. Os rios descem das serras do Mar e da Mantiqueira em direção ao oceano, como o Paraíba do Sul, o Doce, o Ribeira de Iguape e o Itajaí-Açu, ou em direção ao interior, como o Tietê e o Paranapanema, afluentes do Paraná.",
+        "A floresta funciona como esponja. As folhas amortecem a chuva forte, as raízes seguram o solo e a água infiltra aos poucos, alimentando as nascentes mesmo no período seco. Quando a mata é retirada das encostas, a chuva escorre rápido, carrega terra e engrossa enchentes e deslizamentos. Por isso a restauração de matas ciliares, nas margens dos rios, e de encostas é uma das ferramentas mais baratas para proteger a água das cidades.",
+        "No litoral, rios e mar se encontram nos estuários e nos manguezais, que funcionam como berçários de peixes e crustáceos. A Cachoeira das Cataratas do Iguaçu, na fronteira com a Argentina, é o cartão-postal dessa paisagem de rios e floresta."
+      ]
+    },
+    {
+      "id": "ciencia", "titulo": "Ciência e curiosidades",
+      "p": [
+        "A Mata Atlântica e o Cerrado são os dois hotspots de biodiversidade do Brasil. Aqui vivem o muriqui, o maior primata das Américas, o mico-leão-dourado e dezenas de aves que só existem nela.",
+        "O mico-leão-dourado é uma história de sucesso da conservação: nos anos 1970 restavam algumas centenas de animais, em pequenos fragmentos de mata no Rio de Janeiro. Com reprodução em cativeiro, reintrodução, corredores de floresta e a participação das comunidades vizinhas, as populações voltaram a crescer, e a espécie hoje conta com alguns milhares de indivíduos.",
+        "A cidade do Rio tem uma das florestas urbanas mais famosas do mundo, a Floresta da Tijuca. No século XIX, o cafezal tinha acabado com a mata e secado as nascentes que abasteciam a cidade; a partir de 1861, um programa de reflorestamento plantou milhares de mudas, e a floresta cresceu de novo.",
+        "O pau-brasil, árvore da qual o país tirou o nome, foi o primeiro produto de exportação da colônia, usado para extrair um corante vermelho. Hoje é ameaçado e protegido, e é também uma árvore símbolo de projetos de restauração."
+      ]
+    },
+    {
+      "id": "visitar", "titulo": "Para visitar e para proteger",
+      "p": [
+        "O Parque Nacional do Itatiaia, criado em 1937, foi o primeiro parque nacional do Brasil. O Parque Nacional da Serra dos Órgãos, em Teresópolis, tem trilhas entre as pedras do Dedo de Deus. O Parque Nacional do Iguaçu protege as Cataratas, Patrimônio Natural da Humanidade. O Parque Estadual da Ilha do Cardoso e o Parque Nacional de Superagui, no litoral Sul de São Paulo e Norte do Paraná, mostram a mata junto ao mar. Em Santa Catarina, o Parque Nacional de São Joaquim guarda campos de altitude e neve ocasional.",
+        "Quem visita uma trilha na Mata Atlântica contribui quando respeita as regras: não retira plantas, não alimenta bichos, leva o lixo de volta. Outra forma de ajudar é comprar produtos de agroflorestas e de cooperativas da região, como palmito-juçara de manejo sustentável, que evita a derrubada da palmeira. E quem tem um terreno pode criar uma Reserva Particular do Patrimônio Natural (RPPN) ou plantar espécies nativas, formando corredores que ligam os fragmentos de mata."
+      ]
+    }
+  ],
+  "especies": [
+    { "n": "Mico-leão-dourado", "c": "Leontopithecus rosalia", "t": "fauna", "d": "Primata pequeno, de pelagem inteira cor de ouro e uma juba ao redor do rosto. Vive em grupos familiares e se alimenta de frutas, insetos e pequenos animais nas matas do Rio de Janeiro." },
+    { "n": "Muriqui", "c": "Brachyteles arachnoides e B. hypoxanthus", "t": "fauna", "d": "O maior primata das Américas, de corpo magro, braços longos e cauda preênsil. Também chamado de mono-carvoeiro. Vive em grupos pacíficos nas copas da mata." },
+    { "n": "Sabiá-laranjeira", "c": "Turdus rufiventris", "t": "fauna", "d": "Ave de peito alaranjado e dorso pardo, de canto melodioso. É a ave nacional do Brasil, citada na Canção do Exílio." },
+    { "n": "Tucano-de-bico-verde", "c": "Ramphastos dicolorus", "t": "fauna", "d": "Ave de bico grande e verde-claro, peito amarelo e dorso verde-escuro. Voa em bandos e come frutos, espalhando sementes pela mata." },
+    { "n": "Araucária", "c": "Araucaria angustifolia", "t": "flora", "d": "Árvore de copa em forma de taça e galhos que se abrem como candelabro. O fruto é uma pinha grande, e as sementes são o pinhão. Símbolo do Sul do Brasil." },
+    { "n": "Pau-brasil", "c": "Paubrasilia echinata", "t": "flora", "d": "Árvore de tronco espinhoso e flores amarelas com mancha rosada, perfumadas. O cerne tem cor avermelhada. Deu nome ao país." },
+    { "n": "Jequitibá-rosa", "c": "Cariniana legalis", "t": "flora", "d": "Uma das maiores árvores da Mata Atlântica: tronco reto, casca com sulcos profundos e copa que passa dos 40 metros. Alguns exemplares têm séculos de idade." },
+    { "n": "Palmito-juçara", "c": "Euterpe edulis", "t": "flora", "d": "Palmeira de tronco esguio e liso. Antigamente era derrubada para extrair o palmito; hoje o fruto, parecido com o açaí, é colhido sem cortar a planta, o que ajuda a proteger a espécie." }
+  ],
+  "videos": [
+    { "id": "TCeRkEk1KRA", "tipo": "Documentário", "canal": "TV Brasil", "titulo": "Mata Atlântica, a floresta mais antiga da América do Sul (Nossos Biomas)", "dur": "25:16" },
+    { "id": "TjYAwYJJoy4", "tipo": "Documentário", "canal": "Últimos Refúgios", "titulo": "Redescobrindo a Mata Atlântica", "dur": "20:01" },
+    { "id": "EbLzAzSWHSU", "tipo": "Turismo", "canal": "Roteiros eco trilhas", "titulo": "Trilha na Mata Atlântica, Peruíbe (SP)", "dur": "6:06" }
+  ],
+  "quiz": [
+    { "q": "Qual foi o primeiro parque nacional do Brasil, criado em 1937?", "o": ["Iguaçu", "Itatiaia", "Tijuca", "Serra dos Órgãos"], "c": 1, "e": "O Parque Nacional do Itatiaia, na Mantiqueira, entre o Rio de Janeiro e Minas Gerais." },
+    { "q": "Qual primata é o maior das Américas e vive na Mata Atlântica?", "o": ["Mico-leão-dourado", "Muriqui", "Bugio", "Sagui"], "c": 1, "e": "O muriqui, também chamado de mono-carvoeiro, é o maior primata do continente." },
+    { "q": "Qual planta dá o pinhão?", "o": ["Palmito-juçara", "Pau-brasil", "Araucária", "Jequitibá"], "c": 2, "e": "O pinhão é a semente da araucária." },
+    { "q": "Por que a Mata Atlântica é importante para a água das cidades?", "o": ["Porque protege nascentes e ajuda a água a infiltrar no solo.", "Porque aquece os rios.", "Porque substitui as represas.", "Porque produz sal."], "c": 0, "e": "A floresta amortece a chuva, segura o solo e alimenta as nascentes." },
+    { "q": "Qual é a ave nacional do Brasil?", "o": ["Arara-azul", "Tucano", "Sabiá-laranjeira", "Beija-flor"], "c": 2, "e": "O sabiá-laranjeira, imortalizado na Canção do Exílio." }
+  ],
+  "fontes": "Texto escrito a partir de conhecimento geral de divulgação e de materiais do IBGE, do MMA, do ICMBio, da Fundação SOS Mata Atlântica e da Associação Mico-Leão-Dourado. Os números de área e espécies vêm do IBGE e da Flora do Brasil 2020."
+}

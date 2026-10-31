@@ -1,0 +1,69 @@
+{
+  "intro": "A maior floresta tropical do planeta e o maior sistema de rios da Terra.",
+  "secoes": [
+    {
+      "id": "paisagem", "titulo": "Paisagem e clima", "chuva": true,
+      "p": [
+        "A Amazônia ocupa quase metade do território brasileiro e se estende ainda por oito países vizinhos e pela Guiana Francesa. No Brasil, cobre por inteiro o Acre, o Amazonas, o Amapá e Roraima, e quase todo o Pará e Rondônia, além de partes do Mato Grosso, do Maranhão e do Tocantins.",
+        "O clima é equatorial: quente e úmido o ano inteiro, com chuva abundante em quase todos os meses. Mesmo assim há uma estação mais chuvosa e outra menos chuvosa, e é essa variação que faz os rios subirem e descerem muitos metros ao longo do ano.",
+        "Quem olha de cima vê um tapete verde, mas a floresta tem andares. No alto, as copas das árvores emergentes passam dos 40 metros. Abaixo vem o dossel fechado, onde vive a maior parte dos animais. Mais embaixo ficam o sub-bosque, escuro e úmido, e o chão coberto de folhas, onde fungos e insetos reciclam tudo com rapidez. É por isso que a floresta é exuberante mesmo sobre solos em geral pobres: os nutrientes circulam rápido entre as folhas, as raízes e o chão.",
+        "Nem tudo é floresta de terra firme. Ao longo dos rios de água barrenta, a várzea alaga por meses e recebe sedimentos fertéis. Nos rios de água escura, o igapó fica alagado com a água ácida e pobre em nutrientes. Há ainda campinas, cerrados e campos naturais pelo meio da mata, que mostram como o bioma é mais variado do que parece."
+      ]
+    },
+    {
+      "id": "gente", "titulo": "Gente e culturas",
+      "p": [
+        "A Amazônia abriga centenas de povos indígenas, entre eles os Yanomami, os Tikuna, os Kayapó, os Munduruku, os Baniwa e os Ashaninka, muitos com línguas próprias. Seus territórios, reconhecidos como terras indígenas, formam uma das barreiras mais eficazes contra a perda de floresta.",
+        "Ao lado deles vivem os ribeirinhos, que moram em casas sobre palafitas ou à beira dos rios e se deslocam de barco; os extrativistas, como os seringueiros e os castanheiros, que ganharam voz com Chico Mendes e com a criação das reservas extrativistas; e as comunidades quilombolas, como as do rio Trombetas, no Pará.",
+        "A cozinha amazônica é das mais originais do país. O tucupi, caldo amarelo extraído da mandioca, vai no pato no tucupi e no tacacá, servido quente em cuias com jambu, erva que anestesia levemente a boca. Há o pirarucu, o tambaqui e o filhote, o açaí servido com peixe e farinha no Pará, a maniçoba e frutas como cupuaçu, bacuri, taperebá e camu-camu.",
+        "As festas são grandes. O Círio de Nazaré, em Belém, reúne por volta de dois milhões de pessoas numa das maiores procissões católicas do mundo. Em Parintins, no Amazonas, o Festival Folclórico coloca frente a frente os bois Garantido e Caprichoso. No Sairé, em Alter do Chão, tradição indígena e católica se misturam. Nas histórias, o boto que se transforma em rapaz bonito e vai aos bailes, o Curupira de pés virados para trás, a Iara de canto encantador, o Mapinguari e a Matinta Perera percorrem a floresta."
+      ]
+    },
+    {
+      "id": "agua", "titulo": "Água: o maior rio do mundo",
+      "p": [
+        "A bacia do Amazonas é a maior do planeta e despeja no Atlântico uma quantidade de água maior que a de qualquer outro rio. O Amazonas nasce nos Andes, no Peru, e corre por milhares de quilômetros. No Brasil, ele recebe o nome de Solimões até a junção com o Rio Negro, perto de Manaus.",
+        "Ali acontece o famoso encontro das águas: o Negro, de água escura e ácida, e o Solimões, barrento e claro, correm lado a lado por vários quilômetros sem se misturar, por causa da diferença de temperatura, velocidade e densidade. Outros rios gigantes, como o Madeira, o Tapajós, o Xingu e o Negro, juntam-se ao Amazonas. Na foz, no Amapá e no Pará, a maré pode empurrar a água contra a corrente e formar a pororoca, uma onda que sobe o rio por quilômetros.",
+        "A floresta também faz chover. Árvores bombeiam água do solo e a devolvem ao ar pelas folhas, num processo chamado evapotranspiração. Parte dessa umidade viaja com os ventos até outras regiões, e o fenômeno é conhecido popularmente como rios voadores. Pesquisadores ainda estudam o quanto da chuva do Centro-Oeste e do Sudeste depende dele."
+      ]
+    },
+    {
+      "id": "ciencia", "titulo": "Ciência e curiosidades",
+      "p": [
+        "Boa parte da fauna e da flora da Amazônia ainda não foi descrita. Todo ano pesquisadores do INPA, em Manaus, e do Museu Paraense Emílio Goeldi, em Belém, publicam novas espécies de peixes, anfíbios, plantas e insetos. A floresta é também laboratório do clima: no meio da mata, no Amazonas, fica a torre ATTO, de 325 metros, uma das mais altas da América do Sul, que mede gases e partículas para entender como a floresta e a atmosfera conversam.",
+        "O ponto mais alto do Brasil, o Pico da Neblina, com cerca de 2.995 metros, fica dentro do bioma, na fronteira com a Venezuela. O pirarucu, um dos maiores peixes de água doce do mundo, passou de ameaçado a símbolo de manejo bem-sucedido: comunidades ribeirinhas contam os peixes, pescam só uma cota e fiscalizam seus lagos, e as populações voltaram a crescer em vários locais.",
+        "A vitória-régia, a maior planta aquática da Amazônia, tem folhas que chegam a mais de dois metros de diâmetro e suportam o peso de uma criança. Suas flores abrem à noite, brancas e perfumadas, e mudam para rosa no segundo dia."
+      ]
+    },
+    {
+      "id": "visitar", "titulo": "Para visitar e para proteger",
+      "p": [
+        "O Parque Nacional de Anavilhanas, no rio Negro, protege um dos maiores arquipélagos fluviais do planeta. O Parque Nacional do Jaú, também no Negro, é um dos maiores parques de floresta tropical do mundo. A Reserva de Desenvolvimento Sustentável Mamirauá, perto de Tefé, protege uma extensa várzea e o uacari-branco, um macaco de rosto vermelho. A Floresta Nacional do Tapajós e o balneário de Alter do Chão, no Pará, têm praias de água clara de rio, chamadas de Caribe amazônico.",
+        "Visitar a Amazônia de forma responsável é dar emprego a quem mora nela. Escolher passeios com guias da região, hospedar-se em pousadas comunitárias e comprar artesanato e produtos do extrativismo, como castanha, óleos e cestaria, mantém a renda perto da floresta em pé. Quem quer ajudar de longe também pode escolher produtos com origem rastreável, como castanha-do-brasil e cacau de manejo comunitário."
+      ]
+    }
+  ],
+  "especies": [
+    { "n": "Onça-pintada", "c": "Panthera onca", "t": "fauna", "d": "O maior felino das Américas. Pelagem amarelo-dourada com rosetas, que têm pintas no centro, mandíbula muito forte e cabeça larga. Nada bem e caça até jacarés." },
+    { "n": "Boto-cor-de-rosa", "c": "Inia geoffrensis", "t": "fauna", "d": "O maior golfinho de rio do mundo. Os adultos ganham tom rosado; bico longo e testa em bossa. Vive em rios e na várzea inundada, onde nada entre as árvores." },
+    { "n": "Harpia", "c": "Harpia harpyja", "t": "fauna", "d": "Uma das maiores águias do planeta, com cristas de penas na cabeça e garras do tamanho das de um urso. Caça preguiças e macacos no alto das copas." },
+    { "n": "Pirarucu", "c": "Arapaima gigas", "t": "fauna", "d": "Peixe de escamas grandes, avermelhadas na cauda, que chega a mais de dois metros. Respira ar na superfície, e por isso vem à tona a cada poucos minutos." },
+    { "n": "Ariranha", "c": "Pteronura brasiliensis", "t": "fauna", "d": "A maior lontra do mundo, de pelagem marrom e mancha clara na garganta, única para cada indivíduo. Vive em grupos barulhentos de família." },
+    { "n": "Vitória-régia", "c": "Victoria amazonica", "t": "flora", "d": "Folhas redondas com bordas erguidas que chegam a dois metros, com nervuras reforçadas por baixo e espinhos. Flores brancas que se abrem à noite." },
+    { "n": "Castanheira-do-brasil", "c": "Bertholletia excelsa", "t": "flora", "d": "Árvore gigante, de tronco reto e muito alto, que passa de 40 metros. O fruto, chamado de ouriço, é duro como madeira e guarda as castanhas. Só existe com a mata em pé, pois a polinização depende de abelhas grandes da floresta." },
+    { "n": "Açaizeiro", "c": "Euterpe oleracea", "t": "flora", "d": "Palmeira esbelta que cresce em touceiras na várzea. Os cachos de frutos pequenos e roxos são colhidos por quem sobe no tronco com uma peconha, o laço de fibra nos pés." }
+  ],
+  "videos": [
+    { "id": "_MyLk4v-Oj0", "tipo": "Documentário", "canal": "TV Brasil", "titulo": "Amazônia, riqueza da natureza selvagem (Nossos Biomas)", "dur": "26:27" },
+    { "id": "He3j-rqWrEU", "tipo": "Educativo", "canal": "Canal Ciências", "titulo": "Bioma Amazônia", "dur": "7:26" },
+    { "id": "9CT7Me8_RjI", "tipo": "Turismo", "canal": "Vamos Trilhar", "titulo": "Passeio de barco em Manaus: encontro das águas, aldeia indígena e botos", "dur": "11:06" }
+  ],
+  "quiz": [
+    { "q": "O que acontece no encontro das águas, perto de Manaus?", "o": ["O Rio Negro e o Solimões correm lado a lado sem se misturar por vários quilômetros.", "O mar entra no rio.", "Dois rios secam.", "Uma cachoeira se forma."], "c": 0, "e": "As águas têm cores, temperaturas e velocidades diferentes, e demoram a se misturar." },
+    { "q": "O que é a pororoca?", "o": ["Uma tempestade de areia.", "Uma onda que sobe o rio, empurrada pela maré.", "Um peixe grande.", "Uma festa popular."], "c": 1, "e": "Na foz do Amazonas, a maré empurra a água contra a corrente e forma uma onda que sobe o rio." },
+    { "q": "Qual é a diferença entre várzea e igapó?", "o": ["A várzea é alagada por rios de água barrenta e fértil; o igapó, por água escura e ácida.", "A várzea fica no mar.", "O igapó não alaga.", "São o mesmo ambiente."], "c": 0, "e": "O tipo de água do rio define o tipo de floresta alagada." },
+    { "q": "Qual peixe ganhou fama por um sistema de manejo comunitário que fez a população crescer?", "o": ["Piranha", "Pirarucu", "Tucunaré", "Pacu"], "c": 1, "e": "Comunidades ribeirinhas contam e pescam só uma cota de pirarucus, e fiscalizam os lagos." },
+    { "q": "Qual é o ponto mais alto do Brasil, dentro da Amazônia?", "o": ["Pico da Bandeira", "Monte Roraima", "Pico da Neblina", "Pedra da Mina"], "c": 2, "e": "O Pico da Neblina tem cerca de 2.995 metros e fica no Amazonas, na fronteira com a Venezuela." }
+  ],
+  "fontes": "Texto escrito a partir de conhecimento geral de divulgação e de materiais do IBGE, do MMA, do ICMBio, do INPA e do Museu Goeldi. Os números de área e espécies vêm do IBGE e da Flora do Brasil 2020."
+}
