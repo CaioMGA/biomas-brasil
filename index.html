@@ -81,6 +81,8 @@ main { position: relative; z-index: 1; }
 .layers { align-self: stretch; display: flex; flex-direction: column; gap: 4px; margin-top: 8px; pointer-events: auto; }
 .layers .ttl { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: #cfd3bf; text-shadow: 0 1px 4px #000, 0 0 10px rgba(0,0,0,.9); margin: 0 0 1px 4px; text-align: right; }
 .sw { display: flex; align-items: center; gap: 8px; padding: 3px 12px 3px 6px; cursor: pointer; background: var(--glass); border: 1px solid var(--rule); border-radius: 999px; font-size: 13px; backdrop-filter: blur(6px); }
+.sw.sub { padding-left: 26px; }   /* camada-filha: recuo que indica a hierarquia */
+.sw:disabled { opacity: .45; cursor: default; }
 .sw::before { content: ""; width: 26px; height: 14px; border-radius: 999px; background: rgba(236,230,212,.18); box-shadow: inset 0 0 0 1px var(--rule);
   background-image: radial-gradient(circle at 7px 7px, var(--muted) 5px, transparent 5.5px); background-repeat: no-repeat; transition: background-color .2s; }
 .sw[aria-checked="true"]::before { background-color: var(--accent); background-image: radial-gradient(circle at 19px 7px, #11160f 5px, transparent 5.5px); }
@@ -203,6 +205,7 @@ dd { margin: 0; }
   .layers { gap: 3px; margin-top: 6px; }
   .exag { left: 16px; top: 130px; width: 190px; padding: 8px 10px 6px; }
     .sw { padding: 3px 10px 3px 5px; font-size: 12px; }
+    .sw.sub { padding-left: 22px; }
   .chip { padding: 4px 10px 4px 8px; font-size: 12px; }
   .chips { gap: 4px; }
   .xh { width: 26px; height: 26px; }
@@ -878,11 +881,28 @@ function setEffect(key, instant) {
 const LAYER_DEFS = [["relevo", "Relevo"], ["estados", "Divisas e fronteiras"], ["siglas", "Siglas dos estados"], ["equador", "Linha do Equador"], ["tropico", "Trópico de Capricórnio"], ["rios", "Rios"], ["nomesRios", "Nome dos rios"], ["capitais", "Capitais"], ["nomesCapitais", "Nomes das capitais"], ["cidades", "Centros urbanos"], ["nomesCidades", "Nomes dos centros urbanos"]];
 const layerOn = { relevo: true, estados: true, siglas: true, equador: false, tropico: false, rios: true, nomesRios: false, capitais: false, nomesCapitais: false, cidades: false, nomesCidades: false };   // camadas ligadas quando o visitante abre o site
 const layersEl = document.getElementById("layers");
+// Hierarquia das camadas: o nome (filho) só é interativo com a camada-mãe ligada; ligar a mãe liga o filho e desligar a mãe desliga o filho.
+// Rios é diferente: ligar "Nome dos rios" liga "Rios", mas desligar um não mexe no outro.
+const SUB_OF = { siglas: "estados", nomesCapitais: "capitais", nomesCidades: "cidades" };
+const layerBtn = {};
+function setLayer(k, v) {
+  layerOn[k] = v; layerBtn[k].setAttribute("aria-checked", String(v));
+  if (k === "relevo") exagEl.classList.toggle("off", !v);
+}
+function syncSubs() { for (const c in SUB_OF) { const off = !layerOn[SUB_OF[c]]; layerBtn[c].disabled = off; layerBtn[c].setAttribute("aria-disabled", String(off)); } }
 LAYER_DEFS.forEach(([k, name]) => {
-  const b = el("button", { type: "button", class: "sw", role: "switch", "aria-checked": String(layerOn[k]) }, name);
-  b.addEventListener("click", () => { layerOn[k] = !layerOn[k]; b.setAttribute("aria-checked", String(layerOn[k])); if (k === "relevo") exagEl.classList.toggle("off", !layerOn.relevo); });
+  const b = el("button", { type: "button", class: "sw" + (SUB_OF[k] ? " sub" : ""), role: "switch", "aria-checked": String(layerOn[k]) }, name);
+  layerBtn[k] = b;
+  b.addEventListener("click", () => {
+    if (b.disabled) return;
+    const v = !layerOn[k]; setLayer(k, v);
+    for (const c in SUB_OF) if (SUB_OF[c] === k) setLayer(c, v);
+    if (k === "nomesRios" && v) setLayer("rios", true);
+    syncSubs();
+  });
   layersEl.appendChild(b);
 });
+syncSubs();
 
 /* ---------- Escala vertical do relevo (para experimentar) ---------- */
 // Pílula deslizante: arrastar muda de 1x a 50x; um clique no centro abre a digitação (1 a 120); clique nas laterais salta para aquele ponto.
