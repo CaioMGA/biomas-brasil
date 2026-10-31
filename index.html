@@ -295,6 +295,8 @@ body.lab-on .cont:has(.labbox) { z-index: 5; }   /* o texto selecionado no lab s
 .labrios .lablist li { gap: 6px; }
 .labrios .lablist li .xh { width: 24px; height: 24px; padding: 0; margin-left: auto; flex: none; border-radius: 50%; }
 .labrios .lablist li .xh svg { width: 15px; height: 15px; }
+.labrios .lablist li .xh + .xh { margin-left: 0; }
+.labrios .lablist li .xh[aria-pressed="true"] { background: rgba(166, 255, 0, .3); color: #a6ff00; }
 .labrios .lablist li > span { flex: 1; }
 .labrios .lablist li s { color: #7fa0b4; font-size: 11px; }
 body.lab-rios .rl:not(.gl) { pointer-events: auto; cursor: pointer; }
@@ -406,7 +408,7 @@ body.lab-rios .rl:not(.gl) { pointer-events: auto; cursor: pointer; }
 </div>
 <aside id="labRios" class="labrios" hidden aria-label="Lab de nomes de rios">
   <header><strong>Lab · nomes dos rios</strong></header>
-  <p class="labhelp">Clique em um rio: ele fica em verde-limão no mapa. Para mudar o nome, edite o texto do rio selecionado (só o texto: posição, giro, tamanho e arco não mudam aqui).</p>
+  <p class="labhelp">Clique em um rio: ele fica em verde-limão no mapa. Os nomes são protegidos: o lápis libera (ou bloqueia) a edição do texto daquele rio, e a mira o centraliza no mapa. Só o texto muda; posição, giro, tamanho e arco não.</p>
   <input id="lrFilter" type="search" placeholder="filtrar rios…" autocomplete="off" aria-label="Filtrar rios">
   <ul id="lrList" class="lablist"></ul>
   <div class="labrow"><button type="button" id="lrReset">Restaurar este nome</button><button type="button" id="lrClear">Restaurar todos</button></div>
@@ -1894,35 +1896,45 @@ function drawFx(dt) {
     const L = LABELS.get(ID(n)); if (!L) return;
     L.text = cur(n); renderText(L);
   }
+  const editing = new Set();   // rios com a edição liberada; os demais ficam protegidos (só leitura)
   function select(n) {
     sel = n; LABUI.sel = n ? ID(n) : null;
     if (LABHOOK.hlRiver) LABHOOK.hlRiver(n);
     render();
     const inp = listEl.querySelector("li.on input"); if (inp) { inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length); }
   }
+  const ICON_CROSS = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="6.5"/><path d="M12 2v5M12 17v5M2 12h5M17 12h5"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/></svg>';
+  const ICON_EDIT = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19.5 8.5a2.1 2.1 0 0 0-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>';
+  function iconBtn(icon, title, onClick) {
+    const b = document.createElement("button"); b.type = "button"; b.className = "xh"; b.title = title; b.setAttribute("aria-label", title); b.innerHTML = icon;
+    b.addEventListener("click", ev => { ev.stopPropagation(); onClick(); }); return b;
+  }
   function cross(n) {   // botão de mira: centraliza o rio no mapa (e o seleciona)
-    const b = document.createElement("button"); b.type = "button"; b.className = "xh"; b.title = "Centralizar " + cur(n) + " no mapa"; b.setAttribute("aria-label", b.title);
-    b.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="6.5"/><path d="M12 2v5M12 17v5M2 12h5M17 12h5"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/></svg>';
-    b.addEventListener("click", ev => { ev.stopPropagation(); if (sel !== n) select(n); LABHOOK.focusRiver && LABHOOK.focusRiver(n); });
-    return b;
+    return iconBtn(ICON_CROSS, "Centralizar " + cur(n) + " no mapa", () => { if (sel !== n) select(n); LABHOOK.focusRiver && LABHOOK.focusRiver(n); });
+  }
+  function pencil(n) {   // botão de edição: liga/desliga a permissão de editar o nome deste rio
+    const on = editing.has(n);
+    const b = iconBtn(ICON_EDIT, on ? "Bloquear a edição do nome" : "Permitir a edição do nome", () => {
+      if (editing.has(n)) { editing.delete(n); render(); } else { editing.add(n); select(n); }
+    });
+    b.setAttribute("aria-pressed", String(on)); return b;
   }
   function render() {
     const f = filt.value.trim().toLowerCase();
     const shown = names.filter(n => !f || n.toLowerCase().includes(f) || cur(n).toLowerCase().includes(f));
     listEl.replaceChildren(...shown.map(n => {
-      const li = document.createElement("li"); li.dataset.river = n;
-      if (n === sel) {
-        li.className = "on";
-        const inp = document.createElement("input"); inp.type = "text"; inp.value = cur(n); inp.setAttribute("aria-label", "Nome do rio selecionado");
-        inp.addEventListener("input", () => { const v = inp.value.trim(); if (!v || v === n) delete ren[n]; else ren[n] = v; save(); applyName(n); });
-        inp.addEventListener("keydown", e => { if (e.key === "Enter") inp.blur(); else if (e.key === "Escape") { sel = null; LABUI.sel = null; LABHOOK.hlRiver && LABHOOK.hlRiver(null); render(); } e.stopPropagation(); });
-        li.appendChild(inp); li.appendChild(cross(n));
+      const li = document.createElement("li"); li.dataset.river = n; if (n === sel) li.className = "on";
+      let a;
+      if (editing.has(n)) {
+        a = document.createElement("input"); a.type = "text"; a.value = cur(n); a.setAttribute("aria-label", "Nome do rio");
+        a.addEventListener("input", () => { const v = a.value.trim(); if (!v || v === n) delete ren[n]; else ren[n] = v; save(); applyName(n); });
+        a.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === "Escape") a.blur(); e.stopPropagation(); });
       } else {
-        const a = document.createElement("span"); a.textContent = cur(n);
+        a = document.createElement("span"); a.textContent = cur(n);
         if (ren[n] != null) { const m = document.createElement("s"); m.textContent = " ← " + n; a.append(m); }
-        li.append(a, cross(n));
-        li.addEventListener("click", () => select(n));
       }
+      li.append(a, cross(n), pencil(n));
+      li.addEventListener("click", () => { if (sel !== n) select(n); });
       return li;
     }));
     const on = listEl.querySelector("li.on"); if (on && on.scrollIntoViewIfNeeded) on.scrollIntoViewIfNeeded(false);
@@ -1935,7 +1947,7 @@ function drawFx(dt) {
   }, true);
   $("labels").addEventListener("click", ev => { if (ev.target.closest && ev.target.closest(".rl[data-lab^='rio:']")) { ev.stopPropagation(); ev.preventDefault(); } }, true);
 
-  $("lrReset").addEventListener("click", () => { if (!sel) return; delete ren[sel]; save(); applyName(sel); render(); });
+  $("lrReset").addEventListener("click", () => { if (!sel || !editing.has(sel)) { msg.textContent = "Libere a edição do rio (ícone de lápis) para restaurar o nome."; return; } delete ren[sel]; save(); applyName(sel); render(); });
   $("lrClear").addEventListener("click", () => { const ks = Object.keys(ren); ren = {}; save(); ks.forEach(applyName); render(); msg.textContent = "Todos os nomes restaurados."; });
 
   // Exportação em texto (para colar no chat e passar a um agente) + JSON
