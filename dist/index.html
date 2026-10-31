@@ -1582,7 +1582,7 @@ async function init3d() {
     for (let n = 1; n <= 6; n++) { const pm = prisms[n]; if (!pm) continue; const h = (n === sel ? l1 : n === prevSel ? l2 : 0) * (1 - elevV) * LIFT; pm.visible = h > .0004; pm.scale.z = Math.max(h, 1e-4); }
     const scale = cam.fit * cam.user / cam.fit0 * 1.05, thr = Math.max(4, Math.min(9, Math.round(4 + (1.05 / scale - 1) * 4)));   // mais rios nomeados quanto mais perto
     rlbls.forEach(k => {
-      const show = LABUI.all || LABUI.rivers || LABUI.sel === k.id || (layerOn.nomesRios && k.r.r <= thr && (k.f ? sel && k.bid === sel : (!sel || k.bid === sel)));
+      const show = LABUI.all || LABUI.sel === k.id || (LABUI.rivers && k.r.r <= thr) || (!LABUI.rivers && layerOn.nomesRios && k.r.r <= thr && (k.f ? sel && k.bid === sel : (!sel || k.bid === sel)));
       k.e.classList.toggle("off", !show);
       if (!show) return;
       const hh = heightAt(k.u, k.v) + (k.bid === sel && !k.f ? LIFT * l1 * (1 - elevV) : 0) + .02;
