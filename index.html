@@ -816,8 +816,8 @@ function readerPlan(id) {
     if (c.glossario) plan.push({ id: "glossario", titulo: "Glossário", min: roundMin(minWords(c.glossario.map(g => g.d)) + 1), kind: "glossario" });
     if (c.linha) plan.push({ id: "linha", titulo: "Linha do tempo", min: roundMin(minWords(c.linha.map(g => g.t)) + 1), kind: "linha" });
   }
-  if (id === "brasil" && c.creditos) plan.push({ id: "creditos", titulo: "Créditos e fontes", min: 2, kind: "creditos" });
   if (c.quiz && c.quiz.length) plan.push({ id: "quiz", titulo: id === "brasil" ? "Quiz final" : "Quiz do bioma", min: Math.max(QUIZ_MIN, Math.round(c.quiz.length * .4)), kind: "quiz" });
+  if (id === "brasil" && c.creditos) plan.push({ id: "creditos", titulo: "Créditos e fontes", min: 2, kind: "creditos" });
   return plan;
 }
 const totalMin = id => { const p = readerPlan(id); return p ? p.reduce((a, s) => a + s.min, 0) : 0; };
