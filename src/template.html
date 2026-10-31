@@ -292,6 +292,10 @@ body.lab-on .cont:has(.labbox) { z-index: 5; }   /* o texto selecionado no lab s
 .labrios .lablist li { align-items: center; }
 .labrios .lablist li.on { background: rgba(166, 255, 0, .22); outline: 1px solid #a6ff00; }
 .labrios .lablist li input { padding: 3px 6px; }
+.labrios .lablist li { gap: 6px; }
+.labrios .lablist li .xh { width: 24px; height: 24px; padding: 0; margin-left: auto; flex: none; border-radius: 50%; }
+.labrios .lablist li .xh svg { width: 15px; height: 15px; }
+.labrios .lablist li > span { flex: 1; }
 .labrios .lablist li s { color: #7fa0b4; font-size: 11px; }
 body.lab-rios .rl:not(.gl) { pointer-events: auto; cursor: pointer; }
 /*LAB:CSS-END*/
@@ -1442,6 +1446,16 @@ async function init3d() {
     if (instant) { cam.tx = f.cx; cam.tz = f.cz; cam.fit = f.d; }
   }
 
+  LABHOOK.focusRiver = name => {   // centraliza (e enquadra) o rio no mapa
+    let x0 = 1e9, x1 = -1e9, z0 = 1e9, z1 = -1e9;
+    LAYERS.rivers.forEach(r => { if (r.n !== name) return; for (let i = 0; i + 1 < r.p.length; i += 2) { const x = wxOf(r.p[i]), z = wzOf(r.p[i + 1]); x0 = Math.min(x0, x); x1 = Math.max(x1, x); z0 = Math.min(z0, z); z1 = Math.max(z1, z); } });
+    if (x0 > x1) return;
+    const pad = Math.max(.5, .1 * Math.max(x1 - x0, z1 - z0)); x0 -= pad; x1 += pad; z0 -= pad; z1 += pad;
+    const cx = (x0 + x1) / 2, cz = (z0 + z1) / 2;
+    const f = fitRegion({ cx, cz, pts: [[x0, z0], [x1, z0], [x0, z1], [x1, z1], [cx, z0], [cx, z1], [x0, cz], [x1, cz]] });
+    cam.ttx = f.cx; cam.ttz = f.cz; cam.fitT = Math.max(f.d, 5); cam.userT = 1; touched = true;
+  };
+
   // Picking: raio contra o relevo (4 refinamentos sobre a altura local)
   const ray = new THREE.Raycaster(), plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0), hit = new THREE.Vector3();
   let elevV = 1;
@@ -1886,6 +1900,12 @@ function drawFx(dt) {
     render();
     const inp = listEl.querySelector("li.on input"); if (inp) { inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length); }
   }
+  function cross(n) {   // botão de mira: centraliza o rio no mapa (e o seleciona)
+    const b = document.createElement("button"); b.type = "button"; b.className = "xh"; b.title = "Centralizar " + cur(n) + " no mapa"; b.setAttribute("aria-label", b.title);
+    b.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="6.5"/><path d="M12 2v5M12 17v5M2 12h5M17 12h5"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/></svg>';
+    b.addEventListener("click", ev => { ev.stopPropagation(); if (sel !== n) select(n); LABHOOK.focusRiver && LABHOOK.focusRiver(n); });
+    return b;
+  }
   function render() {
     const f = filt.value.trim().toLowerCase();
     const shown = names.filter(n => !f || n.toLowerCase().includes(f) || cur(n).toLowerCase().includes(f));
@@ -1896,11 +1916,11 @@ function drawFx(dt) {
         const inp = document.createElement("input"); inp.type = "text"; inp.value = cur(n); inp.setAttribute("aria-label", "Nome do rio selecionado");
         inp.addEventListener("input", () => { const v = inp.value.trim(); if (!v || v === n) delete ren[n]; else ren[n] = v; save(); applyName(n); });
         inp.addEventListener("keydown", e => { if (e.key === "Enter") inp.blur(); else if (e.key === "Escape") { sel = null; LABUI.sel = null; LABHOOK.hlRiver && LABHOOK.hlRiver(null); render(); } e.stopPropagation(); });
-        li.appendChild(inp);
+        li.appendChild(inp); li.appendChild(cross(n));
       } else {
         const a = document.createElement("span"); a.textContent = cur(n);
         if (ren[n] != null) { const m = document.createElement("s"); m.textContent = " ← " + n; a.append(m); }
-        li.appendChild(a);
+        li.append(a, cross(n));
         li.addEventListener("click", () => select(n));
       }
       return li;
