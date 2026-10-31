@@ -1,0 +1,1845 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="boot navhide">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Biomas do Brasil</title>
+<link rel="icon" type="image/svg+xml" href="__ICONSVG__">
+<link rel="apple-touch-icon" href="__ICONPNG__">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet"></noscript>
+<style>
+/* Layout: palco de tela cheia com o mapa 3D como herói; o painel de informações flutua à direita (embaixo no celular). */
+:root {
+  --bg: #0b100c;
+  --glass: rgba(14, 20, 15, .78);
+  --ink: #ece6d4;
+  --muted: #b6bba4;
+  --rule: rgba(236, 230, 212, .16);
+  --c-amazonia: #5ea56e;
+  --c-cerrado: #b38b3c;
+  --c-mata-atlantica: #2da895;
+  --c-caatinga: #cb7a61;
+  --c-pampa: #9486cf;
+  --c-pantanal: #25a3ba;
+  --c-costeiro: #5f96d2;
+  --accent: #ece6d4;
+  --display: "Instrument Serif", "Iowan Old Style", Georgia, serif;
+  --body: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --panel-w: min(430px, 36vw);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 400 16px/1.55 var(--body); -webkit-text-size-adjust: 100%; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+#fx { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; display: block; }
+
+main { position: relative; z-index: 1; }
+.stage { position: relative; z-index: 1; height: 100svh; min-height: 560px; overflow: hidden; }
+#gl { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; cursor: grab; }
+#gl.hover { cursor: pointer; }
+#gl.drag { cursor: grabbing; }
+
+.brand { position: absolute; left: 24px; top: 22px; pointer-events: none; }
+.brand .eyebrow { margin: 0 0 6px; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: #cfd3bf; text-shadow: 0 1px 4px #000, 0 0 10px rgba(0,0,0,.9); }
+.brand h1 { margin: 0; font: 400 clamp(38px, 5.2vw, 76px)/.95 var(--display); text-wrap: balance; text-shadow: 0 2px 6px rgba(0,0,0,.7), 0 0 26px rgba(0,0,0,.75); }
+.brand h1 em { font-style: italic; }
+
+.labels { position: absolute; inset: 0; pointer-events: none; }
+.lbl { position: absolute; left: 0; top: 0; transform: translate(-50%, -50%); padding: 3px 10px; border: 0; background: transparent; cursor: pointer; pointer-events: auto;
+  font: 600 21px var(--body); letter-spacing: .02em; color: #fff; transition: opacity .35s; white-space: nowrap;
+  -webkit-text-stroke: 4px rgba(5,9,6,.82); paint-order: stroke fill;
+  text-shadow: 0 0 5px rgba(0,0,0,.95), 0 0 12px rgba(0,0,0,.85), 0 0 26px rgba(0,0,0,.6); }
+.lbl.off { opacity: 0; pointer-events: none; }
+.lbl.big { font: 400 52px var(--display); -webkit-text-stroke: 7px rgba(5,9,6,.8); text-shadow: 0 0 8px rgba(0,0,0,.95), 0 0 20px rgba(0,0,0,.85), 0 0 40px rgba(0,0,0,.6); }
+
+.dock { position: absolute; left: 24px; bottom: 20px; right: 24px; display: flex; flex-direction: column; gap: 10px; align-items: flex-start; pointer-events: none; }
+.hint { margin: 0; font-size: 13px; color: #d3d7c4; text-shadow: 0 1px 4px #000, 0 0 10px #000, 0 0 20px rgba(0,0,0,.8); }
+.chips { display: flex; flex-direction: column; gap: 4px; align-self: stretch; margin: 6px 0 0; padding: 0; list-style: none; pointer-events: auto; }
+.chip { display: flex; align-items: center; gap: 8px; flex: 1; white-space: nowrap; padding: 4px 14px 4px 10px; cursor: pointer; background: var(--glass); border: 1px solid var(--rule); border-radius: 999px; font-size: 14px; font-weight: 500; backdrop-filter: blur(6px); }
+.chip::before { content: ""; width: 12px; height: 12px; border-radius: 50%; background: var(--col, var(--ink)); }
+.chip[aria-pressed="true"] { background: var(--ink); color: #11160f; border-color: var(--ink); }
+.chips li { display: flex; align-items: center; gap: 6px; }
+.xh { flex: none; width: 28px; height: 28px; padding: 0; border-radius: 50%; cursor: pointer; display: grid; place-items: center; color: #fff;
+  background: var(--glass); border: 1px solid var(--rule); backdrop-filter: blur(6px); }
+.xh svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; }
+.xh:hover { background: rgba(255,255,255,.16); }
+
+.exag { align-self: stretch; margin-top: 8px; transition: opacity .2s; pointer-events: auto; }
+.exag.off { opacity: .45; }
+.exrow { display: flex; align-items: center; gap: 6px; }
+.exrow .exs { flex: 1; min-width: 0; }
+.exag .exlbl { display: block; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: #cfd3bf; text-shadow: 0 1px 4px #000, 0 0 10px rgba(0,0,0,.9); margin: 0 0 3px 4px; text-align: right; }
+.exs { position: relative; height: 30px; border-radius: 999px; overflow: hidden; display: grid; place-items: center; cursor: ew-resize; touch-action: none; user-select: none;
+  background: var(--glass); border: 1px solid var(--rule); backdrop-filter: blur(6px); }
+.exfill { position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent) 70%, #000)); opacity: .34; pointer-events: none; }
+.exval { position: relative; font: 600 14px var(--body); pointer-events: none; }
+.exin { position: relative; width: 72px; padding: 1px 4px; text-align: center; font: 600 14px var(--body); color: var(--ink); background: rgba(255,255,255,.14); border: 1px solid var(--rule); border-radius: 6px; }
+.layers { align-self: stretch; display: flex; flex-direction: column; gap: 4px; margin-top: 8px; pointer-events: auto; }
+.layers .ttl { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: #cfd3bf; text-shadow: 0 1px 4px #000, 0 0 10px rgba(0,0,0,.9); margin: 0 0 1px 4px; text-align: right; }
+.sw { display: flex; align-items: center; gap: 8px; padding: 3px 12px 3px 6px; cursor: pointer; background: var(--glass); border: 1px solid var(--rule); border-radius: 999px; font-size: 13px; backdrop-filter: blur(6px); }
+.sw::before { content: ""; width: 26px; height: 14px; border-radius: 999px; background: rgba(236,230,212,.18); box-shadow: inset 0 0 0 1px var(--rule);
+  background-image: radial-gradient(circle at 7px 7px, var(--muted) 5px, transparent 5.5px); background-repeat: no-repeat; transition: background-color .2s; }
+.sw[aria-checked="true"]::before { background-color: var(--accent); background-image: radial-gradient(circle at 19px 7px, #11160f 5px, transparent 5.5px); }
+.mk { position: absolute; left: 0; top: 0; width: 0; height: 0; pointer-events: none; transition: opacity .3s; }
+.mk.off { opacity: 0; }
+.uf { position: absolute; left: 0; top: 0; pointer-events: none; white-space: nowrap; font: 700 13px var(--body); letter-spacing: .08em; color: #fff; transition: opacity .3s;
+  -webkit-text-stroke: 3px rgba(5,9,6,.78); paint-order: stroke fill; text-shadow: 0 0 6px rgba(0,0,0,.7); }
+.uf.off { opacity: 0; }
+.mk i { position: absolute; left: -4px; top: -4px; width: 8px; height: 8px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 2px rgba(0,0,0,.55); pointer-events: auto; cursor: default; }
+.mk.cap i { left: -5px; top: -5px; width: 10px; height: 10px; background: #f5d67a; border-radius: 2px; transform: rotate(45deg); }
+.mk .t { position: absolute; left: 9px; top: -9px; white-space: nowrap; font: 500 12px var(--body); color: #fff; opacity: 0; transition: opacity .2s; pointer-events: none;
+  -webkit-text-stroke: 3.5px rgba(5,9,6,.85); paint-order: stroke fill; text-shadow: 0 0 5px rgba(0,0,0,.95), 0 0 12px rgba(0,0,0,.8); }
+.mk:hover .t, .mk.in .t { opacity: 1; }
+.nav { position: absolute; z-index: 3; top: 20px; bottom: 20px; right: calc(var(--panel-w) + 24px + 16px); display: flex; flex-direction: column; align-items: flex-end; gap: 8px; overflow-y: auto; scrollbar-width: none; padding-left: 4px; }
+.nav::-webkit-scrollbar { display: none; }
+.nav, .nav *, .compass text { -webkit-user-select: none; user-select: none; }
+.navrow { --nh: 82px; display: flex; align-items: center; gap: 8px; flex: none; }
+.navstack { display: flex; flex-direction: column; gap: 6px; height: var(--nh); }
+.navstack .pill { flex: 1; }
+.navstack .pill button { height: 100%; }
+.pill.zm { height: var(--nh); }
+.pill.zm button { flex: 1; height: auto; }
+.compass { position: relative; flex: none; width: var(--nh); height: var(--nh);   /* mesma altura do conjunto de zoom */
+  padding: 0; border-radius: 50%; cursor: grab; touch-action: none;
+  background: var(--glass); border: 1px solid var(--rule); backdrop-filter: blur(8px); }
+.pill { display: flex; flex-direction: column; border-radius: 999px; overflow: hidden; background: var(--glass); border: 1px solid var(--rule); backdrop-filter: blur(8px); }
+.pill button { width: 40px; height: 40px; padding: 0; border: 0; background: transparent; cursor: pointer; font: 400 24px/1 var(--body); user-select: none; touch-action: none; }
+.pill button + button { border-top: 1px solid var(--rule); }
+.pill button:hover { background: rgba(255,255,255,.14); }
+.pill button:active { background: rgba(255,255,255,.24); }
+.pill .t { font: 600 14px var(--body); }
+.compass:active { cursor: grabbing; }
+.compass svg { width: 100%; height: 100%; display: block; }
+.compass .ring { fill: none; stroke: var(--rule); stroke-width: 1; }
+.compass .tick { stroke: var(--muted); stroke-width: 1; }
+.compass .nn { fill: #e8574a; } .compass .ns { fill: rgba(236,230,212,.75); }
+.compass text { font: 700 9px var(--body); fill: #fff; text-anchor: middle; }
+.rl { position: absolute; left: 0; top: 0; font: italic 500 13px var(--body); letter-spacing: .03em; color: #d4eeff; white-space: nowrap;
+  -webkit-text-stroke: 3.5px rgba(3,12,22,.88); paint-order: stroke fill; text-shadow: 0 0 5px rgba(0,0,0,.95), 0 0 12px rgba(40,140,255,.5), 0 0 22px rgba(0,0,0,.6); pointer-events: none; transition: opacity .3s; }
+.rl.off { opacity: 0; }
+.txt.arc { position: relative; top: .5em; display: inline-block; width: 0; height: 1em; }   /* a origem do arco fica no centro vertical do elemento */
+.txt .ch { position: absolute; left: 0; top: 0; white-space: pre; }
+.mk .t { transform-origin: center; }
+.cont { position: absolute; left: 0; top: 0; font: italic 400 100px/1 var(--display); letter-spacing: .08em; white-space: nowrap; pointer-events: none; transition: opacity .3s;
+  color: rgba(236, 230, 212, .62); -webkit-text-stroke: 9px rgba(5, 9, 6, .5); paint-order: stroke fill; text-shadow: 0 0 24px rgba(0, 0, 0, .75), 0 0 60px rgba(0, 0, 0, .5); }
+.cont.off { opacity: 0; }
+/* ordem dos textos no mapa: "América do Sul" fica por baixo de todos os demais */
+.cont { z-index: 0; }
+.lbl, .rl, .mk { z-index: 1; }
+.gl { font-style: normal; font-weight: 600; letter-spacing: .04em; color: #ffe9a8; text-shadow: 0 0 5px rgba(0,0,0,.95), 0 0 12px rgba(255,190,70,.5), 0 0 22px rgba(0,0,0,.6); }
+.gl.tr { color: #ffcfba; text-shadow: 0 0 5px rgba(0,0,0,.95), 0 0 12px rgba(255,120,80,.5), 0 0 22px rgba(0,0,0,.6); }
+.compass:active { cursor: grabbing; }
+.compass svg { width: 100%; height: 100%; display: block; }
+.compass .ring { fill: none; stroke: var(--rule); stroke-width: 1; }
+.compass .tick { stroke: var(--muted); stroke-width: 1; }
+.compass .nn { fill: #e8574a; } .compass .ns { fill: rgba(236,230,212,.75); }
+.compass text { font: 700 9px var(--body); fill: #fff; text-anchor: middle; }
+.panel { position: absolute; z-index: 2; top: 24px; right: 24px; bottom: 24px; width: var(--panel-w); overflow-y: auto; padding: 26px 26px 22px;
+  background: var(--glass); border: 1px solid var(--rule); border-top: 8px solid var(--accent); backdrop-filter: blur(14px); transition: border-color .4s; scrollbar-width: thin; }
+.panel .in { animation: rise .45s ease both; }
+@keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.kicker { margin: 0; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.panel h2 { margin: 4px 0 0; font: 400 clamp(40px, 4.6vw, 62px)/1 var(--display); text-wrap: balance; }
+.lead { margin: 10px 0 0; color: var(--muted); }
+.nums { display: flex; gap: 8px 26px; flex-wrap: wrap; margin: 18px 0 4px; padding-bottom: 16px; border-bottom: 1px solid var(--rule); }
+.num b { display: block; font: 400 38px/1 var(--display); font-variant-numeric: tabular-nums; }
+.num > span { font-size: 13px; color: var(--muted); }
+.cnt { font-variant-numeric: tabular-nums; }
+.rain { margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--rule); }
+.nums.sm { margin-top: 10px; }
+.nums.sm .num b { font-size: 30px; }
+.rainbars { display: grid; grid-template-columns: repeat(12, 1fr); gap: 3px; height: 86px; margin-top: 14px; }
+.rainbars div { display: flex; flex-direction: column; justify-content: flex-end; height: 100%; }
+.rainbars i { display: block; height: var(--h); min-height: 2px; background: linear-gradient(180deg, var(--accent), color-mix(in srgb, var(--accent) 70%, #000)); opacity: .5; transition: height 1.1s cubic-bezier(.2,.7,.2,1); }
+.rainbars .pk i { opacity: 1; }
+.rainmo { display: grid; grid-template-columns: repeat(12, 1fr); gap: 3px; margin-top: 3px; font-size: 10px; text-align: center; color: var(--muted); }
+dl { margin: 16px 0 0; display: grid; grid-template-columns: 84px 1fr; gap: 12px 14px; }
+dt { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); padding-top: 3px; }
+dd { margin: 0; }
+.spp { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.spp li { border: 1px solid var(--rule); padding: 4px 10px; font-size: 14px; background: rgba(255,255,255,.04); }
+.spp li small { color: var(--muted); font-size: 11px; margin-left: 6px; text-transform: uppercase; letter-spacing: .05em; }
+.curio { margin: 20px 0 0; padding: 12px 0 0 16px; border-left: 4px solid var(--accent); font: italic 400 21px/1.3 var(--display); }
+.curio > span { display: block; margin-bottom: 4px; font: 500 12px var(--body); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-style: normal; }
+.back { margin: 22px 0 0; padding: 8px 16px; cursor: pointer; background: transparent; border: 1px solid var(--rule); border-radius: 999px; font-size: 14px; }
+.back:hover { background: rgba(255,255,255,.08); }
+
+.strip { display: flex; height: 34px; gap: 2px; margin: 18px 0 0; }
+.strip button { flex: var(--km) 1 0; min-width: 6px; border: 0; padding: 0 8px; cursor: pointer; position: relative; isolation: isolate; background: transparent; color: #0e130d; font-size: 12px; font-weight: 600; text-align: left; display: flex; align-items: center; }
+.strip button::before { content: ""; position: absolute; inset: 0; z-index: -1; background: var(--col); opacity: .7; transition: opacity .2s; }
+.strip button:hover::before { opacity: 1; }
+.strip button[data-dark] { color: #11160f; }
+.cap { margin: 6px 0 0; font-size: 12px; color: var(--muted); }
+.panel h3 { margin: 26px 0 4px; font: 400 28px/1.1 var(--display); text-wrap: balance; }
+.rows { display: grid; gap: 2px; margin-top: 10px; }
+.row { display: grid; grid-template-columns: 98px minmax(0, 1fr); gap: 4px 10px; align-items: center; background: transparent; border: 0; border-left: 4px solid var(--col); text-align: left; padding: 7px 8px; cursor: pointer; }
+.row:hover { background: rgba(255,255,255,.06); }
+.row .nm { grid-row: span 3; font-size: 14px; font-weight: 600; }
+.bar { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.trk { flex: 1; min-width: 0; }
+.bar i { display: block; height: 10px; background: linear-gradient(90deg, var(--col), color-mix(in srgb, var(--col) 70%, #000)); width: var(--w); min-width: 3px; transition: width 1.1s cubic-bezier(.2,.7,.2,1); }
+.bar b { flex: none; min-width: 3.4em; text-align: right; font-weight: 500; font-size: 12px; font-variant-numeric: tabular-nums; }
+.bar em { flex: none; width: 50px; font-style: normal; font-size: 11px; color: var(--muted); }
+.endem { margin: 10px 0 0; padding: 10px 12px; background: rgba(255,255,255,.05); border-left: 4px solid var(--col, var(--ink)); font-size: 14px; min-height: 4.6em; }
+.endem strong { display: block; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+.note { margin: 10px 0 0; font-size: 12px; color: var(--muted); }
+.src { margin: 22px 0 0; padding-top: 14px; border-top: 1px solid var(--rule); font-size: 12px; color: var(--muted); }
+.src p { margin: 0 0 6px; }
+.nogl { display: none; position: absolute; left: 24px; top: 50%; max-width: 40ch; color: var(--muted); }
+
+@media (max-width: 860px) {
+  .stage { height: 74svh; min-height: 480px; }
+  .panel { position: relative; z-index: 2; top: auto; right: auto; bottom: auto; width: auto; margin: 0 16px 32px; overflow: visible; }
+  .brand { left: 16px; top: 16px; }
+  .nav { right: 12px; top: 12px; bottom: 36px; gap: 8px; }
+  .pill button { width: 40px; height: 40px; }
+  .dock { left: 16px; right: 16px; bottom: 10px; }
+  .layers { gap: 3px; margin-top: 6px; }
+  .exag { left: 16px; top: 130px; width: 190px; padding: 8px 10px 6px; }
+    .sw { padding: 3px 10px 3px 5px; font-size: 12px; }
+  .chip { padding: 4px 10px 4px 8px; font-size: 12px; }
+  .chips { gap: 4px; }
+  .xh { width: 26px; height: 26px; }
+  .xh svg { width: 15px; height: 15px; }
+  .lbl { font-size: 16px; }
+  .lbl.big { font-size: 38px; }
+  dl { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+  dt { margin-top: 10px; }
+}
+@media (prefers-reduced-motion: reduce) { .panel .in { animation: none; } }
+
+/* ---------- Tela de carregamento e entrada ---------- */
+html.boot, html.boot body { overflow: hidden; }
+#loader { position: fixed; inset: 0; z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px;
+  background: radial-gradient(ellipse 75% 70% at 50% 48%, #101612 0%, #060907 55%, #000 100%); transition: opacity 1.4s ease; }
+#loader.out { opacity: 0; pointer-events: none; }
+#loader svg { width: min(46vmin, 360px); height: auto; overflow: visible; transform-origin: 50% 50%; }
+#loader .fill { fill: #5ea56e; fill-opacity: 0; transition: fill-opacity .55s ease; }
+#loader .glow { fill: none; stroke: #f3e3a3; stroke-width: 7; stroke-linejoin: round; opacity: .35; filter: blur(5px); }
+#loader .line { fill: none; stroke: #f6ecc8; stroke-width: 2.4; stroke-linejoin: round; stroke-linecap: round; }
+#loader .head { fill: #fff; filter: drop-shadow(0 0 4px #fff3b8) drop-shadow(0 0 10px #ffd966) drop-shadow(0 0 22px #ffb83d); }
+#loader .msg { font: 500 13px/1 system-ui, -apple-system, "Segoe UI", sans-serif; letter-spacing: .28em; text-transform: uppercase; color: #cfd3bf; transition: opacity .3s ease; }
+#loader.filled .fill { fill-opacity: .75; }
+#loader.pop svg { animation: ldpop .38s cubic-bezier(.2,.7,.3,1) forwards; }
+#loader.pop .msg { opacity: 0; }
+@keyframes ldpop { 0% { transform: scale(1); opacity: 1; } 35% { transform: scale(1.14); opacity: 1; } 100% { transform: scale(1.3); opacity: 0; } }
+.panel { transition: border-color .4s, translate .95s cubic-bezier(.16,.84,.24,1); }
+.panel { border-top-color: transparent; background: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent) 70%, #000)) 0 0 / 100% 8px no-repeat border-box border-box, var(--glass); }
+html.nobiome .panel { border-top-color: transparent; background: linear-gradient(90deg, #009c3b, #ffdf00, #002776, #fff) 0 0 / 100% 8px no-repeat border-box border-box, var(--glass); }
+html.boot .panel { translate: calc(100% + 60px) 0; transition: none; }
+html.navhide .navstack .pill, html.navhide .compass, html.navhide .pill.zm, html.navhide .chips > *, html.navhide .layers > *, html.navhide .exag { opacity: 0; }
+html.nav-in .navstack .pill, html.nav-in .compass, html.nav-in .pill.zm, html.nav-in .chips > *, html.nav-in .layers > *, html.nav-in .exag { animation: bin .4s cubic-bezier(.2,.8,.3,1) backwards; animation-delay: calc(var(--i, 0) * .015s); }
+@keyframes bin { from { opacity: 0; translate: 14px 0; } to { opacity: 1; translate: 0 0; } }
+@media (prefers-reduced-motion: reduce) { #loader { transition-duration: .3s; } html.boot .panel { translate: 0 0; } }
+/*LAB:CSS*/
+.labbtn { position: fixed; left: 12px; bottom: 12px; z-index: 30; padding: 4px 10px; font: 600 12px var(--body); letter-spacing: .08em; text-transform: uppercase; color: #d6f5ff;
+  background: rgba(10, 30, 45, .85); border: 1px dashed rgba(120, 200, 255, .6); border-radius: 6px; cursor: pointer; opacity: .55; }
+.labbtn:hover, body.lab-on .labbtn { opacity: 1; }
+.labpanel { position: fixed; left: 12px; bottom: 48px; z-index: 31; width: 340px; max-height: 80vh; overflow-y: auto; padding: 12px 14px; font-size: 13px; color: #dfeef7;
+  background: rgba(8, 18, 28, .95); border: 1px solid rgba(120, 200, 255, .45); border-radius: 8px; backdrop-filter: blur(10px); }
+.labpanel[hidden] { display: none; }
+.labpanel header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 14px; }
+.labpanel button { font: 500 12px var(--body); padding: 4px 10px; color: #dfeef7; background: rgba(120, 200, 255, .14); border: 1px solid rgba(120, 200, 255, .4); border-radius: 5px; cursor: pointer; }
+.labpanel button:hover { background: rgba(120, 200, 255, .3); }
+.labpanel input[type="search"] { width: 100%; padding: 5px 8px; margin: 6px 0; font: 13px var(--body); color: #fff; background: rgba(255, 255, 255, .08); border: 1px solid rgba(120, 200, 255, .3); border-radius: 5px; }
+.labpanel textarea { width: 100%; margin-top: 8px; padding: 6px; font: 11px/1.35 ui-monospace, Menlo, Consolas, monospace; color: #cfe; background: rgba(0, 0, 0, .4); border: 1px solid rgba(120, 200, 255, .3); border-radius: 5px; }
+.labhelp { margin: 4px 0; font-size: 12px; line-height: 1.4; color: #9fb8c8; }
+.labrow { display: flex; gap: 8px; align-items: center; margin: 6px 0; }
+.lablist { max-height: 150px; overflow-y: auto; margin: 0; padding: 0; list-style: none; border: 1px solid rgba(120, 200, 255, .2); border-radius: 5px; }
+.lablist li { display: flex; justify-content: space-between; gap: 8px; padding: 3px 8px; cursor: pointer; font-size: 12px; }
+.lablist li:hover { background: rgba(120, 200, 255, .15); }
+.lablist li.on { background: rgba(120, 200, 255, .32); }
+.lablist li small { color: #7fa0b4; }
+.lablist li b { color: #ffd66b; font-weight: 600; }
+.labsel { padding: 6px 8px; margin: 6px 0; font-size: 12px; background: rgba(255, 255, 255, .05); border-radius: 5px; }
+body.lab-on .lbl, body.lab-on .rl, body.lab-on .cont, body.lab-on .mk .t { pointer-events: auto; cursor: pointer; }
+.labbox { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); border: 1.5px dashed #5ad1ff; box-sizing: border-box; pointer-events: none; z-index: 6; }
+.labbox i { position: absolute; width: 12px; height: 12px; border-radius: 50%; background: #fff; border: 2px solid #1aa5e6; box-sizing: border-box; pointer-events: auto; transform: translate(-50%, -50%) scale(var(--inv, 1)); }
+.labbox i[data-h="rot"], .labbox i[data-h="sp"], .labbox i[data-h="arc"], .labbox i[data-h="mv"] { display: grid; place-items: center; font-style: normal; line-height: 1; box-shadow: 0 1px 6px rgba(0, 0, 0, .5);
+  color: #fff; -webkit-text-stroke: 2.5px #000; paint-order: stroke fill; text-shadow: 0 0 2px #000; }   /* ícones brancos com contorno preto */
+.labbox i[data-h="rot"] { left: 50%; top: -38px; width: 26px; height: 26px; background: #ffe27a; cursor: grab; font-size: 17px; }
+.labbox i[data-h="rot"]::after { content: "↻"; }
+.labbox i[data-h="sp"] { left: calc(100% + 34px); top: 50%; width: 26px; height: 26px; background: #ff9ac4; cursor: ew-resize; font-size: 14px; font-weight: 700; }
+.labbox i[data-h="sp"]::after { content: "A↔A"; font-size: 9px; letter-spacing: -.02em; white-space: nowrap; -webkit-text-stroke-width: 1.6px; }
+.labbox i[data-h="arc"] { left: 50%; top: calc(100% + 34px); width: 26px; height: 26px; background: #9be37c; cursor: ew-resize; font-size: 18px; }
+.labbox i[data-h="arc"]::after { content: "⌒"; transform: translateY(3px); }
+.labbox i[data-h="mv"] { left: calc(0% - 38px); top: 50%; width: 44px; height: 44px; background: rgba(20, 45, 62, .6); cursor: move; font-size: 30px; }
+.labbox i[data-h="mv"]::after { content: "✥"; }
+.labbox i[data-h="nw"] { left: 0; top: 0; cursor: nwse-resize; } .labbox i[data-h="ne"] { left: 100%; top: 0; cursor: nesw-resize; }
+.labbox i[data-h="sw"] { left: 0; top: 100%; cursor: nesw-resize; } .labbox i[data-h="se"] { left: 100%; top: 100%; cursor: nwse-resize; }
+body.lab-on .cont:has(.labbox) { z-index: 5; }   /* o texto selecionado no lab sobe, para as alças ficarem acessíveis */
+/*LAB:CSS-END*/
+
+</style>
+</head>
+<body>
+<div id="loader" role="status" aria-live="polite" aria-label="Carregando o mapa">
+  <svg viewBox="__BRVB__" aria-hidden="true">
+    <path class="fill" d="__BRD__"/>
+    <path class="glow" d="__BRD__"/>
+    <path class="line" id="ldLine" d="__BRD__" pathLength="1"/>
+    <circle class="head" id="ldHead" r="3.6" cx="0" cy="0" opacity="0"/>
+  </svg>
+  <div class="msg">Carregando</div>
+</div>
+<noscript><style>#loader { display: none; } html.boot .panel { translate: 0 0; } html.navhide .navstack .pill, html.navhide .compass, html.navhide .pill.zm, html.navhide .chips > *, html.navhide .layers > *, html.navhide .exag { opacity: 1; }</style></noscript>
+<script>
+/* Loader: só usa o que está neste HTML (SVG, CSS e este script), então desenha antes de qualquer outra coisa carregar. */
+(function () {
+  const line = document.getElementById("ldLine"), glow = document.querySelector("#loader .glow"), head = document.getElementById("ldHead");
+  const DRAW = 4600, MIN = 5000;   // o contorno é desenhado uma única vez (4,6 s) e o loader fica pelo menos 5 s
+  const total = line.getTotalLength ? line.getTotalLength() : 1;   // pathLength=1 normaliza só o traço; o brilho usa o comprimento real
+  const kf = [{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }];
+  const opt = { duration: DRAW, iterations: 1, fill: "forwards", easing: "cubic-bezier(.45,.1,.55,.9)" };
+  line.style.strokeDasharray = "1 1"; glow.setAttribute("pathLength", "1"); glow.style.strokeDasharray = "1 1";
+  line.style.strokeDashoffset = "1"; glow.style.strokeDashoffset = "1";
+  const anim = line.animate(kf, opt), ga = glow.animate(kf, opt);
+  function tick() {
+    const done = anim.playState === "finished";
+    if (!done) {
+      const off = parseFloat(getComputedStyle(line).strokeDashoffset);
+      const pt = line.getPointAtLength(Math.min(1, Math.max(0, 1 - off)) * total);
+      head.setAttribute("cx", pt.x); head.setAttribute("cy", pt.y); head.setAttribute("opacity", "1");
+      window.__ldRaf = requestAnimationFrame(tick);
+    } else head.setAttribute("opacity", "0");
+  }
+  tick();
+  window.__ld = { anim, ga, line, glow, head, t0: performance.now(),
+    // espera o desenho terminar e os 5 s mínimos
+    whenDrawn(cb) { setTimeout(cb, Math.max(0, MIN - (performance.now() - this.t0)) + 30); }
+  };
+})();
+</script>
+<canvas id="fx" aria-hidden="true"></canvas>
+
+<main>
+  <section class="stage" id="stage" aria-label="Mapa 3D dos biomas do Brasil">
+    <canvas id="gl" aria-label="Mapa 3D do relevo do Brasil. Clique em um bioma para destacá-lo."></canvas>
+    <div class="labels" id="labels"></div>
+    <div class="nav" id="nav" role="group" aria-label="Navegação do mapa">
+      <div class="navrow">
+      <div class="navstack">
+        <div class="pill"><button type="button" class="t" id="tiltBtn" data-a="tilt3d" aria-label="Alternar entre vista 2D e 3D" title="Alternar 2D / 3D">3D</button></div>
+        <div class="pill"><button type="button" data-a="home" aria-label="Reiniciar a visão" title="Reiniciar a visão">⌂</button></div>
+      </div>
+      <button class="compass" id="compass" type="button" aria-label="Bússola: arraste para girar e inclinar o mapa, clique para colocar o norte para cima" title="Arraste para girar e inclinar; clique para o norte ficar para cima">
+      <svg viewBox="-36 -36 72 72" aria-hidden="true"><circle class="ring" r="33"/><path class="tick" d="M0,-33V-29M0,29V33M-33,0H-29M29,0H33"/>
+        <g id="needle"><path class="nn" d="M0,-18L5,0L0,2.5L-5,0Z"/><path class="ns" d="M0,18L5,0L0,2.5L-5,0Z"/><text y="-22" x="0">N</text></g></svg>
+      </button>
+      <div class="pill zm"><button type="button" data-a="zin" aria-label="Aproximar" title="Aproximar">+</button><button type="button" data-a="zout" aria-label="Afastar" title="Afastar">−</button></div>
+      </div>
+      <ul class="chips" id="chips" aria-label="Escolha um bioma"></ul>
+      <div class="layers" id="layers" role="group" aria-label="Camadas do mapa"><span class="ttl">Camadas</span></div>
+      <div class="exag" id="exag" title="Arraste para ajustar (até 50×). Clique no centro para digitar de 1 a 120. 1× é a escala real do terreno; vale com a camada Relevo ligada.">
+        <span class="exlbl" id="exagLbl">Escala vertical do relevo</span>
+        <div class="exrow">
+          <button type="button" class="xh" id="exReset" aria-label="Restaurar a escala vertical padrão (8×)" title="Restaurar a escala padrão (8×)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg></button>
+          <div class="exs" id="exs" role="slider" tabindex="0" aria-labelledby="exagLbl" aria-valuemin="1" aria-valuemax="120" aria-valuenow="8" aria-valuetext="8 vezes">
+            <div class="exfill" id="exfill"></div><span class="exval" id="exval">8×</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="brand">
+      <p class="eyebrow">Atlas dos biomas · limites do IBGE, 2019</p>
+      <h1>Biomas<br><em>do Brasil</em></h1>
+    </div>
+    <div class="dock">
+      <p class="hint">Arraste para mover o mapa. Arraste a bússola (ou use o botão direito) para girar e inclinar, Shift + arrastar só inclina e a roda do mouse dá zoom. Clique em um bioma para destacá-lo e use a mira ao lado dele para enquadrá-lo inteiro.</p>
+    </div>
+    <p class="nogl" id="nogl">Este navegador não conseguiu abrir o mapa 3D. As informações de cada bioma continuam disponíveis nos botões acima.</p>
+  </section>
+  <aside class="panel" id="panel" aria-live="polite"></aside>
+</main>
+
+<!--LAB:HTML-->
+<button type="button" id="labBtn" class="labbtn" title="Lab de textos (Ctrl+Shift+L)">Lab</button>
+<aside id="lab" class="labpanel" hidden aria-label="Lab de textos">
+  <header><strong>Lab de textos</strong><button type="button" id="labClose" aria-label="Fechar o lab">×</button></header>
+  <p class="labhelp">Clique em um texto do mapa ou na lista. Arraste os cantos para o tamanho, ↻ gira, ⌒ curva em arco e A↔A muda o espaçamento entre letras. No centro, o gizmo ✥ move o texto em qualquer direção (Shift trava no eixo).</p>
+  <label class="labrow"><input type="checkbox" id="labAll"> mostrar todos os textos (ignora zoom e camadas)</label>
+  <input id="labFilter" type="search" placeholder="filtrar textos…" autocomplete="off" aria-label="Filtrar textos">
+  <ul id="labList" class="lablist"></ul>
+  <div id="labSel" class="labsel">nenhum texto selecionado</div>
+  <div class="labrow"><button type="button" id="labReset">Zerar este texto</button><button type="button" id="labClear">Zerar todos</button></div>
+  <div class="labrow"><button type="button" id="labExport">Exportar e copiar</button><button type="button" id="labImport">Importar</button></div>
+  <textarea id="labOut" rows="6" spellcheck="false" placeholder="A configuração exportada aparece aqui. Para importar, cole um JSON aqui e clique em Importar."></textarea>
+  <p id="labMsg" class="labhelp"></p>
+</aside>
+<!--LAB:HTML-END-->
+<script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
+<script>
+const MAPW = __W__, MAPH = __H__;
+const CENT = __CENT__;
+const DEM_URI = "__DEM__";
+const IDS_URI = "__IDS__";
+const LAYERS = __LAYERS__;
+const FOCUS = __FOCUS__;
+const GEO = __GEO__;     // y (em unidades do mapa) da linha do Equador (0°) e do Trópico de Capricórnio (23°26′ S)
+const RAIN = __RAIN__;   // chuva por bioma (WorldClim 2.1, 1970-2000), calculada em build/rain.py
+const MES = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
+const MES_LONGO = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
+const MES_INICIAL = "JFMAMJJASOND";
+// Estados em que cada bioma está presente (IBGE, Tabela 1, área > 0). O mar usa os 17 estados litorâneos. Índice = n do bioma.
+const BIOME_UFS = [null,
+  new Set("RO AC AM RR PA AP TO MA MT".split(" ")),
+  new Set("RO PA TO MA PI BA MG SP PR MS MT GO DF".split(" ")),
+  new Set("RN PB PE AL SE BA MG ES RJ SP PR SC RS MS GO".split(" ")),
+  new Set("PI CE RN PB PE AL SE BA MG".split(" ")),
+  new Set(["RS"]),
+  new Set("MS MT".split(" ")),
+  new Set("AP PA MA PI CE RN PB PE AL SE BA ES RJ SP PR SC RS".split(" "))];   // [x, y, zoom] da câmera para cada bioma (com a extensão fora do Brasil) e para o Brasil
+
+/* ---------- Dados ---------- */
+const B = [
+  { id: "amazonia", name: "Amazônia", key: "Amazônia", n: 1, km: 4212742, pct: "49,5", sp: 13056, zoom: .86,
+    states: "Todo o AC, AM, AP e RR e quase todo o PA e RO, além de partes de MT, MA e TO.",
+    abroad: "Bolívia, Peru, Equador, Colômbia, Venezuela, Guiana, Suriname e Guiana Francesa. No mapa aparece em tom pálido.",
+    climate: "Equatorial: quente e úmido o ano todo, com chuva abundante.",
+    veg: "Floresta ombrófila densa e aberta, a maior floresta tropical do planeta.",
+    spp: [["Onça-pintada", "fauna"], ["Boto-cor-de-rosa", "fauna"], ["Vitória-régia", "flora"]],
+    curio: "Ocupa quase metade do Brasil e cobre por inteiro o Amazonas, Roraima, Acre e Amapá.",
+    endem: "Sem contagem de endemismo comparável entre os biomas nas fontes consultadas." },
+  { id: "cerrado", name: "Cerrado", key: "Cerrado", n: 2, km: 1983017, pct: "23,3", sp: 12829, dark: true, zoom: .8,
+    states: "Ocupa GO, DF e TO quase inteiros, boa parte de MT, MS, MG e MA, e trechos de PI, BA, SP, PR e PA.",
+    abroad: "Pequenas áreas do Paraguai e da Bolívia. No mapa aparece em tom pálido.",
+    climate: "Tropical sazonal: verão chuvoso e inverno seco.",
+    veg: "Savana: árvores baixas e retorcidas entre gramíneas, com matas ao longo dos rios.",
+    spp: [["Lobo-guará", "fauna"], ["Tamanduá-bandeira", "fauna"], ["Pequi", "flora"]],
+    curio: "É o único bioma presente nas cinco regiões do país, e o Distrito Federal fica inteiro dentro dele.",
+    endem: "Material escolar cita cerca de 4.400 plantas endêmicas entre as cerca de 10 mil espécies vegetais do Cerrado. É uma estimativa e usa outro critério de contagem que o gráfico." },
+  { id: "mata-atlantica", name: "Mata Atlântica", key: "Mata Atlântica", n: 3, km: 1107419, pct: "13,0", sp: 17150, dark: true, zoom: .78,
+    states: "15 estados, do RS ao RN pelo litoral, mais MG, MS e GO. Cobre todo o ES e o RJ e quase todo o SP e o PR.",
+    abroad: "Leste do Paraguai e nordeste da Argentina (Misiones). No mapa aparece em tom pálido.",
+    climate: "Tropical úmido no litoral e subtropical no sul, com chuva bem distribuída.",
+    veg: "Florestas ombrófilas e estacionais, com araucárias nas terras altas do sul.",
+    spp: [["Mico-leão-dourado", "fauna"], ["Pau-brasil", "flora"], ["Araucária", "flora"]],
+    curio: "Reúne a maior flora entre os biomas e é daqui o pau-brasil, a árvore que deu nome ao país.",
+    endem: "Sem contagem de endemismo comparável entre os biomas nas fontes consultadas." },
+  { id: "caatinga", name: "Caatinga", key: "Caatinga", n: 4, km: 862818, pct: "10,1", sp: 4963, zoom: .72,
+    states: "Todo o CE e grande parte de BA, PE, PB, RN, PI, SE e AL, com um trecho do norte de MG.",
+    climate: "Semiárido: quente, com chuva escassa e irregular.",
+    veg: "Savana-estépica: arbustos espinhosos, cactos e árvores que perdem as folhas na seca.",
+    spp: [["Tatu-bola", "fauna"], ["Mandacaru", "flora"], ["Umbuzeiro", "flora"]],
+    curio: "O nome vem do tupi e quer dizer “mata branca”, pela cor da vegetação na seca. Com as primeiras chuvas, tudo reverdece.",
+    endem: "Sem contagem de endemismo comparável entre os biomas nas fontes consultadas." },
+  { id: "pampa", name: "Pampa", key: "Pampa", n: 5, km: 193836, pct: "2,3", sp: 2817, zoom: .46,
+    states: "Só o Rio Grande do Sul, onde cobre 68,8% do estado.",
+    abroad: "Uruguai e áreas vizinhas da Argentina. No mapa aparece em tom pálido.",
+    climate: "Subtropical, com estações bem marcadas e geadas no inverno.",
+    veg: "Estepe: campos de gramíneas, com capões de mato e matas ao longo dos rios.",
+    spp: [["Ema", "fauna"], ["Veado-campeiro", "fauna"], ["Butiá", "flora"]],
+    curio: "No Brasil só existe no Rio Grande do Sul. O bioma segue pelo Uruguai e pela Argentina.",
+    endem: "Sem contagem de endemismo comparável entre os biomas nas fontes consultadas." },
+  { id: "pantanal", name: "Pantanal", key: "Pantanal", n: 6, km: 150988, pct: "1,8", sp: 1682, zoom: .46,
+    states: "Todo dentro de MS e MT, com área bem maior em Mato Grosso do Sul.",
+    abroad: "Bolívia e Paraguai. No mapa aparece em tom pálido.",
+    climate: "Tropical, com verão chuvoso e cheias que alagam a planície por meses.",
+    veg: "Mosaico de savana, campos inundáveis, matas e plantas aquáticas.",
+    spp: [["Tuiuiú", "fauna"], ["Jacaré-do-pantanal", "fauna"], ["Aguapé", "flora"]],
+    curio: "É o menor bioma do país e a maior planície alagável do planeta. O IBGE o define pela hidrologia, não pela vegetação.",
+    endem: "Sem contagem de endemismo comparável entre os biomas nas fontes consultadas." },
+  { id: "costeiro", name: "Costeiro-marinho", key: "Sistema Costeiro", n: 7, marine: true, zoom: .66,
+    nums: [["93,7%", "da área é marítima"], ["6,3%", "é parte continental"], ["17", "estados litorâneos"]],
+    states: "Presente nos 17 estados litorâneos. As maiores ocorrências continentais estão no RS, no PA e no MA.",
+    climate: "Varia ao longo da costa, do equatorial no norte ao subtropical no sul.",
+    veg: "Formações pioneiras de influência marinha e fluviomarinha: manguezais, restingas e dunas.",
+    spp: [["Peixe-boi-marinho", "fauna"], ["Golfinho-rotador", "fauna"], ["Mangue-vermelho", "flora"]],
+    curio: "Da parte continental do sistema, 42% fica na faixa da Amazônia, 25% no Pampa e 20% na Mata Atlântica, que tem a maior linha de costa do país.",
+    endem: "Sem contagem de endemismo comparável entre os biomas nas fontes consultadas." }
+];
+const byId = Object.fromEntries(B.map(b => [b.id, b]));
+const BR_KM = 8510821;
+const EX_DEFAULT = 8;
+let exagVal = EX_DEFAULT;              // exagero vertical do relevo, em múltiplos da escala real
+let setExag = () => {};         // preenchido pelo mapa 3D
+const fmt = n => n.toLocaleString("pt-BR");
+const LAND = B.filter(b => !b.marine);
+const maxKm = Math.max(...LAND.map(b => b.km)), maxSp = Math.max(...LAND.map(b => b.sp));
+const col = b => b ? `var(--c-${b.id})` : "var(--ink)";
+const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+const el = (tag, attrs = {}, text) => {
+  const e = document.createElement(tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (text != null) e.textContent = text;
+  return e;
+};
+
+/* ---------- Estado ---------- */
+let current = null;           // id do bioma selecionado ou null (Brasil)
+let frameRegion = () => {};   // enquadra um bioma (1-7) ou o Brasil (0); preenchido pelo mapa 3D
+let onSelect = () => {};      // preenchido pelo mapa 3D e pelos efeitos
+
+function select(id, fromHash) {
+  if (id && !byId[id]) id = null;
+  current = id;
+  document.documentElement.style.setProperty("--accent", id ? col(byId[id]) : "var(--ink)");
+  document.documentElement.classList.toggle("nobiome", !id);   // sem bioma: a faixa do topo do painel vira o degradê da bandeira
+  renderPanel();
+  document.querySelectorAll(".chip").forEach(c => c.setAttribute("aria-pressed", String(c.dataset.id === (id || "brasil"))));
+  onSelect(id);
+  if (!fromHash) { try { history.replaceState(null, "", id ? "#" + id : location.pathname + location.search); } catch (e) {} }
+}
+const toggle = id => select(current === id ? null : id);
+window.addEventListener("hashchange", () => select(location.hash.slice(1) || null, true));
+
+/* ---------- Números animados ---------- */
+// Todo número do painel vira um contador que sobe de zero até o valor quando o painel muda; as barras crescem junto.
+const NUM_RE = /\d{1,3}(?:\.\d{3})+(?:,\d+)?|\d+(?:,\d+)?/g;
+let counterToken = 0;
+function wrapNumbers(root) {
+  const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT), list = [];
+  while (w.nextNode()) list.push(w.currentNode);
+  for (const t of list) {
+    if (t.parentElement && t.parentElement.closest("[data-nocount], .src, .cnt, script, style")) continue;
+    const txt = t.nodeValue; NUM_RE.lastIndex = 0;
+    if (!NUM_RE.test(txt)) continue;
+    NUM_RE.lastIndex = 0;
+    const frag = document.createDocumentFragment(); let last = 0, m;
+    while ((m = NUM_RE.exec(txt))) {
+      frag.appendChild(document.createTextNode(txt.slice(last, m.index)));
+      const sp = document.createElement("span"); sp.className = "cnt"; sp.dataset.v = m[0]; sp.textContent = m[0]; frag.appendChild(sp);
+      last = m.index + m[0].length;
+    }
+    frag.appendChild(document.createTextNode(txt.slice(last)));
+    t.parentNode.replaceChild(frag, t);
+  }
+}
+function runCounters(root, ms = 1100) {
+  const token = ++counterToken;
+  const items = [...root.querySelectorAll(".cnt")].map(e => { const v = e.dataset.v, dec = (v.split(",")[1] || "").length; return { e, dec, val: parseFloat(v.replace(/\./g, "").replace(",", ".")) }; });
+  if (reduced || !items.length) return;
+  const f = (n, d) => n.toLocaleString("pt-BR", { minimumFractionDigits: d, maximumFractionDigits: d });
+  items.forEach(it => { it.e.textContent = f(0, it.dec); });
+  const t0 = performance.now();
+  const tick = now => {
+    if (token !== counterToken) return;
+    const k = Math.min(1, (now - t0) / ms), ease = 1 - Math.pow(1 - k, 3);
+    for (const it of items) it.e.textContent = k < 1 ? f(it.val * ease, it.dec) : it.e.dataset.v;
+    if (k < 1) requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
+function growBars(root) {
+  if (reduced) return;
+  const bars = [...root.querySelectorAll(".bar i, .rainbars i")];
+  bars.forEach(i => { i.style[i.closest(".rainbars") ? "height" : "width"] = "0"; });
+  void root.offsetWidth;
+  requestAnimationFrame(() => bars.forEach(i => { i.style.height = ""; i.style.width = ""; }));
+}
+
+/* ---------- Painel ---------- */
+const panel = document.getElementById("panel");
+const maxRain = Math.max(...LAND.map(b => RAIN[b.id].ano));
+function sources() {
+  const s = el("div", { class: "src" });
+  s.appendChild(el("p", {}, "Chuva: WorldClim 2.1 (Fick e Hijmans, 2017), médias mensais de 1970 a 2000, calculadas sobre o território brasileiro de cada bioma; a faixa mostra de 10% a 90% do território, e meses secos são os que têm menos de 60 mm."));
+  s.appendChild(el("p", {}, "Fontes: IBGE, Biomas e Sistema Costeiro-Marinho do Brasil (áreas, estados e vegetação, escala 1:250 000); contornos dos biomas do IBGE 2019 pelo pacote geobr; extensão dos biomas fora do Brasil por ecorregiões do WWF (RESOLVE Ecoregions 2017), associadas ao bioma brasileiro de maior sobreposição, então é aproximada; fronteiras, rios e cidades do Natural Earth, divisas estaduais do IBGE; relevo dos Terrain Tiles (SRTM, GMTED e ETOPO1); espécies da Flora do Brasil 2020, conforme reportagem do JB. Clima, espécies emblemáticas e curiosidades são conhecimento geral de divulgação."));
+  return s;
+}
+function renderPanel() {
+  const b = byId[current];
+  const wrap = el("div", { class: "in" });
+  panel.scrollTop = 0;
+  if (b) {
+    wrap.appendChild(el("p", { class: "kicker" }, b.marine ? "Sistema" : "Bioma"));
+    wrap.appendChild(el("h2", {}, b.name));
+    const nums = el("div", { class: "nums" });
+    (b.nums || [[`${b.pct}%`, "do território nacional"], [fmt(b.km), "km² de área"], [fmt(b.sp), "espécies de plantas, algas e fungos"]]).forEach(([v, l]) => {
+      const n = el("div", { class: "num" });
+      n.append(el("b", {}, v), el("span", {}, l));
+      nums.appendChild(n);
+    });
+    wrap.appendChild(nums);
+    const dl = el("dl");
+    [["Estados", b.states], ...(b.abroad ? [["Fora do Brasil", b.abroad]] : []), ["Clima", b.climate], ["Vegetação", b.veg]].forEach(([k, v]) => dl.append(el("dt", {}, k), el("dd", {}, v)));
+    dl.appendChild(el("dt", {}, "Espécies"));
+    const dd = el("dd"), ul = el("ul", { class: "spp" });
+    b.spp.forEach(([n, t]) => { const li = el("li", {}, n); li.appendChild(el("small", {}, t)); ul.appendChild(li); });
+    dd.appendChild(ul); dl.appendChild(dd);
+    wrap.appendChild(dl);
+    const r = RAIN[b.id];
+    if (r) {
+      const sec = el("div", { class: "rain" });
+      sec.appendChild(el("p", { class: "kicker" }, "Chuvas"));
+      const rn = el("div", { class: "nums sm" });
+      const ini = r.chuvoso.ini, fim = (ini + 2) % 12;
+      [[fmt(r.ano), "mm de chuva por ano, em média"], [`${fmt(r.p10)} a ${fmt(r.p90)}`, "mm por ano na maior parte do bioma"],
+       [String(r.seco), r.seco === 1 ? "mês seco por ano (menos de 60 mm)" : "meses secos por ano (menos de 60 mm)"]].forEach(([v, l]) => {
+        const n = el("div", { class: "num" }); n.append(el("b", {}, v), el("span", { "data-nocount": "" }, l)); rn.appendChild(n);
+      });
+      sec.appendChild(rn);
+      const top = Math.max(...Object.values(RAIN).map(x => Math.max(...x.mm)));
+      const bars = el("div", { class: "rainbars", role: "img", "aria-label": `Chuva média mensal no bioma ${b.name}` });
+      r.mm.forEach((v, k) => {
+        const c = el("div", { title: `${MES_LONGO[k]}: ${v} mm`, class: k === r.pico ? "pk" : "" });
+        c.appendChild(el("i", { style: `--h:${(v / top * 100).toFixed(1)}%` })); bars.appendChild(c);
+      });
+      sec.appendChild(bars);
+      const mo = el("div", { class: "rainmo", "aria-hidden": "true" }); [...MES_INICIAL].forEach(ch => mo.appendChild(el("span", {}, ch))); sec.appendChild(mo);
+      const sec2 = r.mm.indexOf(Math.min(...r.mm));
+      const frase = r.chuvoso.pct < 30
+        ? `A chuva é bem distribuída ao longo do ano: nenhum trimestre concentra mais de ${r.chuvoso.pct}%. O mês mais chuvoso é ${MES_LONGO[r.pico]}, com ${r.mm[r.pico]} mm.`
+        : `A estação chuvosa vai de ${MES_LONGO[ini]} a ${MES_LONGO[fim]}, quando cai ${r.chuvoso.pct}% da chuva do ano. O pico é em ${MES_LONGO[r.pico]}, com ${r.mm[r.pico]} mm, e o mês mais seco é ${MES_LONGO[sec2]}, com ${r.mm[sec2]} mm.`;
+      sec.appendChild(el("p", { class: "lead" }, frase));
+      sec.appendChild(el("p", { class: "cap", "data-nocount": "" }, "Chuva média mensal em mm, 1970–2000 (WorldClim 2.1), no território brasileiro do bioma."));
+      wrap.appendChild(sec);
+    }
+    const q = el("p", { class: "curio" }, b.curio);
+    q.prepend(el("span", {}, "Curiosidade"));
+    wrap.appendChild(q);
+    const back = el("button", { type: "button", class: "back" }, "Voltar ao Brasil");
+    back.addEventListener("click", () => select(null));
+    wrap.appendChild(back);
+  } else {
+    wrap.appendChild(el("p", { class: "kicker" }, "País"));
+    wrap.appendChild(el("h2", {}, "Brasil"));
+    wrap.appendChild(el("p", { class: "lead" }, "Seis grandes paisagens dividem o território, da floresta que cobre quase metade do país aos campos do extremo sul. Cerca de 40% do país tem vegetação predominantemente campestre, segundo o IBGE."));
+    const nums = el("div", { class: "nums" });
+    [[fmt(BR_KM), "km² de território"], ["6", "biomas continentais"], ["27", "unidades da federação"]].forEach(([v, l]) => {
+      const n = el("div", { class: "num" });
+      n.append(el("b", {}, v), el("span", {}, l));
+      nums.appendChild(n);
+    });
+    wrap.appendChild(nums);
+    const strip = el("div", { class: "strip", role: "group", "aria-label": "Parte do território ocupada por cada bioma" });
+    LAND.forEach(b => {
+      const s = el("button", { type: "button", style: `--km:${b.km};--col:${col(b)}`, "aria-label": `${b.name}, ${b.pct}% do território` });
+      if (b.dark) s.setAttribute("data-dark", "");
+      if (b.km / BR_KM > .1) s.textContent = `${b.pct}%`;
+      s.addEventListener("click", () => select(b.id));
+      strip.appendChild(s);
+    });
+    wrap.appendChild(strip);
+    wrap.appendChild(el("p", { class: "cap" }, "Cada faixa tem a largura proporcional à área do bioma."));
+    wrap.appendChild(el("h3", {}, "Grande não é o mesmo que diverso"));
+    wrap.appendChild(el("p", { class: "lead" }, "A Amazônia é quase quatro vezes maior que a Mata Atlântica, mas a Mata Atlântica tem mais espécies de plantas, algas e fungos."));
+    const rows = el("div", { class: "rows" });
+    const endem = el("p", { class: "endem" });
+    const showEndem = b => {
+      endem.style.setProperty("--col", col(b));
+      endem.replaceChildren(el("strong", {}, `Endemismo · ${b.name}`), document.createTextNode(b.endem));
+    };
+    LAND.forEach(b => {
+      const r = el("button", { type: "button", class: "row", style: `--col:${col(b)}` });
+      r.appendChild(el("span", { class: "nm" }, b.name));
+      [["Área", b.km, maxKm, fmt(Math.round(b.km / 1000)) + " mil"], ["Espécies", b.sp, maxSp, fmt(b.sp)], ["Chuva", RAIN[b.id].ano, maxRain, fmt(RAIN[b.id].ano) + " mm"]].forEach(([lab, v, mx, txt]) => {
+        const bar = el("span", { class: "bar" });
+        bar.appendChild(el("em", {}, lab));
+        const t = el("span", { class: "trk" });
+        t.appendChild(el("i", { style: `--w:${(v / mx * 100).toFixed(2)}%` }));
+        bar.append(t, el("b", {}, txt));
+        r.appendChild(bar);
+      });
+      r.addEventListener("click", () => select(b.id));
+      r.addEventListener("mouseenter", () => showEndem(b));
+      r.addEventListener("focus", () => showEndem(b));
+      rows.appendChild(r);
+    });
+    wrap.appendChild(rows);
+    showEndem(byId["cerrado"]);
+    wrap.appendChild(endem);
+    wrap.appendChild(el("p", { class: "note", "data-nocount": "" }, "Contagens de espécies da Flora do Brasil 2020. Uma espécie pode ocorrer em mais de um bioma, então os números não somam o total nacional, e não há lista de animais comparável entre os seis biomas. A chuva é a média anual de 1970 a 2000 (WorldClim 2.1). Passe o mouse ou toque numa linha para ver o endemismo."));
+    wrap.appendChild(el("h3", {}, "E o mar?"));
+    wrap.appendChild(el("p", { class: "lead" }, "O IBGE trata o Sistema Costeiro-Marinho à parte: manguezais, restingas, dunas, recifes e as águas do litoral. É quase todo marítimo (93,7% da área); a parte continental, 6,3%, se sobrepõe aos biomas. Dela, 42% fica na faixa da Amazônia, 25% no Pampa e 20% na Mata Atlântica."));
+  }
+  wrap.appendChild(sources());
+  panel.replaceChildren(wrap);
+  wrapNumbers(panel); runCounters(panel); growBars(panel);
+}
+
+/* ---------- Chips ---------- */
+const chips = document.getElementById("chips");
+[{ id: "brasil", name: "Brasil" }, ...B].forEach(b => {
+  const li = document.createElement("li");
+  const c = el("button", { type: "button", class: "chip", "aria-pressed": "false", "data-id": b.id, style: `--col:${b.id === "brasil" ? "var(--ink)" : col(b)}` }, b.name);
+  c.addEventListener("click", () => b.id === "brasil" ? select(null) : toggle(b.id));
+  const x = el("button", { type: "button", class: "xh", "aria-label": `Enquadrar ${b.name} no mapa`, title: b.id === "brasil" ? "Mostrar o Brasil inteiro" : `Mostrar todo o bioma ${b.name}`, style: `--col:${b.id === "brasil" ? "var(--ink)" : col(b)}` });
+  x.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="6.5"/><path d="M12 2v5M12 17v5M2 12h5M17 12h5"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/></svg>';
+  x.addEventListener("click", () => frameRegion(b.id === "brasil" ? 0 : b.n));
+  li.append(x, c); chips.appendChild(li);
+});
+
+/* ---------- Efeitos de fundo (um por bioma) ---------- */
+const fx = document.getElementById("fx"), fctx = fx.getContext("2d");
+let FW = 0, FH = 0, FD = 1;
+function sizeFx() {
+  FD = Math.min(devicePixelRatio || 1, 1.5);
+  FW = fx.width = Math.round(innerWidth * FD); FH = fx.height = Math.round(innerHeight * FD);
+}
+addEventListener("resize", sizeFx); sizeFx();
+const rnd = (a, b) => a + Math.random() * (b - a);
+const rgba = (c, a) => `rgba(${c[0]},${c[1]},${c[2]},${a})`;
+const COL = { amazonia: [94,165,110], cerrado: [179,139,60], "mata-atlantica": [45,168,149], caatinga: [203,122,97], pampa: [148,134,207], pantanal: [37,163,186], costeiro: [95,150,210] };
+
+function glow(ctx, x, y, r, c, a) {
+  const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+  g.addColorStop(0, rgba(c, a)); g.addColorStop(1, rgba(c, 0));
+  ctx.fillStyle = g; ctx.fillRect(x - r, y - r, r * 2, r * 2);
+}
+const EFFECTS = {
+  brasil: () => {
+    const ids = Object.keys(COL);
+    const blobs = ids.map((k, i) => ({ c: COL[k], a: rnd(0, 6.28), s: rnd(.05, .12), ox: (i + .5) / ids.length, oy: rnd(.25, .75) }));
+    const dust = Array.from({ length: 70 }, () => ({ x: rnd(0, 1), y: rnd(0, 1), r: rnd(.6, 1.8), v: rnd(.004, .012) }));
+    return (c, t, dt, w, h) => {
+      blobs.forEach(b => { b.a += b.s * dt; glow(c, (b.ox + Math.cos(b.a) * .12) * w, (b.oy + Math.sin(b.a * 1.3) * .14) * h, Math.max(w, h) * .38, b.c, .16); });
+      c.fillStyle = "rgba(236,230,212,.35)";
+      dust.forEach(d => { d.y -= d.v * dt; if (d.y < 0) d.y = 1; c.beginPath(); c.arc(d.x * w, d.y * h, d.r * FD, 0, 6.28); c.fill(); });
+    };
+  },
+  amazonia: () => {
+    const rain = Array.from({ length: 260 }, () => ({ x: rnd(0, 1.2), y: rnd(0, 1), l: rnd(14, 34), v: rnd(.9, 1.7), z: rnd(.4, 1) }));
+    const mist = Array.from({ length: 6 }, () => ({ x: rnd(0, 1), y: rnd(.1, .9), r: rnd(.25, .45), v: rnd(.004, .012) }));
+    return (c, t, dt, w, h) => {
+      glow(c, w * .3, h * .1, Math.max(w, h) * .7, COL.amazonia, .2);
+      mist.forEach(m => { m.x += m.v * dt; if (m.x > 1.4) m.x = -.4; glow(c, m.x * w, m.y * h, m.r * w, [126, 209, 145], .09); });
+      c.lineWidth = 1.2 * FD;
+      rain.forEach(r => {
+        r.y += r.v * dt * .9; r.x -= r.v * dt * .16;
+        if (r.y > 1.05) { r.y = -.05; r.x = rnd(0, 1.2); }
+        const x = r.x * w, y = r.y * h;
+        c.strokeStyle = rgba([154, 234, 171], .12 + .3 * r.z);
+        c.beginPath(); c.moveTo(x, y); c.lineTo(x + r.l * .18 * FD, y + r.l * FD); c.stroke();
+      });
+    };
+  },
+  cerrado: () => {
+    const blades = Array.from({ length: 170 }, (_, i) => ({ x: i / 170 + rnd(-.003, .003), h: rnd(.07, .2), p: rnd(0, 6.28), s: rnd(.8, 1.5) }));
+    const sparks = Array.from({ length: 80 }, () => ({ x: rnd(0, 1), y: rnd(0, 1), v: rnd(.02, .06), p: rnd(0, 6.28), r: rnd(.8, 2.2) }));
+    return (c, t, dt, w, h) => {
+      const g = c.createLinearGradient(0, h * .45, 0, h); g.addColorStop(0, "rgba(224,166,58,0)"); g.addColorStop(1, "rgba(224,166,58,.28)");
+      c.fillStyle = g; c.fillRect(0, h * .45, w, h * .55);
+      glow(c, w * .75, h * 1.02, w * .6, [248, 194, 87], .22);
+      c.lineWidth = 1.6 * FD;
+      blades.forEach(b => {
+        const x = b.x * w, y = h, sway = Math.sin(t * b.s + b.p + b.x * 6) * 26 * FD, top = b.h * h;
+        c.strokeStyle = rgba([235, 185, 87], .38);
+        c.beginPath(); c.moveTo(x, y); c.quadraticCurveTo(x + sway * .3, y - top * .6, x + sway, y - top); c.stroke();
+      });
+      sparks.forEach(s => {
+        s.y -= s.v * dt; s.x += Math.sin(t + s.p) * .0004; if (s.y < -.02) { s.y = 1.02; s.x = rnd(0, 1); }
+        c.fillStyle = rgba([255, 205, 110], .25 + .35 * Math.abs(Math.sin(t * 1.6 + s.p)));
+        c.beginPath(); c.arc(s.x * w, s.y * h, s.r * FD, 0, 6.28); c.fill();
+      });
+    };
+  },
+  "mata-atlantica": () => {
+    const leaves = Array.from({ length: 56 }, () => ({ x: rnd(0, 1), y: rnd(0, 1), s: rnd(5, 12), v: rnd(.03, .08), p: rnd(0, 6.28), r: rnd(0, 6.28), g: rnd(0, 1) }));
+    const bands = Array.from({ length: 4 }, (_, i) => ({ y: .2 + i * .2, x: rnd(0, 1), v: rnd(.004, .01) }));
+    return (c, t, dt, w, h) => {
+      glow(c, w * .72, h * .2, Math.max(w, h) * .7, COL["mata-atlantica"], .17);
+      bands.forEach(b => { b.x += b.v * dt; if (b.x > 1.5) b.x = -.5; glow(c, b.x * w, b.y * h, w * .5, [130, 200, 186], .08); });
+      leaves.forEach(l => {
+        l.y += l.v * dt; l.x += Math.sin(t * .8 + l.p) * .0008 + .0005; l.r += dt * .6;
+        if (l.y > 1.05) { l.y = -.05; l.x = rnd(0, 1); } if (l.x > 1.05) l.x = -.05;
+        c.save(); c.translate(l.x * w, l.y * h); c.rotate(l.r);
+        c.fillStyle = rgba(l.g > .5 ? [94, 185, 168] : [58, 130, 117], .5);
+        c.beginPath(); c.ellipse(0, 0, l.s * FD, l.s * .42 * FD, 0, 0, 6.28); c.fill(); c.restore();
+      });
+    };
+  },
+  caatinga: () => {
+    const motes = Array.from({ length: 60 }, () => ({ x: rnd(0, 1), y: rnd(0, 1), v: rnd(.01, .035), r: rnd(.7, 1.8) }));
+    return (c, t, dt, w, h) => {
+      const pulse = .26 + .05 * Math.sin(t * .7);
+      glow(c, w * .78, h * .12, Math.max(w, h) * .6, [254, 148, 115], pulse);
+      glow(c, w * .78, h * .12, Math.max(w, h) * .18, [255, 210, 196], .3);
+      c.lineWidth = 1.4 * FD;
+      for (let i = 0; i < 16; i++) {
+        const y0 = h * (.5 + i * .03), amp = (3 + i * .9) * FD;
+        c.strokeStyle = rgba([244, 146, 115], .05 + i * .006);
+        c.beginPath();
+        for (let x = 0; x <= w; x += 14 * FD) { const y = y0 + Math.sin(x * .012 + t * (1.2 + i * .05) + i) * amp; x ? c.lineTo(x, y) : c.moveTo(x, y); }
+        c.stroke();
+      }
+      motes.forEach(m => { m.y -= m.v * dt; m.x += .0004; if (m.y < 0) { m.y = 1; m.x = rnd(0, 1); } if (m.x > 1) m.x = 0;
+        c.fillStyle = rgba([247, 184, 165], .3); c.beginPath(); c.arc(m.x * w, m.y * h, m.r * FD, 0, 6.28); c.fill(); });
+    };
+  },
+  pampa: () => {
+    const lines = Array.from({ length: 46 }, () => ({ y: rnd(.05, .8), p: rnd(0, 6.28), s: rnd(.25, .6), a: rnd(8, 26), len: rnd(.15, .4), x: rnd(0, 1.2), v: rnd(.05, .14) }));
+    return (c, t, dt, w, h) => {
+      glow(c, w * .25, h * .1, Math.max(w, h) * .7, COL.pampa, .18);
+      c.lineWidth = 1.3 * FD; c.lineCap = "round";
+      lines.forEach(l => {
+        l.x += l.v * dt; if (l.x - l.len > 1) { l.x = -.1; l.y = rnd(.05, .8); }
+        c.strokeStyle = rgba([186, 177, 231], .24);
+        c.beginPath();
+        for (let k = 0; k <= 24; k++) {
+          const u = k / 24, x = (l.x - l.len * (1 - u)) * w, y = l.y * h + Math.sin(u * 5 + t * l.s + l.p) * l.a * FD;
+          k ? c.lineTo(x, y) : c.moveTo(x, y);
+        }
+        c.stroke();
+      });
+      [[.82, .05, 3.2, .1], [.88, .08, 2.1, .16], [.94, .1, 1.5, .24]].forEach(([y, a, f, al], i) => {
+        c.fillStyle = rgba([76, 65, 116], al); c.beginPath(); c.moveTo(0, h);
+        for (let x = 0; x <= w; x += 12 * FD) c.lineTo(x, h * y + Math.sin(x / w * f * 3 + i * 2 + t * .05) * h * a * .5);
+        c.lineTo(w, h); c.fill();
+      });
+    };
+  },
+  pantanal: () => {
+    const rings = [], bubbles = Array.from({ length: 40 }, () => ({ x: rnd(0, 1), y: rnd(0, 1), v: rnd(.02, .06), r: rnd(1, 3.2) }));
+    let next = 0;
+    return (c, t, dt, w, h) => {
+      glow(c, w * .3, h * .85, Math.max(w, h) * .8, COL.pantanal, .22);
+      if (t > next) { rings.push({ x: rnd(.05, .95), y: rnd(.15, .95), age: 0 }); next = t + rnd(.25, .7); }
+      c.lineWidth = 1.6 * FD;
+      for (let i = rings.length - 1; i >= 0; i--) {
+        const r = rings[i]; r.age += dt; const k = r.age / 3.2;
+        if (k >= 1) { rings.splice(i, 1); continue; }
+        c.strokeStyle = rgba([113, 214, 236], .38 * (1 - k));
+        for (let j = 0; j < 3; j++) { const kk = Math.max(0, k - j * .08); if (kk <= 0) continue; c.beginPath(); c.ellipse(r.x * w, r.y * h, (20 + kk * 190) * FD, (8 + kk * 76) * FD, 0, 0, 6.28); c.stroke(); }
+      }
+      bubbles.forEach(b => { b.y -= b.v * dt; b.x += Math.sin(t + b.r * 9) * .0004; if (b.y < -.02) { b.y = 1.02; b.x = rnd(0, 1); }
+        c.strokeStyle = rgba([152, 229, 246], .4); c.lineWidth = 1 * FD; c.beginPath(); c.arc(b.x * w, b.y * h, b.r * FD, 0, 6.28); c.stroke(); });
+    };
+  },
+  costeiro: () => {
+    const specks = Array.from({ length: 70 }, () => ({ x: rnd(0, 1), y: rnd(0, 1), v: rnd(.01, .03), r: rnd(.6, 1.8), p: rnd(0, 6.28) }));
+    return (c, t, dt, w, h) => {
+      glow(c, w * .75, h * .5, Math.max(w, h) * .8, COL.costeiro, .24);
+      c.lineWidth = 1.5 * FD;
+      for (let i = 0; i < 18; i++) {
+        const y0 = h * (.12 + i * .052), amp = (5 + i * .7) * FD;
+        c.strokeStyle = rgba([111, 175, 245], .07 + (i % 3) * .03);
+        c.beginPath();
+        for (let x = 0; x <= w; x += 12 * FD) { const y = y0 + Math.sin(x * .008 + t * (.5 + i * .04) + i * 1.7) * amp + Math.sin(x * .02 - t * .8 + i) * amp * .35; x ? c.lineTo(x, y) : c.moveTo(x, y); }
+        c.stroke();
+      }
+      specks.forEach(s => { s.y -= s.v * dt; if (s.y < 0) { s.y = 1; s.x = rnd(0, 1); }
+        c.fillStyle = rgba([177, 213, 255], .12 + .25 * Math.abs(Math.sin(t * 1.3 + s.p))); c.beginPath(); c.arc(s.x * w, s.y * h, s.r * FD, 0, 6.28); c.fill(); });
+    };
+  }
+};
+const fxState = { cur: { key: "brasil", draw: EFFECTS.brasil(), a: 1 }, prev: null };
+function setEffect(key, instant) {
+  if (fxState.cur.key === key) return;
+  if (instant) { fxState.prev = null; fxState.cur = { key, draw: EFFECTS[key](), a: 1 }; return; }   // sem transição
+  fxState.prev = fxState.cur; fxState.prev.fade = true;
+  fxState.cur = { key, draw: EFFECTS[key](), a: 0 };
+}
+
+/* ---------- Camadas ---------- */
+const LAYER_DEFS = [["relevo", "Relevo"], ["estados", "Divisas e fronteiras"], ["siglas", "Siglas dos estados"], ["equador", "Linha do Equador"], ["tropico", "Trópico de Capricórnio"], ["rios", "Rios"], ["nomesRios", "Nome dos rios"], ["capitais", "Capitais"], ["cidades", "Centros urbanos"]];
+const layerOn = { relevo: true, estados: false, siglas: false, equador: false, tropico: false, rios: true, nomesRios: true, capitais: true, cidades: false };
+const layersEl = document.getElementById("layers");
+LAYER_DEFS.forEach(([k, name]) => {
+  const b = el("button", { type: "button", class: "sw", role: "switch", "aria-checked": String(layerOn[k]) }, name);
+  b.addEventListener("click", () => { layerOn[k] = !layerOn[k]; b.setAttribute("aria-checked", String(layerOn[k])); if (k === "relevo") exagEl.classList.toggle("off", !layerOn.relevo); });
+  layersEl.appendChild(b);
+});
+
+/* ---------- Escala vertical do relevo (para experimentar) ---------- */
+// Pílula deslizante: arrastar muda de 1x a 50x; um clique no centro abre a digitação (1 a 120); clique nas laterais salta para aquele ponto.
+const exagEl = document.getElementById("exag"), exs = document.getElementById("exs"), exfill = document.getElementById("exfill");
+let exval = document.getElementById("exval");
+const EX_MIN = 1, EX_MAX = 120, EX_SLIDER_MAX = 50;   // o slider vai até 50x; o campo numérico aceita até 120x
+const exClamp = v => Math.max(EX_MIN, Math.min(EX_MAX, v));
+const exFmt = v => String(Math.round(v * 100) / 100).replace(".", ",");
+let exTween = 0;
+function applyExag(v, keepTween) {
+  v = exClamp(Number(v)); if (!isFinite(v)) return;
+  if (!keepTween && exTween) { cancelAnimationFrame(exTween); exTween = 0; }   // o visitante mexeu no controle: interrompe a transição
+  exagVal = v;
+  exfill.style.width = ((Math.min(v, EX_SLIDER_MAX) - EX_MIN) / (EX_SLIDER_MAX - EX_MIN) * 100) + "%";
+  exval.textContent = exFmt(v) + "×";
+  exs.setAttribute("aria-valuenow", String(v)); exs.setAttribute("aria-valuetext", exFmt(v) + " vezes");
+  setExag(v);
+}
+const exFromX = x => { const r = exs.getBoundingClientRect(); return Math.round((EX_MIN + Math.max(0, Math.min(1, (x - r.left) / r.width)) * (EX_SLIDER_MAX - EX_MIN)) * 2) / 2; };
+let exEditing = false, exDown = null;
+function editExag() {
+  if (exEditing) return; exEditing = true;
+  const inp = document.createElement("input");
+  inp.type = "number"; inp.className = "exin"; inp.min = String(EX_MIN); inp.max = String(EX_MAX); inp.step = "any"; inp.inputMode = "decimal";
+  inp.value = String(Math.round(exagVal * 100) / 100); inp.setAttribute("aria-label", `Escala vertical do relevo, de ${EX_MIN} a ${EX_MAX}`);
+  exval.style.display = "none"; exs.appendChild(inp); inp.focus(); inp.select();
+  let done = false;
+  const finish = ok => {
+    if (done) return; done = true;
+    if (ok) { const n = parseFloat(String(inp.value).replace(",", ".")); if (isFinite(n)) applyExag(n); }
+    inp.remove(); exval.style.display = ""; exEditing = false; exs.focus();
+  };
+  inp.addEventListener("keydown", e => { e.stopPropagation(); if (e.key === "Enter") finish(true); else if (e.key === "Escape") finish(false); });
+  inp.addEventListener("blur", () => finish(true));
+}
+exs.addEventListener("pointerdown", e => { if (exEditing) return; try { exs.setPointerCapture(e.pointerId); } catch (_) {} exDown = { x: e.clientX, moved: false }; });
+exs.addEventListener("pointermove", e => {
+  if (!exDown) return;
+  if (!exDown.moved && Math.abs(e.clientX - exDown.x) > 4) exDown.moved = true;
+  if (exDown.moved) applyExag(exFromX(e.clientX));
+});
+exs.addEventListener("pointerup", e => {
+  if (!exDown) return;
+  const moved = exDown.moved; exDown = null;
+  if (moved) return;
+  const r = exs.getBoundingClientRect(), rel = (e.clientX - r.left) / r.width;
+  if (Math.abs(rel - .5) < .2) editExag(); else applyExag(exFromX(e.clientX));
+});
+exs.addEventListener("pointercancel", () => { exDown = null; });
+exs.addEventListener("keydown", e => {
+  if (exEditing) return;
+  const k = e.key; let d = 0;
+  if (k === "ArrowRight" || k === "ArrowUp") d = 1; else if (k === "ArrowLeft" || k === "ArrowDown") d = -1; else if (k === "PageUp") d = 5; else if (k === "PageDown") d = -5;
+  else if (k === "Enter" || k === " ") { e.preventDefault(); editExag(); return; } else return;
+  e.preventDefault(); applyExag(exagVal + d);
+});
+applyExag(exagVal);
+function animateExag(to, ms) {   // transição suave (ease in-out) até o valor final
+  cancelAnimationFrame(exTween);
+  const from = exagVal, t0 = performance.now();
+  const step = now => {
+    const t = Math.min(1, (now - t0) / ms), k = t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    applyExag(from + (to - from) * k, true);
+    exTween = t < 1 ? requestAnimationFrame(step) : 0;
+  };
+  exTween = requestAnimationFrame(step);
+}
+document.getElementById("exReset").addEventListener("click", () => animateExag(EX_DEFAULT, 400));
+
+/* ---------- Textos do mapa: configuração por texto (rotação, tamanho, arco, espaçamento) ---------- */
+// Cada texto tem um id estável (bio:cerrado, rio:Rio Amazonas, cap:Brasília, cid:Campinas, geo:equador, cont:sa) e uma configuração opcional:
+// r = rotação extra em graus, s = tamanho (multiplicador), a = arco em graus (positivo curva para cima), l = espaçamento extra entre letras (em),
+// x, y = deslocamento do texto em unidades do mapa (x para leste, y para sul; 1 unidade ≈ 1,11 km), preso à geografia.
+const LABEL_CFG = __LABELCFG__;
+const LABHOOK = {};   // ponte com o mapa 3D (converte um ponto da tela em ponto do terreno)
+const LABUI = { all: false, sel: null };   // modo lab: mostrar todos os textos / texto selecionado (sempre visível)
+const LABELS = new Map();
+const cfgGet = id => Object.assign({ r: 0, s: 1, a: 0, l: 0, x: 0, y: 0 }, LABEL_CFG[id]);
+const labOff = id => { const c = LABEL_CFG[id]; return c && (c.x || c.y) ? { x: (c.x || 0) * WORLD_W / MAPW, z: id.startsWith("geo:") ? 0 : (c.y || 0) * WORLD_H / MAPH } : { x: 0, z: 0 }; };   // nomes dos paralelos: o espaço até a linha é fixo (GEO_PAD), só o x vale
+const GEO_PAD = 30;   // distância, em pixels, do centro do nome até a sua linha (igual para o Equador e para o Trópico)
+const sstep = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };   // em unidades do mundo 3D
+const cfgTf = id => { const c = LABEL_CFG[id]; return c && (c.r || (c.s && c.s !== 1)) ? ` rotate(${c.r || 0}deg) scale(${c.s || 1})` : ""; };
+const _cv = document.createElement("canvas").getContext("2d");
+function measureChars(t, text) {
+  const cs = getComputedStyle(t); _cv.font = `${cs.fontStyle} ${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+  const ls = parseFloat(cs.letterSpacing) || 0;
+  return [...text].map(ch => _cv.measureText(ch).width + ls);
+}
+function renderText(L) {
+  const c = cfgGet(L.id), key = [c.a, c.l, L.text].join("|");
+  if (L.key === key) return; L.key = key;
+  const t = L.t;
+  t.style.letterSpacing = ""; t.style.marginRight = "";
+  if (c.l) { const cs = getComputedStyle(L.e), base = parseFloat(cs.letterSpacing) || 0, fs = parseFloat(cs.fontSize) || 16; t.style.letterSpacing = (base + c.l * fs) + "px"; }
+  t.className = "txt"; t.textContent = L.text;
+  const ls = parseFloat(getComputedStyle(t).letterSpacing) || 0;
+  const ws = measureChars(t, L.text), W = ws.reduce((x, y) => x + y, 0); L.w = W;
+  if (!c.a) { if (ls > 0) t.style.marginRight = (-ls) + "px"; return; }   // sem arco: tira o espaço que sobra depois da última letra, para o centro do texto ser o centro da caixa
+  const R = W / (c.a * Math.PI / 180);   // raio que faz o texto cobrir o ângulo do arco
+  t.className = "txt arc"; t.textContent = "";
+  let x = -W / 2; const pos = [];
+  [...L.text].forEach((ch, i) => { const th = (x + ws[i] / 2) / R; x += ws[i]; pos.push({ ch, th, px: R * Math.sin(th), py: R * (1 - Math.cos(th)) }); });
+  const cx = pos.reduce((a, q) => a + q.px, 0) / pos.length, cy = pos.reduce((a, q) => a + q.py, 0) / pos.length;   // centro das letras: vira o pivô da rotação
+  pos.forEach(q => {
+    const sp = document.createElement("span"); sp.className = "ch"; sp.textContent = q.ch;
+    sp.style.transform = `translate(${-cx}px, ${-cy}px) translate(0, ${R}px) rotate(${q.th}rad) translate(0, ${-R}px) translate(-50%, -50%)`;
+    t.appendChild(sp);
+  });
+}
+function labStatic(L) { if (L.kind === "mk") L.e.style.transform = cfgTf(L.id) || ""; }   // marcadores: o nome é filho do ponto, a transformação é fixa
+function registerLabel(id, e, kind) {
+  const text = e.textContent; e.textContent = "";
+  const t = document.createElement("span"); t.className = "txt"; e.appendChild(t);
+  const L = { id, e, t, text, kind, key: null, ang: 0, w: 0, hh: 0, moved: false };
+  LABELS.set(id, L); e.dataset.lab = id;
+  renderText(L); labStatic(L);
+  return L;
+}
+
+/* ---------- Mapa 3D ---------- */
+const stage = document.getElementById("stage");
+const glc = document.getElementById("gl");
+const labelsEl = document.getElementById("labels");
+const navEl = document.getElementById("nav"), compassEl = document.getElementById("compass"), needleEl = document.getElementById("needle"), tiltEl = document.getElementById("tiltBtn");
+const WORLD_W = 10, WORLD_H = WORLD_W * MAPH / MAPW;
+// Escala horizontal: 1 unidade do mapa = 1/100 de grau de latitude = 1,1119 km. O relevo usa 3x essa escala.
+const EX0 = WORLD_W / (MAPW * 1.1119);    // unidades do mundo por km de altitude na escala real (1x, igual à escala horizontal)
+const SHADE_BOOST = 10 / 6;                // realce do sombreamento, calibrado para o padrão de 6x
+const LIFT = .16;                        // quanto o bioma selecionado sobe (destaque visual, não altitude)
+let gl3 = null;
+
+function loadImg(uri) { return new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = uri; }); }
+function pixels(img) { const c = document.createElement("canvas"); c.width = img.width; c.height = img.height; const x = c.getContext("2d", { willReadFrequently: true }); x.drawImage(img, 0, 0); return x.getImageData(0, 0, img.width, img.height); }
+
+async function init3d() {
+  if (!window.THREE) throw new Error("three.js indisponível");
+  const [demImg, idsImg] = await Promise.all([loadImg(DEM_URI), loadImg(IDS_URI)]);
+  const dem = pixels(demImg), ids = pixels(idsImg);
+  const DW = dem.width, DH = dem.height, IW = ids.width, IH = ids.height;
+
+  // Elevação (km) em half float, e ids dos biomas (0 = fora do Brasil)
+  const half = new Uint16Array(DW * DH);
+  for (let i = 0; i < DW * DH; i++) half[i] = THREE.DataUtils.toHalfFloat(((dem.data[i * 4] * 256 + dem.data[i * 4 + 1]) / 6 - 6000) / 1000);
+  const hTex = new THREE.DataTexture(half, DW, DH, THREE.RedFormat, THREE.HalfFloatType);
+  hTex.internalFormat = "R16F"; hTex.unpackAlignment = 1; hTex.minFilter = hTex.magFilter = THREE.LinearFilter; hTex.needsUpdate = true;
+  const idArr = new Uint8Array(IW * IH);   // 0 fora; 1-7 Brasil e mar; 11-16 extensão do bioma n fora do Brasil
+  for (let i = 0; i < IW * IH; i++) idArr[i] = Math.round(ids.data[i * 4] / 15);
+  const iTex = new THREE.DataTexture(idArr, IW, IH, THREE.RedFormat, THREE.UnsignedByteType);
+  iTex.internalFormat = "R8"; iTex.unpackAlignment = 1; iTex.minFilter = iTex.magFilter = THREE.NearestFilter; iTex.needsUpdate = true;
+
+  // Máscara suave de um bioma (para levantar o terreno sem serrilhado)
+  const MW = 548, MH = Math.round(MW * IH / IW), BS = IW / MW;
+  function blur(src, r) {
+    const tmp = new Float32Array(src.length), out = new Float32Array(src.length), n = 2 * r + 1;
+    for (let y = 0; y < MH; y++) { let s = 0; for (let x = -r; x <= r; x++) s += src[y * MW + Math.min(MW - 1, Math.max(0, x))];
+      for (let x = 0; x < MW; x++) { tmp[y * MW + x] = s / n; s += src[y * MW + Math.min(MW - 1, x + r + 1)] - src[y * MW + Math.max(0, x - r)]; } }
+    for (let x = 0; x < MW; x++) { let s = 0; for (let y = -r; y <= r; y++) s += tmp[Math.min(MH - 1, Math.max(0, y)) * MW + x];
+      for (let y = 0; y < MH; y++) { out[y * MW + x] = s / n; s += tmp[Math.min(MH - 1, y + r + 1) * MW + x] - tmp[Math.max(0, y - r) * MW + x]; } }
+    return out;
+  }
+  function maskTex(n) {
+    let m = new Float32Array(MW * MH);
+    if (n) for (let y = 0; y < MH; y++) for (let x = 0; x < MW; x++) {
+      let c = 0; const x0 = Math.floor(x * BS), y0 = Math.floor(y * BS);
+      for (let j = 0; j < BS; j += 1) for (let i = 0; i < BS; i += 1) { const q = idArr[(y0 + j) * IW + x0 + i]; if (q === n) c++; }
+      m[y * MW + x] = c / (BS * BS);
+    }
+    m = blur(blur(m, 3), 3);
+    const u8 = new Uint8Array(MW * MH); for (let i = 0; i < u8.length; i++) u8[i] = Math.min(255, m[i] * 255 * 1.4);
+    const t = new THREE.DataTexture(u8, MW, MH, THREE.RedFormat, THREE.UnsignedByteType);
+    t.internalFormat = "R8"; t.unpackAlignment = 1; t.minFilter = t.magFilter = THREE.LinearFilter; t.needsUpdate = true; return t;
+  }
+  const masks = [null, ...B.map(b => maskTex(b.n))];
+  const emptyMask = maskTex(0);
+
+  // Sombra projetada no "chão": silhueta do país desfocada
+  const sil = new Float32Array(MW * MH); for (let y = 0; y < MH; y++) for (let x = 0; x < MW; x++) { const q = idArr[Math.floor(y * BS) * IW + Math.floor(x * BS)]; sil[y * MW + x] = q && q <= 8 ? 1 : 0; }
+  const sb = blur(blur(blur(sil, 5), 5), 5), sc = document.createElement("canvas"); sc.width = MW; sc.height = MH;
+  const sx = sc.getContext("2d"), sd = sx.createImageData(MW, MH);
+  for (let i = 0; i < sb.length; i++) { sd.data[i * 4 + 3] = Math.min(255, sb[i] * 255 * 1.5); }
+  sx.putImageData(sd, 0, 0);
+
+
+  const renderer = new THREE.WebGLRenderer({ canvas: glc, antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
+  renderer.setClearColor(0x000000, 0);
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(32, 1, .5, 200);
+
+  // Cores sRGB cruas (o shader escreve direto na tela, sem conversão de espaço de cor)
+  const cols = [new THREE.Vector3(), ...B.map(b => {
+    const hex = getComputedStyle(document.documentElement).getPropertyValue(`--c-${b.id}`).trim().replace("#", "");
+    return new THREE.Vector3(parseInt(hex.slice(0, 2), 16) / 255, parseInt(hex.slice(2, 4), 16) / 255, parseInt(hex.slice(4, 6), 16) / 255);
+  })];
+  const uniforms = {
+    uH: { value: hTex }, uId: { value: iTex }, uM1: { value: emptyMask }, uM2: { value: emptyMask },
+    uEx: { value: EX0 * exagVal }, uShade: { value: SHADE_BOOST }, uL1: { value: 0 }, uL2: { value: 0 }, uLA: { value: LIFT },
+    uTexel: { value: new THREE.Vector2(1 / DW, 1 / DH) }, uIdTexel: { value: new THREE.Vector2(1 / IW, 1 / IH) },
+    uCol: { value: cols }, uW: { value: [0, 0, 0, 0, 0, 0, 0, 0] }, uDim: { value: 0 }, uHover: { value: 0 }, uHoverId: { value: 0 }, uHoverA: { value: 0 }, uGlowK: { value: 1 },
+    uTexW: { value: WORLD_W / DW }, uTime: { value: 0 },
+    uElev: { value: 1 }, uSt: { value: 0 }, uRv: { value: 0 }, uEq: { value: 0 }, uTr: { value: 0 }, uRes: { value: new THREE.Vector2(1, 1) }, uPx: { value: 1 }, uWorld: { value: new THREE.Vector2(WORLD_W, WORLD_H) }
+  };
+  const mat = new THREE.ShaderMaterial({
+    uniforms, side: THREE.DoubleSide, transparent: true,
+    vertexShader: `
+      uniform sampler2D uH, uM1, uM2; uniform float uEx, uL1, uL2, uLA, uElev;
+      varying vec2 vUv;
+      void main() {
+        vUv = uv; vec2 t = vec2(uv.x, 1.0 - uv.y);
+        float h = texture2D(uH, t).r * uEx * uElev;
+        float lift = (texture2D(uM1, t).r * uL1 + texture2D(uM2, t).r * uL2) * uLA * (1.0 - uElev);   // o destaque em relevo só existe com a camada de relevo desligada
+        vec3 p = position; p.z = h;   // o destaque do bioma é um prisma à parte (extrusão vertical), não uma rampa no terreno
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
+      }`,
+    fragmentShader: `
+      precision highp float;
+      uniform sampler2D uH, uId; uniform vec2 uTexel, uIdTexel; uniform vec3 uCol[8]; uniform float uW[8];
+      uniform float uDim, uHover, uHoverId, uHoverA, uEx, uShade, uTexW, uTime, uElev, uSt, uRv;
+      varying vec2 vUv;
+      float idAt(vec2 t) { return floor(texture2D(uId, t).r * 255.0 + 0.5); }
+      float wOf(float b) { float r = 0.0; for (int i = 1; i < 8; i++) { if (abs(b - float(i)) < 0.5) r = uW[i]; } return r; }
+      float baseOf(float id) { return id > 10.5 ? id - 10.0 : id; }
+      bool vis(float id) { return id < 0.5 ? false : (id > 10.5 ? wOf(id - 10.0) > 0.3 : true); }
+      void main() {
+        vec2 t = vec2(vUv.x, 1.0 - vUv.y);
+        float id = idAt(t);
+        if (id < 0.5) discard;
+        float foreign = step(10.5, id);
+        float bid = id - foreign * 10.0;
+        float w = wOf(bid);
+        if (foreign > 0.5 && w < 0.01) { bid = 8.0; foreign = 0.0; w = 0.0; }   // extensão de bioma não selecionado vira terra neutra (id 8)
+        float hC = texture2D(uH, t).r;
+        float hx = texture2D(uH, t + vec2(uTexel.x, 0.0)).r - texture2D(uH, t - vec2(uTexel.x, 0.0)).r;
+        float hyS = texture2D(uH, t + vec2(0.0, uTexel.y)).r - texture2D(uH, t - vec2(0.0, uTexel.y)).r;
+        float k = uEx * uShade * uElev / (2.0 * uTexW);
+        vec3 n = normalize(vec3(-hx * k, hyS * k, 1.0));
+        vec3 L = normalize(vec3(-0.55, 0.55, 0.62));
+        float lam = clamp(dot(n, L), 0.0, 1.0);
+        float shade = mix(0.82, 0.34 + 0.95 * lam, uElev);
+        vec3 bc = vec3(0.0);
+        for (int i = 1; i < 8; i++) { if (abs(bid - float(i)) < 0.5) bc = uCol[i]; }
+        if (bid > 7.5) bc = vec3(0.35, 0.38, 0.37);   // outros países da América do Sul
+        float g = dot(bc, vec3(0.3, 0.59, 0.11));
+        vec3 muted = mix(vec3(g), bc, 0.07) * 0.62 + vec3(0.02, 0.025, 0.02);
+        vec3 c = mix(muted, bc, max(w, 1.0 - uDim));
+        c = mix(c, vec3(g) * 0.9 + c * 0.35, foreign * 0.4);   // extensão fora do Brasil, mais pálida
+        float isSea = step(6.5, bid) * (1.0 - step(7.5, bid));
+        c = mix(c, c * mix(0.32, 1.2, smoothstep(-4.0, -0.05, hC)), isSea);
+        c *= 1.0 + smoothstep(0.1, 1.2, hC) * 0.35 * uElev;
+        c *= shade;
+        // hover: o bioma sob o mouse acende um pouco, os demais perdem saturação
+        float isHov = (abs(bid - uHoverId) < 0.5 ? 1.0 : 0.0) * (1.0 - foreign);
+        float others = (1.0 - isHov) * (1.0 - step(7.5, bid)) * uHoverA;
+        c = mix(c, vec3(dot(c, vec3(0.3, 0.59, 0.11))), others * 0.4);
+        c *= 1.0 - others * 0.06;
+        c += 0.07 * isHov * uHoverA;
+        // bioma selecionado: comprime os tons acima de 80% com uma curva suave, em vez de estourar em branco (preserva o relevo)
+        vec3 hi = max(c - 0.8, 0.0);
+        vec3 soft = min(c, vec3(0.8)) + (1.0 - exp(-hi / 0.2)) * 0.2;
+        c = mix(c, soft, w * uDim * (1.0 - foreign));
+        float sel = w * uDim;
+        c += sel * 0.05 * (0.6 + 0.4 * sin(uTime * 2.0)) * (1.0 - foreign);
+        gl_FragColor = vec4(c, mix(1.0, 0.84 * min(1.0, w), foreign));
+      }`
+  });
+  mat.extensions = { derivatives: false };
+  const geo = new THREE.PlaneGeometry(WORLD_W, WORLD_H, 360, Math.round(360 * WORLD_H / WORLD_W));
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.rotation.x = -Math.PI / 2;
+  mesh.renderOrder = 1;
+  scene.add(mesh);
+
+  // Linhas vetoriais (divisas, fronteiras, rios e contornos dos biomas): faixas com largura constante em pixels e borda suavizada,
+  // assentadas no relevo pelo próprio shader (mesma textura de altura do terreno). Nada de pixels: ficam nítidas em qualquer zoom.
+  const LINE_STEP = 8;   // passo máximo, em unidades do mapa, para as linhas acompanharem o relevo
+  function lineGeometry(pieces) {
+    const A = [], Bv = [], Sd = [], Ow = [], idx = [];
+    let v = 0;
+    const wx = x => (x / MAPW - .5) * WORLD_W, wz = y => (y / MAPH - .5) * WORLD_H;
+    for (const pc of pieces) {
+      const p = pc.p, o = pc.o || 0, n = pc.n || 0;
+      for (let i = 0; i + 3 < p.length; i += 2) {
+        const x0 = p[i], y0 = p[i + 1], x1 = p[i + 2], y1 = p[i + 3];
+        const steps = Math.max(1, Math.ceil(Math.hypot(x1 - x0, y1 - y0) / LINE_STEP));
+        for (let k = 0; k < steps; k++) {
+          const ax = wx(x0 + (x1 - x0) * k / steps), az = wz(y0 + (y1 - y0) * k / steps), bx = wx(x0 + (x1 - x0) * (k + 1) / steps), bz = wz(y0 + (y1 - y0) * (k + 1) / steps);
+          for (let c = 0; c < 4; c++) { A.push(ax, az); Bv.push(bx, bz); Sd.push(c % 2 ? -1 : 1, c < 2 ? 0 : 1); Ow.push(o, n); }
+          idx.push(v, v + 1, v + 2, v + 2, v + 1, v + 3); v += 4;
+        }
+      }
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute("position", new THREE.BufferAttribute(new Float32Array(v * 3), 3));
+    g.setAttribute("aA", new THREE.BufferAttribute(new Float32Array(A), 2));
+    g.setAttribute("aB", new THREE.BufferAttribute(new Float32Array(Bv), 2));
+    g.setAttribute("aS", new THREE.BufferAttribute(new Float32Array(Sd), 2));
+    g.setAttribute("aO", new THREE.BufferAttribute(new Float32Array(Ow), 2));
+    g.setIndex(new THREE.BufferAttribute(new Uint32Array(idx), 1));
+    return g;
+  }
+  const LINE_VERT = `
+    uniform sampler2D uH, uM1, uM2;
+    uniform float uEx, uElev, uL1, uL2, uLA, uBias, uWidth, uPx, uDim, uOn, uStyle; uniform vec2 uRes, uWorld; uniform float uW[8];
+    attribute vec2 aA, aB, aS, aO;
+    varying float vDist, vHalf, vVis, vSel;
+    float wOf(float b) { float r = 0.0; for (int i = 1; i < 8; i++) { if (abs(b - float(i)) < 0.5) r = uW[i]; } return r; }
+    vec4 clipOf(vec2 p) {
+      vec2 t = vec2(p.x / uWorld.x + 0.5, p.y / uWorld.y + 0.5);
+      float h = texture2D(uH, t).r * uEx * uElev;
+      float lf = (step(0.5, texture2D(uM1, t).r) * uL1 + step(0.5, texture2D(uM2, t).r) * uL2) * uLA * (1.0 - uElev);   // degrau seco: as linhas acompanham o topo do prisma
+      return projectionMatrix * viewMatrix * vec4(p.x, h + lf + uBias, p.y, 1.0);
+    }
+    void main() {
+      vec4 cA = clipOf(aA), cB = clipOf(aB);
+      vec2 sA = cA.xy / cA.w * uRes * 0.5, sB = cB.xy / cB.w * uRes * 0.5;
+      vec2 d = sB - sA; float L = length(d); d = L > 1e-3 ? d / L : vec2(1.0, 0.0);
+      vec2 nrm = vec2(-d.y, d.x);
+      float sel = aO.y > 0.5 ? wOf(aO.y) * uDim * uStyle : 0.0;
+      float hw = 0.5 * uWidth * (1.0 + sel * 1.3) * uPx;
+      float ext = aS.y < 0.5 ? -1.0 : 1.0;
+      float reach = hw + 0.75 * uPx;
+      vec2 sP = mix(sA, sB, aS.y) + d * ext * hw * 0.6 + nrm * aS.x * reach;
+      vec4 c = mix(cA, cB, aS.y);
+      gl_Position = vec4(sP / (uRes * 0.5) * c.w, c.z, c.w);
+      vDist = aS.x * reach; vHalf = hw; vSel = sel;
+      vVis = (aO.x < 0.5 ? 1.0 : wOf(aO.x)) * uOn * ((cA.w > 0.0 && cB.w > 0.0) ? 1.0 : 0.0);
+    }`;
+  const LINE_FRAG = `
+    precision highp float;
+    uniform vec3 uColor, uHlColor; uniform float uOpacity, uHlOpacity, uDim, uStyle;
+    varying float vDist, vHalf, vVis, vSel;
+    void main() {
+      float a = clamp(vHalf - abs(vDist) + 0.5, 0.0, 1.0);
+      vec3 col = mix(uColor, uHlColor, vSel);
+      float op = mix(uOpacity * (1.0 - 0.6 * uDim * uStyle), uHlOpacity, vSel);
+      gl_FragColor = vec4(col, a * op * vVis);
+    }`;
+  const lineShared = { uH: uniforms.uH, uM1: uniforms.uM1, uM2: uniforms.uM2, uEx: uniforms.uEx, uElev: uniforms.uElev, uL1: uniforms.uL1, uL2: uniforms.uL2, uLA: uniforms.uLA,
+    uDim: uniforms.uDim, uW: uniforms.uW, uRes: uniforms.uRes, uPx: uniforms.uPx, uWorld: uniforms.uWorld, uBias: { value: .006 } };
+  function addLines(pieces, o) {
+    const mt = new THREE.ShaderMaterial({
+      uniforms: { ...lineShared, uWidth: { value: o.width }, uOn: o.on, uStyle: { value: o.style || 0 }, uColor: { value: new THREE.Vector3(...o.color) }, uOpacity: { value: o.opacity },
+        uHlColor: { value: new THREE.Vector3(...(o.hl || o.color)) }, uHlOpacity: { value: o.hlOpacity || o.opacity } },
+      vertexShader: LINE_VERT, fragmentShader: LINE_FRAG, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2
+    });
+    const m = new THREE.Mesh(lineGeometry(pieces), mt); m.frustumCulled = false; m.renderOrder = o.order || 3; scene.add(m); return m;
+  }
+  // Extrusão vertical do bioma selecionado (só com o relevo desligado): prisma de paredes retas a partir do polígono do IBGE.
+  const wxOf = x => (x / MAPW - .5) * WORLD_W, wzOf = y => (y / MAPH - .5) * WORLD_H;
+  const prisms = [];
+  function prismFor(n) {
+    const shapes = []; let cur = null;
+    for (const pc of LAYERS.outlines) {
+      if (pc.n !== n || pc.o) continue;
+      const pts = []; for (let i = 0; i + 1 < pc.p.length; i += 2) pts.push(new THREE.Vector2(wxOf(pc.p[i]), -wzOf(pc.p[i + 1])));
+      if (pts.length < 3) continue;
+      if (!pc.h) { cur = new THREE.Shape(pts); shapes.push(cur); } else if (cur) cur.holes.push(new THREE.Path(pts));
+    }
+    if (!shapes.length) return null;
+    const c = cols[n];
+    const mk = k => new THREE.ShaderMaterial({ uniforms: { uColor: { value: new THREE.Vector3(c.x * k, c.y * k, c.z * k) } },
+      vertexShader: "void main() { gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }",
+      fragmentShader: "uniform vec3 uColor; void main() { gl_FragColor = vec4(uColor, 1.0); }" });
+    const m = new THREE.Mesh(new THREE.ExtrudeGeometry(shapes, { depth: 1, bevelEnabled: false }), [mk(.82), mk(.5)]);   // [topo, paredes]
+    m.rotation.x = -Math.PI / 2; m.visible = false; m.frustumCulled = false; m.renderOrder = 2; scene.add(m);
+    return m;
+  }
+  for (let n = 1; n <= 6; n++) prisms[n] = prismFor(n);
+
+  const CREAM = [1, .96, .84];
+  addLines(LAYERS.states.flatMap(st => st.rings.map(r => ({ p: r }))), { width: .8, color: [.06, .055, .05], opacity: .85, on: uniforms.uSt, order: 2 });   // por baixo das demais linhas
+  addLines(LAYERS.borders, { width: 2.1, color: CREAM, opacity: .95, on: uniforms.uSt, order: 3 });
+  addLines(LAYERS.rivers.filter(r => r.r > 4), { width: 1.2, color: [.42, .78, 1], opacity: .85, on: uniforms.uRv, order: 3.1 });
+  addLines(LAYERS.rivers.filter(r => r.r <= 4), { width: 2.1, color: [.42, .78, 1], opacity: .95, on: uniforms.uRv, order: 3.2 });
+  // Brilho do contorno do bioma sob o mouse: halos largos e suaves, somados à luz, na cor do bioma
+  const GLOW_VERT = `
+    uniform sampler2D uH, uM1, uM2;
+    uniform float uEx, uElev, uL1, uL2, uLA, uBias, uGlowW, uPx, uHoverId, uHoverA, uGlowK; uniform vec2 uRes, uWorld; uniform vec3 uCol[8];
+    attribute vec2 aA, aB, aS, aO;
+    varying float vDist, vHalf, vHov; varying vec3 vCol;
+    vec4 clipOf(vec2 p) {
+      vec2 t = vec2(p.x / uWorld.x + 0.5, p.y / uWorld.y + 0.5);
+      float h = texture2D(uH, t).r * uEx * uElev;
+      float lf = (step(0.5, texture2D(uM1, t).r) * uL1 + step(0.5, texture2D(uM2, t).r) * uL2) * uLA * (1.0 - uElev);
+      return projectionMatrix * viewMatrix * vec4(p.x, h + lf + uBias, p.y, 1.0);
+    }
+    void main() {
+      vec4 cA = clipOf(aA), cB = clipOf(aB);
+      vec2 sA = cA.xy / cA.w * uRes * 0.5, sB = cB.xy / cB.w * uRes * 0.5;
+      vec2 d = sB - sA; float L = length(d); d = L > 1e-3 ? d / L : vec2(1.0, 0.0);
+      vec2 nrm = vec2(-d.y, d.x);
+      float hw = 0.5 * uGlowW * uPx * uGlowK;   // o brilho acompanha o zoom: mais fino e fraco com o mapa afastado
+      float ext = aS.y < 0.5 ? -1.0 : 1.0;
+      vec2 sP = mix(sA, sB, aS.y) + d * ext * hw * 0.5 + nrm * aS.x * hw;
+      vec4 c = mix(cA, cB, aS.y);
+      gl_Position = vec4(sP / (uRes * 0.5) * c.w, c.z, c.w);
+      vDist = aS.x * hw; vHalf = hw;
+      vHov = (aO.y > 0.5 && aO.x < 0.5 && abs(aO.y - uHoverId) < 0.5 ? uHoverA : 0.0) * ((cA.w > 0.0 && cB.w > 0.0) ? 1.0 : 0.0) * min(1.0, uGlowK);
+      vCol = vec3(1.0);
+      for (int i = 1; i < 8; i++) { if (abs(aO.y - float(i)) < 0.5) vCol = uCol[i]; }
+    }`;
+  const GLOW_FRAG = `
+    precision highp float;
+    uniform float uGlowI, uGlowWhite;
+    varying float vDist, vHalf, vHov; varying vec3 vCol;
+    void main() {
+      float k = clamp(abs(vDist) / vHalf, 0.0, 1.0);
+      float a = exp(-k * k * 3.4);
+      vec3 col = mix(vCol, vec3(1.0), uGlowWhite);   // halo na cor do bioma; só o fio central é mais claro
+      gl_FragColor = vec4(col, a * vHov * uGlowI);
+    }`;
+  const glowGeo = lineGeometry(LAYERS.outlines.filter(pc => !pc.o));
+  [[30, .36, 0], [13, .55, .1], [4.5, 1, .55]].forEach(([w, inten, white]) => {
+    const mt = new THREE.ShaderMaterial({
+      uniforms: { uH: uniforms.uH, uM1: uniforms.uM1, uM2: uniforms.uM2, uEx: uniforms.uEx, uElev: uniforms.uElev, uL1: uniforms.uL1, uL2: uniforms.uL2, uLA: uniforms.uLA,
+        uBias: { value: .008 }, uPx: uniforms.uPx, uRes: uniforms.uRes, uWorld: uniforms.uWorld, uCol: uniforms.uCol, uHoverId: uniforms.uHoverId, uHoverA: uniforms.uHoverA,
+        uGlowW: { value: w }, uGlowI: { value: inten }, uGlowWhite: { value: white }, uGlowK: uniforms.uGlowK },
+      vertexShader: GLOW_VERT, fragmentShader: GLOW_FRAG, transparent: true, depthWrite: false
+    });
+    const m = new THREE.Mesh(glowGeo, mt); m.frustumCulled = false; m.renderOrder = 5; scene.add(m);
+  });
+
+  // Linha do Equador (0°) e Trópico de Capricórnio (23°26′ S): paralelos que atravessam a tela inteira (passam bem além do quadro do mapa)
+  addLines([{ p: [-2 * MAPW, GEO.eq, 3 * MAPW, GEO.eq] }], { width: 1.3, color: [1, .84, .35], opacity: .95, on: uniforms.uEq, order: 2.5 });
+  addLines([{ p: [-2 * MAPW, GEO.tr, 3 * MAPW, GEO.tr] }], { width: 1.3, color: [1, .55, .42], opacity: .95, on: uniforms.uTr, order: 2.5 });
+  addLines(LAYERS.outlines, { width: 1.3, color: [.93, .9, .8], opacity: .55, hl: [1, 1, .94], hlOpacity: 1, style: 1, on: { value: 1 }, order: 4 });
+
+  const shadow = new THREE.Mesh(new THREE.PlaneGeometry(WORLD_W * 1.06, WORLD_H * 1.06),
+    new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(sc), transparent: true, opacity: .55, depthWrite: false, color: 0x000000 }));
+  shadow.rotation.x = -Math.PI / 2; shadow.position.set(.12, -.38, .18); scene.add(shadow);
+
+  // Rótulos 3D -> HTML
+  const lbls = B.map(b => {
+    const e = el("button", { type: "button", class: "lbl" }, b.name);
+    e.addEventListener("click", () => toggle(b.id));
+    labelsEl.appendChild(e);
+    const L = registerLabel("bio:" + b.id, e, "bio");
+    const [cx, cy] = CENT[b.key];
+    return { b, e, L, id: "bio:" + b.id, pos: new THREE.Vector3((cx / MAPW - .5) * WORLD_W, 0, (cy / MAPH - .5) * WORLD_H) };
+  });
+
+  // Marcadores: capitais (27) e centros urbanos (cidades de grande porte)
+  const marks = [...LAYERS.capitals.map(m => ({ m, kind: "capitais", cls: "mk cap" })), ...LAYERS.cities.map(m => ({ m, kind: "cidades", cls: "mk" }))].map(o => {
+    const e = el("div", { class: o.cls + " off" });
+    e.appendChild(el("i")); e.appendChild(el("span", { class: "t" }, o.m.n));
+    labelsEl.appendChild(e);
+    const id = (o.kind === "capitais" ? "cap:" : "cid:") + o.m.n, tEl = e.querySelector(".t");
+    const L = registerLabel(id, tEl, "mk");
+    const u = o.m.x / MAPW, v = o.m.y / MAPH;
+    const raw = idArr[Math.min(IH - 1, Math.floor(v * IH)) * IW + Math.min(IW - 1, Math.floor(u * IW))];
+    const bid = raw > 10 ? raw - 10 : raw;
+    return { ...o, e, id, L, u, v, bid, f: !!o.m.f, wx: (u - .5) * WORLD_W, wz: (v - .5) * WORLD_H };
+  });
+
+  // Siglas dos estados: no ponto mais largo do maior pedaço de cada UF (varredura horizontal na altura do centroide)
+  const ufLbls = LAYERS.states.map(st => {
+    let best = null, ba = -1;
+    for (const r of st.rings) {
+      let a = 0, cx = 0, cy = 0; const n = r.length / 2;
+      for (let i = 0; i < n; i++) { const j = (i + 1) % n, x0 = r[2 * i], y0 = r[2 * i + 1], x1 = r[2 * j], y1 = r[2 * j + 1], c = x0 * y1 - x1 * y0; a += c; cx += (x0 + x1) * c; cy += (y0 + y1) * c; }
+      if (Math.abs(a) > ba) { ba = Math.abs(a); best = { r, cx: cx / (3 * a), cy: cy / (3 * a) }; }
+    }
+    const { r, cx, cy } = best, xs = [], n = r.length / 2;
+    for (let i = 0; i < n; i++) { const j = (i + 1) % n, y0 = r[2 * i + 1], y1 = r[2 * j + 1]; if ((y0 <= cy) !== (y1 <= cy)) xs.push(r[2 * i] + (cy - y0) / (y1 - y0) * (r[2 * j] - r[2 * i])); }
+    xs.sort((p, q) => p - q);
+    let x = cx, wmax = -1; for (let i = 0; i + 1 < xs.length; i += 2) if (xs[i + 1] - xs[i] > wmax) { wmax = xs[i + 1] - xs[i]; x = (xs[i] + xs[i + 1]) / 2; }
+    const e = el("div", { class: "uf off" }, st.uf); labelsEl.appendChild(e);
+    const u = x / MAPW, v = cy / MAPH;
+    return { uf: st.uf, e, u, v, wx: (u - .5) * WORLD_W, wz: (v - .5) * WORLD_H };
+  });
+
+  // Nomes dos rios: um por rio, no ponto médio do trecho mais longo, orientado pelo curso
+  const rlbls = LAYERS.rl.map(r => {
+    const e = el("div", { class: "rl off" }, r.n); labelsEl.appendChild(e);
+    const L = registerLabel("rio:" + r.n, e, "rio");
+    const u = r.x / MAPW, v = r.y / MAPH;
+    const raw = idArr[Math.min(IH - 1, Math.floor(v * IH)) * IW + Math.min(IW - 1, Math.floor(u * IW))];
+    return { r, e, L, id: "rio:" + r.n, u, v, bid: raw > 10 ? raw - 10 : raw === 8 ? 0 : raw, f: raw > 10 || raw === 8,   // 8 = terra neutra de outro país: sem linha de rio, sem nome
+      a: new THREE.Vector3((u - .5) * WORLD_W, 0, (v - .5) * WORLD_H), b: new THREE.Vector3((r.x2 / MAPW - .5) * WORLD_W, 0, (r.y2 / MAPH - .5) * WORLD_H) };
+  });
+
+  // Nomes dos paralelos, escritos sobre a linha (lado leste do quadro)
+  const geoLbls = [["equador", "Linha do Equador · 0°", GEO.eq, ""], ["tropico", "Trópico de Capricórnio · 23°26′ S", GEO.tr, " tr"]].map(([key, txt, y, cls]) => {
+    const e = el("div", { class: "rl gl" + cls + " off" }, txt); labelsEl.appendChild(e);
+    const L = registerLabel("geo:" + key, e, "geo");
+    const u = .84, v = y / MAPH, z = (v - .5) * WORLD_H;
+    return { key, e, L, id: "geo:" + key, free: GEO[key === "equador" ? "eqFree" : "trFree"].map(x => (x / MAPW - .5) * WORLD_W), u, v, a: new THREE.Vector3((u - .5) * WORLD_W, 0, z), b: new THREE.Vector3((u + .05 - .5) * WORLD_W, 0, z) };
+  });
+
+  // "América do Sul": texto de lado, ancorado entre dois pontos do continente (Bolívia ao sul de Porto Velho até a Argentina)
+  const sa = (() => {
+    const e = el("div", { class: "cont" }, "América do Sul"); labelsEl.appendChild(e);
+    const baseW = () => measureChars(e, "América do Sul").reduce((x, y) => x + y, 0);   // largura sem a configuração do lab: o ajuste ao trecho não a "desfaz"
+    const w100 = baseW(), L = registerLabel("cont:sa", e, "cont");
+    const pt = ([x, y]) => ({ u: x / MAPW, v: y / MAPH, p: new THREE.Vector3((x / MAPW - .5) * WORLD_W, 0, (y / MAPH - .5) * WORLD_H) });
+    const o = { e, L, w100: w100 || 700, a: pt(GEO.sa[0]), b: pt(GEO.sa[1]) };
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { o.w100 = baseW() || o.w100; LABELS.forEach(x => { x.key = null; renderText(x); }); });
+    return o;
+  })();
+
+  // Estado da câmera
+  const cam = { yaw: 0, pitch: 56 * Math.PI / 180, tx: 0, tz: 0, ttx: 0, ttz: 0, fit: 20, fitT: 20, fit0: 20, user: 1, userT: 1, yawT: null, pitchT: null };   // fit: distância que enquadra a região; user: multiplicador do zoom manual
+  let panelPx = 0, W = 1, Hh = 1;
+  function resize() {
+    W = stage.clientWidth; Hh = stage.clientHeight;
+    renderer.setSize(W, Hh, false);
+    uniforms.uRes.value.set(W * renderer.getPixelRatio(), Hh * renderer.getPixelRatio()); uniforms.uPx.value = renderer.getPixelRatio();
+    const desktop = innerWidth > 860;
+    panelPx = desktop ? Math.min(430, innerWidth * .36) + 24 : 0;
+    camera.aspect = W / Hh;
+    camera.setViewOffset(W, Hh, panelPx / 2, 0, W, Hh);
+    camera.updateProjectionMatrix();
+  }
+  addEventListener("resize", () => { resize(); if (!touched) focusOn(framed); });
+  resize();
+
+  // Enquadramento: menor distância de câmera em que a região inteira cabe na área livre da tela
+  const BOX = Array.from({ length: 9 }, () => [1e9, 1e9, -1, -1]);   // caixa de cada bioma (1-7, com a extensão fora do Brasil) e do Brasil com o mar (8)
+  for (let y = 0; y < IH; y++) for (let x = 0; x < IW; x++) {
+    const q = idArr[y * IW + x]; if (!q || q === 8) continue;
+    const n = q > 10 ? q - 10 : q;
+    for (const k of (q < 8 ? [n, 8] : [n])) { const b = BOX[k]; if (x < b[0]) b[0] = x; if (y < b[1]) b[1] = y; if (x > b[2]) b[2] = x; if (y > b[3]) b[3] = y; }
+  }
+  const tmpCam = new THREE.PerspectiveCamera();
+  function regionOf(n) {
+    const b = BOX[n || 8], x0 = (b[0] / IW - .5) * WORLD_W, x1 = (b[2] / IW - .5) * WORLD_W, z0 = (b[1] / IH - .5) * WORLD_H, z1 = (b[3] / IH - .5) * WORLD_H;
+    return { cx: (x0 + x1) / 2, cz: (z0 + z1) / 2, pts: [[x0, z0], [x1, z0], [x0, z1], [x1, z1], [(x0 + x1) / 2, z0], [(x0 + x1) / 2, z1], [x0, (z0 + z1) / 2], [x1, (z0 + z1) / 2]] };
+  }
+  // Área livre da tela (descontando painel lateral, marca no topo e controles embaixo)
+  const freeArea = () => { const d = innerWidth > 860; return { l: d ? 60 : 16, r: W - panelPx - (d ? 230 : 150), t: d ? 90 : 70, b: Hh - (d ? 70 : 50) }; };
+  function bounds(cx, cz, d, r) {
+    tmpCam.position.set(cx + Math.sin((cam.yawT ?? cam.yaw)) * Math.cos((cam.pitchT ?? cam.pitch)) * d, Math.sin((cam.pitchT ?? cam.pitch)) * d, cz + Math.cos((cam.yawT ?? cam.yaw)) * Math.cos((cam.pitchT ?? cam.pitch)) * d);
+    tmpCam.lookAt(cx, 0, cz); tmpCam.updateMatrixWorld();
+    const pv = new THREE.Vector3(), o = { x0: 1e9, x1: -1e9, y0: 1e9, y1: -1e9 };
+    r.pts.forEach(([x, z]) => { pv.set(x, 0, z).project(tmpCam); const px = (pv.x + 1) / 2 * W, py = (1 - pv.y) / 2 * Hh; o.x0 = Math.min(o.x0, px); o.x1 = Math.max(o.x1, px); o.y0 = Math.min(o.y0, py); o.y1 = Math.max(o.y1, py); });
+    return o;
+  }
+  // Menor distância em que a região cabe na área livre e alvo que a deixa no centro dessa área
+  function fitRegion(r) {
+    const A = freeArea(); tmpCam.copy(camera);
+    let cx = r.cx, cz = r.cz, d = 20;
+    for (let it = 0; it < 5; it++) {
+      let lo = 2.5, hi = 90;
+      for (let i = 0; i < 22; i++) {
+        const m = (lo + hi) / 2, o = bounds(cx, cz, m, r);
+        if (o.x0 >= A.l && o.x1 <= A.r && o.y0 >= A.t && o.y1 <= A.b) hi = m; else lo = m;
+      }
+      d = hi;
+      const o = bounds(cx, cz, d, r), ex = (o.x0 + o.x1) / 2 - (A.l + A.r) / 2, ey = (o.y0 + o.y1) / 2 - (A.t + A.b) / 2;
+      const k = 2 * d * Math.tan(16 * Math.PI / 180) / Hh, sp = Math.max(.35, Math.sin((cam.pitchT ?? cam.pitch)));
+      cx += (Math.cos((cam.yawT ?? cam.yaw)) * ex + Math.sin((cam.yawT ?? cam.yaw)) * ey / sp) * k;
+      cz += (-Math.sin((cam.yawT ?? cam.yaw)) * ex + Math.cos((cam.yawT ?? cam.yaw)) * ey / sp) * k;
+    }
+    return { cx, cz, d };
+  }
+  function focusOn(n, instant) {   // n: 1-7 bioma, 0 Brasil
+    const f = fitRegion(regionOf(n)); cam.ttx = f.cx; cam.ttz = f.cz; cam.fitT = f.d;
+    if (instant) { cam.tx = f.cx; cam.tz = f.cz; cam.fit = f.d; }
+  }
+
+  // Picking: raio contra o relevo (4 refinamentos sobre a altura local)
+  const ray = new THREE.Raycaster(), plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0), hit = new THREE.Vector3();
+  let elevV = 1;
+  setExag = v => { uniforms.uEx.value = EX0 * v; };
+  function heightAt(u, v) {
+    const x = Math.min(DW - 1, Math.max(0, Math.floor(u * DW))), y = Math.min(DH - 1, Math.max(0, Math.floor(v * DH)));
+    return (((dem.data[(y * DW + x) * 4] * 256 + dem.data[(y * DW + x) * 4 + 1]) / 6 - 6000) / 1000) * uniforms.uEx.value * elevV;
+  }
+  function pick(cx, cy) {
+    const r = glc.getBoundingClientRect();
+    ray.setFromCamera(new THREE.Vector2(((cx - r.left) / r.width) * 2 - 1, -((cy - r.top) / r.height) * 2 + 1), camera);
+    let h = 0, u = 0, v = 0;
+    for (let k = 0; k < 4; k++) {
+      plane.constant = -h;
+      if (!ray.ray.intersectPlane(plane, hit)) return 0;
+      u = hit.x / WORLD_W + .5; v = hit.z / WORLD_H + .5;
+      if (u < 0 || u > 1 || v < 0 || v > 1) return 0;
+      h = heightAt(u, v);
+    }
+    const q = idArr[Math.min(IH - 1, Math.floor(v * IH)) * IW + Math.min(IW - 1, Math.floor(u * IW))];
+    if (q === 8) return 0;   // terra neutra de outros países não é um bioma
+    return q > 10 ? (q - 10 === sel ? q - 10 : 0) : q;   // a extensão fora do Brasil só responde quando o bioma está selecionado
+  }
+
+  LABHOOK.groundAt = (cx, cy, y) => {   // ponto do terreno (na altura y) sob um ponto da tela
+    const r = glc.getBoundingClientRect(), hit2 = new THREE.Vector3();
+    ray.setFromCamera(new THREE.Vector2(((cx - r.left) / r.width) * 2 - 1, -((cy - r.top) / r.height) * 2 + 1), camera);
+    plane.constant = -y;
+    return ray.ray.intersectPlane(plane, hit2) ? { x: hit2.x, z: hit2.z } : null;
+  };
+
+  // Interação no estilo do Google Earth: arrastar move o mapa; botão direito (ou Shift) + arrastar inclina e gira;
+  // a roda dá zoom; a bússola gira ao arrastar o anel; setas, + e - no teclado.
+  let distNow = 20, framed = 0, touched = false;   // framed: região enquadrada por último; touched: o visitante mexeu na câmera depois
+  const PITCH0 = 56 * Math.PI / 180, PITCH_TOP = 1.5, TAU = 2 * Math.PI, clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  function nudge(rx, fy) {   // desloca o alvo da câmera em pixels de tela (rx: direita, fy: para o fundo do mapa)
+    const s = 2 * distNow * Math.tan(16 * Math.PI / 180) / Hh;
+    const ry = fy / Math.max(.35, Math.sin(cam.pitch));
+    cam.tx += (Math.cos(cam.yaw) * rx - Math.sin(cam.yaw) * ry) * s;
+    cam.tz += (-Math.sin(cam.yaw) * rx - Math.cos(cam.yaw) * ry) * s;
+    cam.tx = clamp(cam.tx, -WORLD_W / 2, WORLD_W / 2); cam.tz = clamp(cam.tz, -WORLD_H / 2, WORLD_H / 2);
+    cam.ttx = cam.tx; cam.ttz = cam.tz; touched = true;
+  }
+  const turn = d => { touched = true; cam.yawT = null; cam.yaw += d; };   // gira em torno do centro da tela
+  const tilt = d => { touched = true; cam.pitchT = null; cam.pitch = clamp(cam.pitch + d, .25, PITCH_TOP); };
+  const zoomBy = f => { touched = true; cam.userT = clamp(cam.userT * f, .2, 2.8); };
+  function goTo(yaw, pitch) {   // anima a orientação e reenquadra a região atual
+    cam.yaw -= Math.round(cam.yaw / TAU) * TAU;
+    cam.yawT = yaw; cam.pitchT = pitch; touched = false; focusOn(framed);
+  }
+  const home = () => { framed = 0; goTo(0, PITCH0); cam.userT = 1; };
+  // Bússola como controle: arrastar gira (horizontal) e inclina (vertical); um clique sem arrastar coloca o norte para cima.
+  let cd = null;
+  compassEl.addEventListener("pointerdown", e => {
+    try { compassEl.setPointerCapture(e.pointerId); } catch (_) {}
+    cd = { sx: e.clientX, sy: e.clientY, x: e.clientX, y: e.clientY, moved: false };
+  });
+  compassEl.addEventListener("pointermove", e => {
+    if (!cd) return;
+    const dx = e.clientX - cd.x, dy = e.clientY - cd.y; cd.x = e.clientX; cd.y = e.clientY;
+    if (!cd.moved && Math.hypot(e.clientX - cd.sx, e.clientY - cd.sy) > 4) cd.moved = true;
+    if (cd.moved) { turn(dx * .015); tilt(dy * .012); }
+  });
+  compassEl.addEventListener("pointerup", () => { if (cd && !cd.moved) goTo(0, cam.pitchT ?? cam.pitch); cd = null; });
+  compassEl.addEventListener("pointercancel", () => { cd = null; });
+  compassEl.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); goTo(0, cam.pitchT ?? cam.pitch); } });
+  frameRegion = n => { framed = n; touched = false; cam.userT = 1; focusOn(n); };   // mira ao lado de cada bioma: pan e zoom para mostrá-lo inteiro
+  const ACT = { zin: () => zoomBy(.96), zout: () => zoomBy(1.04), home, tilt3d: () => goTo(0, cam.pitch > 1.3 ? PITCH0 : PITCH_TOP) };
+  const HOLD = new Set(["zin", "zout"]);
+  navEl.querySelectorAll("button[data-a]").forEach(b => {
+    const fn = ACT[b.dataset.a]; let t1 = 0, t2 = 0;
+    const stop = () => { clearTimeout(t1); clearInterval(t2); };
+    b.addEventListener("pointerdown", e => { e.preventDefault(); fn(); if (HOLD.has(b.dataset.a)) t1 = setTimeout(() => { t2 = setInterval(fn, 40); }, 300); });
+    ["pointerup", "pointerleave", "pointercancel"].forEach(ev => b.addEventListener(ev, stop));
+    b.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); fn(); } });
+  });
+
+  // A bússola é só um indicador: o mapa não gira, o norte fica sempre para cima.
+
+  // Teclado
+  addEventListener("keydown", e => {
+    if (/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName) || (e.target.closest && e.target.closest("#exs")) || e.metaKey || e.ctrlKey || e.altKey) return;
+    const k = e.key; let used = true;
+    if (k === "ArrowUp") e.shiftKey ? tilt(.05) : nudge(0, 30);
+    else if (k === "ArrowDown") e.shiftKey ? tilt(-.05) : nudge(0, -30);
+    else if (k === "ArrowLeft") nudge(-30, 0);
+    else if (k === "ArrowRight") nudge(30, 0);
+    else if (k === "+" || k === "=") zoomBy(.9);
+    else if (k === "-" || k === "_") zoomBy(1.1);
+    else if (k === "Home") home();
+    else used = false;
+    if (used && (e.target === document.body || e.target === glc)) e.preventDefault();
+  });
+
+  const ptrs = new Map(); let down = null, hover = 0, pinch = 0;
+  glc.addEventListener("contextmenu", e => e.preventDefault());
+  glc.addEventListener("pointerdown", e => {
+    try { glc.setPointerCapture(e.pointerId); } catch (_) {} ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (ptrs.size === 1) down = { x: e.clientX, y: e.clientY, moved: false, btn: e.button };
+    else if (ptrs.size === 2) { const [a, b] = [...ptrs.values()]; pinch = { d: Math.hypot(a.x - b.x, a.y - b.y), u: cam.userT }; if (down) down.moved = true; }
+  });
+  glc.addEventListener("pointermove", e => {
+    const p = ptrs.get(e.pointerId);
+    if (!p) { hover = pick(e.clientX, e.clientY); glc.classList.toggle("hover", hover > 0); return; }
+    const dx = e.clientX - p.x, dy = e.clientY - p.y; p.x = e.clientX; p.y = e.clientY;
+    if (ptrs.size >= 2 && pinch) { const [a, b] = [...ptrs.values()]; cam.userT = clamp(pinch.u * pinch.d / (Math.hypot(a.x - b.x, a.y - b.y) || 1), .2, 2.8); return; }
+    if (!down) return;
+    if (!down.moved && Math.hypot(e.clientX - down.x, e.clientY - down.y) > 6) { down.moved = true; glc.classList.add("drag"); }
+    if (!down.moved) return;
+    hover = 0; glc.classList.remove("hover");   // arrastando: sem destaque de hover
+    if (down.btn === 2 || down.btn === 1) { turn(dx * .006); tilt(dy * .006); }   // botão direito (ou do meio) + arrastar: gira (horizontal) e inclina (vertical)
+    else if (e.shiftKey) tilt(dy * .006);                                         // Shift + arrastar: inclina                                         // Shift + arrastar: inclina
+    else nudge(-dx, dy);                                                          // arrastar: move o mapa junto com o cursor
+  });
+  glc.addEventListener("pointerleave", () => { hover = 0; glc.classList.remove("hover"); });
+  const end = e => {
+    ptrs.delete(e.pointerId); if (ptrs.size < 2) pinch = 0;
+    glc.classList.remove("drag");
+    if (e.type === "pointerup" && down && !down.moved && down.btn === 0 && ptrs.size === 0) { const n = pick(e.clientX, e.clientY); if (n) toggle(B[n - 1].id); else if (current) select(null); }
+    if (ptrs.size === 0) down = null;
+  };
+  glc.addEventListener("pointerup", end); glc.addEventListener("pointercancel", end);
+  glc.addEventListener("wheel", e => { e.preventDefault(); zoomBy(e.deltaY > 0 ? 1.08 : .92); }, { passive: false });
+
+  // Seleção: realça o bioma, levanta o relevo, foca a câmera, troca o efeito de fundo
+  let sel = 0, prevSel = 0, l1 = 0, l2 = 0;
+  const wt = [0, 0, 0, 0, 0, 0, 0, 0];
+  let hoverId = 0, hoverA = 0;   // bioma sob o mouse (o último, enquanto o efeito se apaga) e sua intensidade
+  focusOn(0, true); cam.fit0 = cam.fitT;
+  onSelect = id => {
+    const n = id ? byId[id].n : 0;
+    if (n === sel) return;
+    prevSel = sel; sel = n;
+    uniforms.uM2.value = masks[prevSel] || emptyMask; l2 = l1; l1 = 0;
+    uniforms.uM1.value = masks[sel] || emptyMask;
+    setEffect(id || "brasil", !n);
+    if (!n) { for (let i = 1; i < 8; i++) wt[i] = 0; uniforms.uDim.value = 0; l1 = 0; l2 = 0; }   // desselecionar: volta na hora, sem transição suave
+    lbls.forEach(l => { l.e.classList.toggle("off", !!n && l.b.n !== n); l.e.classList.toggle("big", !!n && l.b.n === n); });
+  };
+
+  const v3 = new THREE.Vector3(), v4 = new THREE.Vector3();
+  let last = performance.now(), T = 0;
+  function frame(now) {
+    const dt = Math.min(.05, (now - last) / 1000); last = now; if (!reduced) T += dt;
+    const ease = 1 - Math.pow(.0015, dt);
+    // transições
+    l1 += ((sel ? 1 : 0) - l1) * ease; l2 += (0 - l2) * ease;
+    uniforms.uL1.value = l1; uniforms.uL2.value = l2;
+    for (let i = 1; i < 8; i++) { wt[i] += ((i === sel ? 1 : 0) - wt[i]) * ease; }
+    uniforms.uW.value = wt; uniforms.uDim.value += ((sel ? 1 : 0) - uniforms.uDim.value) * ease;
+    if (hover > 0) hoverId = hover; hoverA += ((hover > 0 ? 1 : 0) - hoverA) * ease;
+    uniforms.uGlowK.value = Math.max(.1, Math.min(1.4, cam.fit0 / (cam.fit * cam.user)));   // zoom em relação à vista geral do Brasil
+    uniforms.uHoverId.value = hoverId; uniforms.uHoverA.value = hoverA; uniforms.uTime.value = T;
+    elevV += ((layerOn.relevo ? 1 : 0) - elevV) * ease; uniforms.uElev.value = elevV;
+    uniforms.uSt.value += ((layerOn.estados ? 1 : 0) - uniforms.uSt.value) * ease;
+    uniforms.uRv.value += ((layerOn.rios ? 1 : 0) - uniforms.uRv.value) * ease;
+    uniforms.uEq.value += ((layerOn.equador ? 1 : 0) - uniforms.uEq.value) * ease;
+    uniforms.uTr.value += ((layerOn.tropico ? 1 : 0) - uniforms.uTr.value) * ease;
+    cam.tx += (cam.ttx - cam.tx) * ease; cam.tz += (cam.ttz - cam.tz) * ease; cam.fit += (cam.fitT - cam.fit) * ease;
+    // câmera
+    const effAspect = Math.max(.3, (W - panelPx) / Hh);
+    if (cam.yawT !== null) { cam.yaw += (cam.yawT - cam.yaw) * ease; if (Math.abs(cam.yawT - cam.yaw) < .002) { cam.yaw = cam.yawT; cam.yawT = null; } }
+    if (cam.pitchT !== null) { cam.pitch += (cam.pitchT - cam.pitch) * ease; if (Math.abs(cam.pitchT - cam.pitch) < .002) { cam.pitch = cam.pitchT; cam.pitchT = null; } }
+    const lab = cam.pitch > 1.3 ? "2D" : "3D";   // mostra a vista atual if (tiltEl.textContent !== lab) tiltEl.textContent = lab;
+    cam.user += (cam.userT - cam.user) * ease;
+    const dist = cam.fit * cam.user;
+    distNow = dist;
+    const yaw = cam.yaw, pitch = cam.pitch;   // o mapa só gira quando o visitante arrasta
+    camera.position.set(cam.tx + Math.sin(yaw) * Math.cos(pitch) * dist, Math.sin(pitch) * dist, cam.tz + Math.cos(yaw) * Math.cos(pitch) * dist);
+    camera.lookAt(cam.tx, 0, cam.tz);
+    needleEl.style.transform = `rotate(${yaw}rad)`;
+    compassEl.firstElementChild.style.transform = `perspective(190px) rotateX(${(Math.PI / 2 - pitch).toFixed(3)}rad)`;   // o mostrador se inclina junto com a vista
+    renderer.render(scene, camera);
+    // rótulos
+    lbls.forEach(l => {
+      l.e.classList.toggle("off", !(LABUI.all || LABUI.sel === l.id) && !!sel && l.b.n !== sel);
+      const hh = heightAt(l.pos.x / WORLD_W + .5, l.pos.z / WORLD_H + .5) + (l.b.n === sel ? LIFT * (1 - elevV) : 0) + .15;
+      const o = labOff(l.id); l.L.hh = hh;
+      v3.set(l.pos.x + o.x, hh, l.pos.z + o.z).project(camera);
+      const rc = LABEL_CFG[l.id];
+      if (l.b.marine && rc && rc.r) {   // o texto inclinado do litoral é ancorado no terreno: gira e inclina junto com o mapa
+        const k = WORLD_W * .05, ra = rc.r * Math.PI / 180;
+        v4.set(l.pos.x + o.x + Math.cos(ra) * k, hh, l.pos.z + o.z + Math.sin(ra) * k).project(camera);
+        const ang = Math.atan2((v3.y - v4.y) / 2 * Hh, (v4.x - v3.x) / 2 * W) * 180 / Math.PI;
+        l.e.style.transform = `translate(${((v3.x + 1) / 2 * W).toFixed(1)}px, ${((1 - v3.y) / 2 * Hh).toFixed(1)}px) translate(-50%, -50%) rotate(${ang.toFixed(1)}deg) scale(${rc.s || 1})`;
+      } else
+      l.e.style.transform = `translate(${((v3.x + 1) / 2 * W).toFixed(1)}px, ${((1 - v3.y) / 2 * Hh).toFixed(1)}px) translate(-50%, -50%)` + cfgTf(l.id);
+    });
+    marks.forEach(k => {
+      const here = k.kind === "capitais" && !k.f ? !sel || BIOME_UFS[sel].has(k.m.sg) : !sel || k.bid === sel;   // capital: aparece se o estado tem o bioma, mesmo que ela fique fora dele
+      const forced = LABUI.all || LABUI.sel === k.id;
+      const show = forced || (layerOn[k.kind] && (k.f ? sel && k.bid === sel : here));
+      k.e.classList.toggle("off", !show);
+      if (!show) return;
+      k.e.classList.toggle("in", !!sel || forced);
+      const hh = heightAt(k.u, k.v) + (k.bid === sel && !k.f ? LIFT * l1 * (1 - elevV) : 0) + .03;
+      v3.set(k.wx, hh, k.wz).project(camera);
+      const o = labOff(k.id); k.L.hh = hh;   // só o nome se move; o ponto continua na cidade
+      if (o.x || o.z) { v4.set(k.wx + o.x, hh, k.wz + o.z).project(camera); k.L.e.style.transform = `translate(${((v4.x - v3.x) / 2 * W).toFixed(1)}px, ${(-(v4.y - v3.y) / 2 * Hh).toFixed(1)}px)` + cfgTf(k.id); k.L.moved = true; }
+      else if (k.L.moved) { k.L.moved = false; labStatic(k.L); }
+      k.e.style.transform = `translate(${((v3.x + 1) / 2 * W).toFixed(1)}px, ${((1 - v3.y) / 2 * Hh).toFixed(1)}px)`;
+    });
+    {
+      const zs = cam.fit0 / (cam.fit * cam.user), fs = Math.max(.8, Math.min(1.7, Math.sqrt(zs) * .95));   // cresce um pouco com o zoom
+      ufLbls.forEach(k => {
+        const show = layerOn.siglas && (!sel || BIOME_UFS[sel].has(k.uf));   // com um bioma selecionado, só os estados que o contêm
+        k.e.classList.toggle("off", !show);
+        if (!show) return;
+        v3.set(k.wx, heightAt(k.u, k.v) + .04, k.wz).project(camera);
+        k.e.style.transform = `translate(${((v3.x + 1) / 2 * W).toFixed(1)}px, ${((1 - v3.y) / 2 * Hh).toFixed(1)}px) translate(-50%, -50%) scale(${fs.toFixed(3)})`;
+      });
+    }
+    for (let n = 1; n <= 6; n++) { const pm = prisms[n]; if (!pm) continue; const h = (n === sel ? l1 : n === prevSel ? l2 : 0) * (1 - elevV) * LIFT; pm.visible = h > .0004; pm.scale.z = Math.max(h, 1e-4); }
+    const scale = cam.fit * cam.user / cam.fit0 * 1.05, thr = Math.max(4, Math.min(9, Math.round(4 + (1.05 / scale - 1) * 4)));   // mais rios nomeados quanto mais perto
+    rlbls.forEach(k => {
+      const show = LABUI.all || LABUI.sel === k.id || (layerOn.nomesRios && k.r.r <= thr && (k.f ? sel && k.bid === sel : (!sel || k.bid === sel)));
+      k.e.classList.toggle("off", !show);
+      if (!show) return;
+      const hh = heightAt(k.u, k.v) + (k.bid === sel && !k.f ? LIFT * l1 * (1 - elevV) : 0) + .02;
+      const o = labOff(k.id); k.L.hh = hh;
+      v3.set(k.a.x + o.x, hh, k.a.z + o.z).project(camera); v4.set(k.b.x + o.x, hh, k.b.z + o.z).project(camera);
+      const x1 = (v3.x + 1) / 2 * W, y1 = (1 - v3.y) / 2 * Hh, x2 = (v4.x + 1) / 2 * W, y2 = (1 - v4.y) / 2 * Hh;
+      let ang = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI; if (ang > 90) ang -= 180; if (ang < -90) ang += 180;
+      k.e.style.transform = `translate(${x1.toFixed(1)}px, ${y1.toFixed(1)}px) translate(-50%, -50%) rotate(${ang.toFixed(1)}deg)` + cfgTf(k.id); k.L.ang = ang;
+    });
+    {
+      const ha = heightAt(sa.a.u, sa.a.v) + .03, hb = heightAt(sa.b.u, sa.b.v) + .03;
+      const o = labOff("cont:sa"); sa.L.hh = ha;
+      v3.set(sa.a.p.x + o.x, ha, sa.a.p.z + o.z).project(camera); v4.set(sa.b.p.x + o.x, hb, sa.b.p.z + o.z).project(camera);
+      const x1 = (v3.x + 1) / 2 * W, y1 = (1 - v3.y) / 2 * Hh, x2 = (v4.x + 1) / 2 * W, y2 = (1 - v4.y) / 2 * Hh;
+      const len = Math.hypot(x2 - x1, y2 - y1), sc = len * .94 / sa.w100;   // o texto ocupa todo o trecho entre os dois pontos
+      const vis = LABUI.all || LABUI.sel === "cont:sa" || (!sel && sc * 100 > 9 && sc * 100 < 260);
+      sa.e.classList.toggle("off", !vis);
+      if (vis) {
+        const ang = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;   // lê de cima para baixo, do norte para o sul
+        sa.e.style.transform = `translate(${((x1 + x2) / 2).toFixed(1)}px, ${((y1 + y2) / 2).toFixed(1)}px) translate(-50%, -50%) rotate(${ang.toFixed(1)}deg) scale(${sc.toFixed(4)})` + cfgTf("cont:sa"); sa.L.ang = ang;
+      }
+    }
+    const zk = cam.fit0 / (cam.fit * cam.user), tz = sstep(1, 3, zk);   // quanto o zoom passou da vista geral
+    geoLbls.forEach(k => {
+      const show = LABUI.all || LABUI.sel === k.id || layerOn[k.key]; k.e.classList.toggle("off", !show);
+      if (!show) return;
+      const o = labOff(k.id);
+      // o nome nunca fica sobre um bioma: fica de um dos lados da zona de biomas (o lado em que você o colocou) e, com zoom, encosta nela
+      const [fw, fe] = k.free, raw = k.a.x + o.x, east = raw >= (fw + fe) / 2;
+      const far = east ? Math.max(raw, fe) : Math.min(raw, fw), near = east ? fe : fw;
+      const ax = far + (near - far) * tz, hh = heightAt(ax / WORLD_W + .5, k.v) + .03; k.L.hh = hh;
+      v3.set(ax, hh, k.a.z).project(camera); v4.set(ax + (k.b.x - k.a.x), hh, k.a.z).project(camera);
+      const x1 = (v3.x + 1) / 2 * W, y1 = (1 - v3.y) / 2 * Hh, x2 = (v4.x + 1) / 2 * W, y2 = (1 - v4.y) / 2 * Hh;
+      let ang = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI; if (ang > 90) ang -= 180; if (ang < -90) ang += 180;
+      const pr = ang * Math.PI / 180, px = x1 - Math.sin(pr) * GEO_PAD, py = y1 + Math.cos(pr) * GEO_PAD;   // mesmo espaço abaixo da linha, medido perpendicular a ela
+      k.e.style.transform = `translate(${px.toFixed(1)}px, ${py.toFixed(1)}px) translate(-50%, -50%) rotate(${ang.toFixed(1)}deg)` + cfgTf(k.id); k.L.ang = ang;
+    });
+    drawFx(dt);
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+  gl3 = true;
+  onSelect(current);  // aplica a seleção que veio do #hash antes do 3D carregar
+  requestAnimationFrame(() => requestAnimationFrame(() => revealSite()));   // 1º quadro já renderizado: pode revelar
+}
+
+/* ---------- Fundo ---------- */
+function drawFx(dt) {
+  const c = fctx, w = FW, h = FH;
+  const step = reduced ? 0 : dt;
+  fxState.t = (fxState.t || 0) + step;
+  c.globalCompositeOperation = "source-over";
+  c.fillStyle = "#0b100c"; c.fillRect(0, 0, w, h);
+  const layers = [fxState.prev, fxState.cur].filter(Boolean);
+  layers.forEach(l => {
+    if (l === fxState.cur) l.a = Math.min(1, l.a + dt * 1.4); else l.a = Math.max(0, l.a - dt * 1.4);
+    if (l.a > 0) { c.save(); c.globalAlpha = l.a; l.draw(c, fxState.t, step, w, h); c.restore(); }
+  });
+  if (fxState.prev && fxState.prev.a <= 0) fxState.prev = null;
+  // vinheta para o mapa e o painel ficarem legíveis
+  const v = c.createRadialGradient(w / 2, h / 2, Math.min(w, h) * .25, w / 2, h / 2, Math.max(w, h) * .75);
+  v.addColorStop(0, "rgba(11,16,12,0)"); v.addColorStop(1, "rgba(11,16,12,.7)");
+  c.fillStyle = v; c.fillRect(0, 0, w, h);
+}
+
+/*LAB:JS*/
+// ---------- Lab de textos (só no build de desenvolvimento; `build.py --publish` remove este bloco) ----------
+(function () {
+  const KEY = "biomas-lab-textos", $ = id => document.getElementById(id);
+  const clean = c => ({ r: +c.r || 0, s: +c.s || 1, a: +c.a || 0, l: +c.l || 0, x: +c.x || 0, y: +c.y || 0 });
+  const isDef = c => !c.r && (!c.s || c.s === 1) && !c.a && !c.l && !c.x && !c.y;
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  // o que foi editado neste navegador vale sempre no build de desenvolvimento
+  try { const st = JSON.parse(localStorage.getItem(KEY) || "null"); if (st) for (const id in st) LABEL_CFG[id] = clean(st[id]); } catch (e) {}
+  const panel = $("lab"), listEl = $("labList"), selEl = $("labSel"), out = $("labOut"), msg = $("labMsg"), filt = $("labFilter"), labelsEl = $("labels");
+  let open = false, selId = null, drag = null;
+  const box = document.createElement("div"); box.className = "labbox";
+  box.innerHTML = '<i data-h="nw"></i><i data-h="ne"></i><i data-h="sw"></i><i data-h="se"></i><i data-h="rot" title="Girar (Shift: de 15 em 15°)"></i><i data-h="arc" title="Curvar em arco (Shift: de 10 em 10°)"></i><i data-h="sp" title="Espaçamento entre letras"></i><i data-h="mv" title="Mover em qualquer direção (Shift trava no eixo)"></i>';
+  const mods = () => Object.keys(LABEL_CFG).filter(id => !isDef(cfgGet(id)));
+  const fmt1 = n => String(Math.round(n * 10) / 10).replace(".", ",");
+  const apply = L => { renderText(L); labStatic(L); };
+  function save() { const o = {}; mods().forEach(id => { o[id] = clean(LABEL_CFG[id]); }); try { localStorage.setItem(KEY, JSON.stringify(o)); } catch (e) {} }
+  function details() {
+    const L = LABELS.get(selId);
+    if (!L) { selEl.textContent = "nenhum texto selecionado"; return; }
+    const c = cfgGet(selId);
+    selEl.textContent = `${selId}  ·  “${L.text}”  ·  giro ${fmt1(c.r)}°  ·  tamanho ×${Math.round(c.s * 100) / 100}  ·  arco ${fmt1(c.a)}°  ·  espaço ${Math.round(c.l * 100) / 100} em  ·  posição ${fmt1(c.x)}, ${fmt1(c.y)}`;
+  }
+  function renderList() {
+    const q = filt.value.trim().toLowerCase();
+    const ids = [...LABELS.keys()].filter(id => !q || id.toLowerCase().includes(q) || LABELS.get(id).text.toLowerCase().includes(q)).sort();
+    listEl.replaceChildren(...ids.slice(0, 400).map(id => {
+      const li = document.createElement("li"), a = document.createElement("span"), k = document.createElement("small");
+      if (id === selId) li.className = "on";
+      a.textContent = LABELS.get(id).text;
+      if (!isDef(cfgGet(id))) { const m = document.createElement("b"); m.textContent = " ●"; a.appendChild(m); }
+      k.textContent = id.split(":")[0]; li.append(a, k);
+      li.addEventListener("click", () => select(id));
+      return li;
+    }));
+  }
+  function select(id) {
+    selId = id; LABUI.sel = id;
+    const L = LABELS.get(id); if (L) L.e.appendChild(box);
+    details(); renderList();
+  }
+  function setOpen(v) {
+    open = v; panel.hidden = !v; document.body.classList.toggle("lab-on", v);
+    if (v) renderList();
+    else { LABUI.sel = null; LABUI.all = false; $("labAll").checked = false; selId = null; box.remove(); }
+  }
+  function tick() {   // mantém a caixa de seleção do tamanho do texto e as alças com tamanho constante na tela
+    const L = open && selId && LABELS.get(selId);
+    if (L) {
+      const cs = getComputedStyle(L.e), fs = parseFloat(cs.fontSize) || 16;
+      const m = new DOMMatrixReadOnly(cs.transform === "none" ? undefined : cs.transform), sc = Math.hypot(m.a, m.b) || 1;
+      box.style.width = (L.w + 14) + "px"; box.style.height = (fs * 1.2 + 8) + "px"; box.style.setProperty("--inv", String(1 / sc));
+    }
+    requestAnimationFrame(tick);
+  }
+  // Alças: cantos = tamanho (arrastar como no Canva), amarela = giro, verde = arco, rosa = espaçamento entre letras
+  box.addEventListener("pointerdown", ev => {
+    const h = ev.target.dataset && ev.target.dataset.h; if (!h || !selId) return;
+    ev.preventDefault(); ev.stopPropagation(); try { box.setPointerCapture(ev.pointerId); } catch (e) {}
+    const L = LABELS.get(selId), r = box.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+    drag = { h, L, c0: cfgGet(selId), cx, cy, px: ev.clientX, py: ev.clientY, d0: Math.hypot(ev.clientX - cx, ev.clientY - cy) || 1, g0: h === "mv" ? LABHOOK.groundAt(ev.clientX, ev.clientY, L.hh || 0) : null };
+  });
+  box.addEventListener("pointermove", ev => {
+    if (!drag) return;
+    const { h, L, c0, cx, cy, px, py, d0, g0 } = drag, c = { ...c0 };
+    const phi = (L.ang + c0.r) * Math.PI / 180, dxl = (ev.clientX - px) * Math.cos(phi) + (ev.clientY - py) * Math.sin(phi);   // deslocamento ao longo do texto
+    if (h === "rot") { let r = Math.atan2(ev.clientY - cy, ev.clientX - cx) * 180 / Math.PI + 90 - L.ang; r = ((r + 540) % 360) - 180; if (ev.shiftKey) r = Math.round(r / 15) * 15; c.r = r; }
+    else if (h === "arc") { let a = clamp(c0.a + dxl * .9, -340, 340); if (Math.abs(a) < 3) a = 0; if (ev.shiftKey) a = Math.round(a / 10) * 10; c.a = a; }
+    else if (h === "sp") { const fs = parseFloat(getComputedStyle(L.e).fontSize) || 16, sc = 1 / (parseFloat(box.style.getPropertyValue("--inv")) || 1); c.l = clamp(c0.l + 2 * dxl / (Math.max(1, [...L.text].length) * fs * sc), -.2, 3); }
+    else if (h === "mv") {   // mover: qualquer direção; com Shift, só no eixo dominante da tela
+      let X = ev.clientX, Y = ev.clientY;
+      if (ev.shiftKey) { if (Math.abs(X - px) >= Math.abs(Y - py)) Y = py; else X = px; }
+      const g1 = LABHOOK.groundAt(X, Y, L.hh || 0);
+      if (g0 && g1) { c.x = c0.x + (g1.x - g0.x) * MAPW / WORLD_W; c.y = c0.y + (g1.z - g0.z) * MAPH / WORLD_H; }
+    }
+    else c.s = clamp(c0.s * Math.hypot(ev.clientX - cx, ev.clientY - cy) / d0, .1, 12);
+    LABEL_CFG[selId] = clean(c); apply(L); details();
+  });
+  const end = () => { if (!drag) return; drag = null; save(); renderList(); };
+  box.addEventListener("pointerup", end); box.addEventListener("pointercancel", end);
+  // Clicar em qualquer texto do mapa seleciona (não aciona o clique normal do texto)
+  labelsEl.addEventListener("pointerdown", ev => {
+    if (!open || (ev.target.dataset && ev.target.dataset.h)) return;
+    const t = ev.target.closest && ev.target.closest("[data-lab]"); if (!t) return;
+    ev.stopPropagation(); select(t.dataset.lab);
+  }, true);
+  labelsEl.addEventListener("click", ev => { if (open && ev.target.closest && ev.target.closest("[data-lab]")) { ev.stopPropagation(); ev.preventDefault(); } }, true);
+
+  const exportJson = () => {
+    const o = {}; mods().forEach(id => { const c = clean(LABEL_CFG[id]); o[id] = { r: +c.r.toFixed(1), s: +c.s.toFixed(3), a: +c.a.toFixed(1), l: +c.l.toFixed(3), x: +c.x.toFixed(1), y: +c.y.toFixed(1) }; });
+    return JSON.stringify({ versao: 1, textos: o }, null, 1);
+  };
+  $("labExport").addEventListener("click", () => {
+    const j = exportJson(); out.value = j; out.select();
+    const n = mods().length;
+    msg.textContent = `${n} texto(s) com configuração exportados (o JSON está na caixa acima). Copiando…`;
+    (navigator.clipboard ? navigator.clipboard.writeText(j) : Promise.reject()).then(() => { msg.textContent = `${n} texto(s) exportados e copiados: cole no chat.`; }, () => { msg.textContent = `${n} texto(s) exportados. Não consegui copiar sozinho: o texto está selecionado, use Ctrl+C.`; });
+  });
+  $("labImport").addEventListener("click", () => {
+    try {
+      const d = JSON.parse(out.value), t = d.textos || d; let n = 0;
+      for (const id in t) { LABEL_CFG[id] = clean(t[id]); n++; const L = LABELS.get(id); if (L) apply(L); }
+      save(); renderList(); details(); msg.textContent = `${n} texto(s) importados.`;
+    } catch (e) { msg.textContent = "JSON inválido: " + e.message; }
+  });
+  $("labReset").addEventListener("click", () => { if (!selId) return; LABEL_CFG[selId] = clean({}); apply(LABELS.get(selId)); save(); details(); renderList(); });
+  $("labClear").addEventListener("click", () => { mods().forEach(id => { LABEL_CFG[id] = clean({}); const L = LABELS.get(id); if (L) apply(L); }); save(); details(); renderList(); msg.textContent = "Tudo zerado."; });
+  $("labAll").addEventListener("change", e => { LABUI.all = e.target.checked; });
+  $("labClose").addEventListener("click", () => setOpen(false));
+  $("labBtn").addEventListener("click", () => setOpen(!open));
+  filt.addEventListener("input", renderList);
+  addEventListener("keydown", e => {
+    if (e.ctrlKey && e.shiftKey && (e.key === "L" || e.key === "l")) { e.preventDefault(); setOpen(!open); return; }
+    if (!open || /^(INPUT|TEXTAREA)$/.test(e.target.tagName)) return;
+    if (e.key === "Escape") { selId = null; LABUI.sel = null; box.remove(); details(); renderList(); }
+    else if ((e.key === "Delete" || e.key === "Backspace") && selId) { $("labReset").click(); }
+  });
+  requestAnimationFrame(tick);
+  if (new URLSearchParams(location.search).has("lab")) {   // abrir com ?lab já ativa o lab
+    setOpen(true);
+    const poll = setInterval(() => { if (LABELS.size) { renderList(); clearInterval(poll); } }, 300);
+  }
+})();
+/*LAB:JS-END*/
+
+/* ---------- Início ---------- */
+select(location.hash.slice(1) || null, true);
+/* ---------- Entrada: loader -> pop -> mapa -> painel -> controles ---------- */
+let revealed = false;
+function revealSite() {
+  if (revealed) return; revealed = true;
+  const ld = document.getElementById("loader"), root = document.documentElement, L = window.__ld;
+  const wait = ms => new Promise(r => setTimeout(r, ms));
+  const drawn = () => L ? new Promise(r => L.whenDrawn(r)) : Promise.resolve();
+  (async () => {
+    await drawn();
+    // 1) linha completa: congela o traço e entra o preenchimento (fade-in)
+    if (L) { cancelAnimationFrame(window.__ldRaf); L.anim.cancel(); L.ga.cancel(); L.line.style.strokeDashoffset = "0"; L.glow.style.strokeDashoffset = "0"; L.head.setAttribute("opacity", "0"); }
+    ld.classList.add("filled"); await wait(650);
+    // 2) pop e some
+    ld.classList.add("pop"); await wait(300);
+    // 3) o fundo preto some aos poucos, revelando o mapa 3D; o painel desliza junto
+    ld.classList.add("out");
+    await wait(350);
+    const panelEl = document.getElementById("panel");
+    root.classList.remove("boot");
+    void panelEl.offsetWidth;   // reativa a transição do painel a partir da posição escondida
+    await new Promise(r => { let done = false; const end = () => { if (!done) { done = true; r(); } };
+      panelEl.addEventListener("transitionend", e => { if (e.propertyName === "translate") end(); });
+      setTimeout(end, 1300); });
+    // 4) controles de cima para baixo, 0,015 s entre eles
+    const items = [...document.querySelectorAll(".navstack .pill, .compass, .pill.zm, .chips > *, .layers > *, .exag")];
+    items.forEach((el, i) => el.style.setProperty("--i", i));
+    root.classList.remove("navhide"); root.classList.add("nav-in");   // os controles ficam escondidos até aqui
+    setTimeout(() => { root.classList.remove("nav-in"); items.forEach(el => el.style.removeProperty("--i")); ld.remove(); }, 400 + items.length * 15 + 100);
+  })();
+}
+setTimeout(revealSite, 25000);   // rede lenta ou erro: não prende o visitante na tela preta
+init3d().catch(err => {
+  console.error(err);
+  revealSite();
+  document.getElementById("nogl").style.display = "block";
+  (function loop(now) { drawFx(.016); requestAnimationFrame(loop); })();
+});
+</script>
+</body>
+</html>
