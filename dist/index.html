@@ -253,7 +253,7 @@ html.nav-in .navstack .pill, html.nav-in .compass, html.nav-in .pill.zm, html.na
 <script>
 /* Loader: só usa o que está neste HTML (SVG, CSS e este script), então desenha antes de qualquer outra coisa carregar. */
 (function () {
-  if (new URLSearchParams(location.search).has("skipintro")) {   // ?skipintro: sem loading nem animações de abertura
+  if (["skipintro", "lab", "labs"].some(k => new URLSearchParams(location.search).has(k))) {   // ?skipintro (e todo lab): sem loading nem animações de abertura
     window.__skipIntro = true; const r = document.documentElement; r.classList.remove("boot", "navhide");
     const l = document.getElementById("loader"); if (l) l.remove(); return;
   }
