@@ -1498,8 +1498,9 @@ async function init3d() {
     const n = id ? byId[id].n : 0;
     if (n === sel) return;
     prevSel = sel; sel = n;
-    uniforms.uM2.value = masks[prevSel] || emptyMask; l2 = l1; l1 = 0;
-    uniforms.uM1.value = masks[sel] || emptyMask;
+    // o Sistema Costeiro-Marinho (7) é o mar: selecionado, ele é destacado mas nunca elevado (sem máscara de elevação)
+    uniforms.uM2.value = (prevSel !== 7 && masks[prevSel]) || emptyMask; l2 = l1; l1 = 0;
+    uniforms.uM1.value = (sel !== 7 && masks[sel]) || emptyMask;
     setEffect(id || "brasil", !n);
     if (!n) { for (let i = 1; i < 8; i++) wt[i] = 0; uniforms.uDim.value = 0; l1 = 0; l2 = 0; }   // desselecionar: volta na hora, sem transição suave
     lbls.forEach(l => { l.e.classList.toggle("off", !!n && l.b.n !== n); l.e.classList.toggle("big", !!n && l.b.n === n); });
@@ -1543,7 +1544,7 @@ async function init3d() {
     // rótulos
     lbls.forEach(l => {
       l.e.classList.toggle("off", !(LABUI.all || LABUI.sel === l.id) && !!sel && l.b.n !== sel);
-      const hh = heightAt(l.pos.x / WORLD_W + .5, l.pos.z / WORLD_H + .5) + (l.b.n === sel ? LIFT * (1 - elevV) : 0) + .15;
+      const hh = heightAt(l.pos.x / WORLD_W + .5, l.pos.z / WORLD_H + .5) + (l.b.n === sel && sel !== 7 ? LIFT * (1 - elevV) : 0) + .15;
       const o = labOff(l.id); l.L.hh = hh;
       v3.set(l.pos.x + o.x, hh, l.pos.z + o.z).project(camera);
       const rc = LABEL_CFG[l.id];
