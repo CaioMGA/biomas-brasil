@@ -868,6 +868,9 @@ const LABELS = new Map();
 const cfgGet = id => Object.assign({ r: 0, s: 1, a: 0, l: 0, x: 0, y: 0 }, LABEL_CFG[id]);
 const labOff = id => { const c = LABEL_CFG[id]; return c && (c.x || c.y) ? { x: (c.x || 0) * WORLD_W / MAPW, z: id.startsWith("geo:") ? 0 : (c.y || 0) * WORLD_H / MAPH } : { x: 0, z: 0 }; };   // nomes dos paralelos: o espaço até a linha é fixo (GEO_PAD), só o x vale
 const GEO_PAD = 30;   // distância, em pixels, do centro do nome até a sua linha (igual para o Equador e para o Trópico)
+// Textos que giram com o mapa nunca ficam de cabeça para baixo (topo das letras para baixo): o ângulo fica numa janela de 180° que começa em lo e, fora dela, o texto vira 180°.
+// A janela termina 10° depois do ângulo de desenho do texto (design), para ele não virar com um giro pequeno do mapa.
+const readable = (a, design) => { const lo = design - 170; a = ((a - lo) % 360 + 360) % 360 + lo; return a >= lo + 180 ? a - 180 : a; };
 const sstep = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };   // em unidades do mundo 3D
 const cfgTf = id => { const c = LABEL_CFG[id]; return c && (c.r || (c.s && c.s !== 1)) ? ` rotate(${c.r || 0}deg) scale(${c.s || 1})` : ""; };
 const _cv = document.createElement("canvas").getContext("2d");
@@ -1107,7 +1110,7 @@ async function init3d() {
       vec2 d = sB - sA; float L = length(d); d = L > 1e-3 ? d / L : vec2(1.0, 0.0);
       vec2 nrm = vec2(-d.y, d.x);
       float sel = aO.y > 0.5 ? wOf(aO.y) * uDim * uStyle : 0.0;
-      float hw = 0.5 * uWidth * (1.0 + sel * 1.3) * uPx;
+      float hw = 0.5 * uWidth * (1.0 + sel * 0.35) * uPx;   // contorno do bioma selecionado: só um pouco mais grosso
       float ext = aS.y < 0.5 ? -1.0 : 1.0;
       float reach = hw + 0.75 * uPx;
       vec2 sP = mix(sA, sB, aS.y) + d * ext * hw * 0.6 + nrm * aS.x * reach;
@@ -1220,7 +1223,7 @@ async function init3d() {
   // Linha do Equador (0°) e Trópico de Capricórnio (23°26′ S): paralelos que atravessam a tela inteira (passam bem além do quadro do mapa)
   addLines([{ p: [-2 * MAPW, GEO.eq, 3 * MAPW, GEO.eq] }], { width: 1.3, color: [1, .84, .35], opacity: .95, on: uniforms.uEq, order: 2.5 });
   addLines([{ p: [-2 * MAPW, GEO.tr, 3 * MAPW, GEO.tr] }], { width: 1.3, color: [1, .55, .42], opacity: .95, on: uniforms.uTr, order: 2.5 });
-  addLines(LAYERS.outlines, { width: 1.3, color: [.93, .9, .8], opacity: .55, hl: [1, 1, .94], hlOpacity: 1, style: 1, on: { value: 1 }, order: 4 });
+  addLines(LAYERS.outlines, { width: 1.3, color: [.93, .9, .8], opacity: .55, hl: [.96, .94, .85], hlOpacity: .5, style: 1, on: { value: 1 }, order: 4 });
 
   const shadow = new THREE.Mesh(new THREE.PlaneGeometry(WORLD_W * 1.06, WORLD_H * 1.06),
     new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(sc), transparent: true, opacity: .55, depthWrite: false, color: 0x000000 }));
@@ -1552,7 +1555,7 @@ async function init3d() {
       if (l.b.marine && rc && rc.r) {   // o texto inclinado do litoral é ancorado no terreno: gira e inclina junto com o mapa
         const k = WORLD_W * .05, ra = rc.r * Math.PI / 180;
         v4.set(l.pos.x + o.x + Math.cos(ra) * k, hh, l.pos.z + o.z + Math.sin(ra) * k).project(camera);
-        const ang = Math.atan2((v3.y - v4.y) / 2 * Hh, (v4.x - v3.x) / 2 * W) * 180 / Math.PI;
+        const ang = readable(Math.atan2((v3.y - v4.y) / 2 * Hh, (v4.x - v3.x) / 2 * W) * 180 / Math.PI, rc.r);
         l.e.style.transform = `translate(${((v3.x + 1) / 2 * W).toFixed(1)}px, ${((1 - v3.y) / 2 * Hh).toFixed(1)}px) translate(-50%, -50%) rotate(${ang.toFixed(1)}deg) scale(${rc.s || 1})`;
       } else
       l.e.style.transform = `translate(${((v3.x + 1) / 2 * W).toFixed(1)}px, ${((1 - v3.y) / 2 * Hh).toFixed(1)}px) translate(-50%, -50%)` + cfgTf(l.id);
@@ -1604,7 +1607,7 @@ async function init3d() {
       const vis = LABUI.all || LABUI.sel === "cont:sa" || (!sel && sc * 100 > 9 && sc * 100 < 260);
       sa.e.classList.toggle("off", !vis);
       if (vis) {
-        const ang = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;   // lê de cima para baixo, do norte para o sul
+        const ang = readable(Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI, 90);   // lê de cima para baixo, do norte para o sul; com o mapa girado, nunca de cabeça para baixo
         sa.e.style.transform = `translate(${((x1 + x2) / 2).toFixed(1)}px, ${((y1 + y2) / 2).toFixed(1)}px) translate(-50%, -50%) rotate(${ang.toFixed(1)}deg) scale(${sc.toFixed(4)})` + cfgTf("cont:sa"); sa.L.ang = ang;
       }
     }
