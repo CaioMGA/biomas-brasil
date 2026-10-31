@@ -117,11 +117,29 @@ for f in json.load(open(borders_f))["features"]:
             run = []
 print("fronteiras", len(res["borders"]))
 
-RIVER_FIX = {"Uruguay": "Rio Uruguai", "Paraiba": "Rio Paraíba", "Corumba": "Rio Corumbá", "Braco Menor": "Braço Menor", "Bois": "Rio dos Bois"}
-def river_label(n):
+RIVER_FIX = {"Uruguay": "Rio Uruguai", "Paraiba": "Rio Paraíba do Sul", "Corumba": "Rio Corumbá", "Braco Menor": "Rio Javaés",
+             "Bois": "Rio dos Bois", "Indaiá": "Rio São Francisco", "Purús": "Rio Purus", "Velhas": "Rio das Velhas",
+             "Contas": "Rio de Contas", "Jiparaná": "Rio Ji-Paraná", "Ribeira": "Rio Ribeira de Iguape",
+             "Courantyne": "Rio Corantijn"}
+def river_label(n, r=None, lon=None, lat=None):
     n = " ".join(n.split())
+    if n == "Paraná" and r == 2 and lat > -27.3:          # o traçado junta Cuiabá + Paraguai + Paraná
+        return "Rio Cuiabá" if lat > -17.94 else "Rio Paraguai"
+    if n == "Amazonas" and -69.95 < lon < -59.9:          # trecho brasileiro a montante do Encontro das Águas
+        return "Rio Solimões"
     if n in RIVER_FIX: return RIVER_FIX[n]
     return n if n.startswith("Rio ") else "Rio " + n
+
+def pieces(name, r, ln):
+    """Divide a linha onde o nome muda, repetindo o ponto de junção nos dois trechos."""
+    out, cur, cl = [], [], None
+    for c in ln:
+        lab = river_label(name, r, c[0], c[1])
+        if cl is not None and lab != cl:
+            out.append((cl, cur + [c])); cur = []
+        cur.append(c); cl = lab
+    if len(cur) >= 2: out.append((cl, cur))
+    return out
 
 def along(run):
     """Ponto médio (por comprimento) do trecho e um ponto adiante, para orientar o rótulo."""
@@ -135,27 +153,29 @@ def along(run):
     dx, dy = q1[0] - q0[0], q1[1] - q0[1]; n = math.hypot(dx, dy) or 1
     return d[-1], (x, y, x + dx / n * 30, y + dy / n * 30)
 
-best, rank, skipped = {}, {}, 0
+best, skipped = {}, 0
+def add(label, r, run):
+    for o, seg in by_owner(run):
+        res["rivers"].append({"n": label, "r": r, "o": o, "p": flat(seg)})
+        L, pos = along(seg)
+        key = (o == 0, L)
+        if label not in best or key > best[label][0]: best[label] = (key, pos, r)
+
 for f in json.load(open(rivers_f))["features"]:
-    name = (f["properties"]["name"] or "").strip()
-    g = f["geometry"]; lines = g["coordinates"] if g["type"] == "MultiLineString" else [g["coordinates"]]
-    pts_runs = []
+    g = f["geometry"]
+    if not g: continue
+    name = (f["properties"]["name"] or "").strip(); r = f["properties"]["scalerank"]
+    lines = g["coordinates"] if g["type"] == "MultiLineString" else [g["coordinates"]]
     for ln in lines:
-        run = []
-        for p in [proj(c[0], c[1]) for c in ln] + [None]:
-            if p is not None and inside(*p): run.append(p); continue
-            if len(run) >= 2: pts_runs.append(dp(run, .9))
+        for label, piece in (pieces(name, r, ln) if name else [(None, ln)]):
             run = []
-    if not name:
-        skipped += len(pts_runs); continue          # todo rio exibido tem nome
-    label = river_label(name); r = f["properties"]["scalerank"]
-    rank[label] = min(rank.get(label, 99), r)
-    for run in pts_runs:
-        for o, seg in by_owner(run):
-            res["rivers"].append({"n": label, "r": r, "o": o, "p": flat(seg)})
-        L, pos = along(run)
-        if label not in best or L > best[label][0]: best[label] = (L, pos)
-res["rl"] = [{"n": n, "x": round(v[1][0]), "y": round(v[1][1]), "x2": round(v[1][2]), "y2": round(v[1][3]), "r": rank[n]} for n, v in best.items()]
+            for p in [proj(c[0], c[1]) for c in piece] + [None]:
+                if p is not None and inside(*p): run.append(p); continue
+                if len(run) >= 2:
+                    if label is None: skipped += 1          # todo rio exibido tem nome
+                    else: add(label, r, dp(run, .9))
+                run = []
+res["rl"] = [{"n": n, "x": round(v[1][0]), "y": round(v[1][1]), "x2": round(v[1][2]), "y2": round(v[1][3]), "r": v[2]} for n, v in best.items()]
 print("rios sem nome descartados:", skipped, "| rótulos:", len(res["rl"]))
 print("rios", len(res["rivers"]))
 
@@ -176,7 +196,7 @@ for f in json.load(open(places_f))["features"]:
         i, j = int(x / DS), int(y / DS)
         if 0 <= i < IW and 0 <= j < IH and idp[i, j] > 10:
             if p["featurecla"] == "Admin-0 capital":
-                seen.add(p["name"]); res["capitals"].append({"n": p["name"], "uf": p["adm0name"], "x": round(x), "y": round(y), "f": 1})
+                seen.add(p["name"]); res["capitals"].append({"n": {"Montevideo": "Montevidéu"}.get(p["name"], p["name"]), "uf": p["adm0name"], "x": round(x), "y": round(y), "f": 1})
             elif p["pop_max"] >= 250000:
                 seen.add(p["name"]); res["cities"].append({"n": p["name"], "x": round(x), "y": round(y), "f": 1})
         continue

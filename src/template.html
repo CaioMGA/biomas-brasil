@@ -1558,7 +1558,8 @@ async function init3d() {
     const effAspect = Math.max(.3, (W - panelPx) / Hh);
     if (cam.yawT !== null) { cam.yaw += (cam.yawT - cam.yaw) * ease; if (Math.abs(cam.yawT - cam.yaw) < .002) { cam.yaw = cam.yawT; cam.yawT = null; } }
     if (cam.pitchT !== null) { cam.pitch += (cam.pitchT - cam.pitch) * ease; if (Math.abs(cam.pitchT - cam.pitch) < .002) { cam.pitch = cam.pitchT; cam.pitchT = null; } }
-    const lab = cam.pitch > 1.3 ? "2D" : "3D";   // mostra a vista atual if (tiltEl.textContent !== lab) tiltEl.textContent = lab;
+    const lab = cam.pitch > 1.3 ? "2D" : "3D";   // mostra a vista atual
+    if (tiltEl.textContent !== lab) tiltEl.textContent = lab;
     cam.user += (cam.userT - cam.user) * ease;
     const dist = cam.fit * cam.user;
     distNow = dist;
