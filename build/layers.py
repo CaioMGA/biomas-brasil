@@ -5,13 +5,14 @@ Fontes:
   - IBGE, malha de UFs 2022 (BR_UF_2022.shp/.dbf)
   - Natural Earth 1:10m: rivers_lake_centerlines, populated_places_simple e admin_0_boundary_lines_land
 Uso: python3 -I layers.py data/map.json data/ids.png BR_UF_2022(sem extensao) rivers.geojson places.geojson borders.geojson data/layers.json
-     python3 -I layers.py data/map.json data/ids.png - rivers.geojson - - data/layers.json --rivers-only   (refaz só rios e nomes de rios, reaproveitando o layers.json atual)
+     python3 -I layers.py data/map.json data/ids.png - rivers.geojson - - data/layers.json --rivers-only --countries=countries.geojson   (refaz só rios e nomes de rios, reaproveitando o layers.json atual)
 """
 import json, math, struct, sys
 from PIL import Image
 
 RIVERS_ONLY = "--rivers-only" in sys.argv
-sys.argv = [a for a in sys.argv if a != "--rivers-only"]
+COUNTRIES_F = next((a.split("=", 1)[1] for a in sys.argv if a.startswith("--countries=")), None)   # ne_10m_admin_0_countries.geojson: contornos e nomes dos países vizinhos
+sys.argv = [a for a in sys.argv if a != "--rivers-only" and not a.startswith("--countries=")]
 meta = json.load(open(sys.argv[1]))
 ids = Image.open(sys.argv[2]); IW, IH = ids.size; idp = ids.load()
 shp_base, rivers_f, places_f, borders_f, out = sys.argv[3], sys.argv[4], sys.argv[5], sys.argv[6], sys.argv[7]
@@ -184,6 +185,31 @@ for f in json.load(open(rivers_f))["features"] + EXTRA_RIVERS:
                     if label is None: skipped += 1          # todo rio exibido tem nome
                     else: add(label, r, dp(run, .9))
                 run = []
+NEIGH = {"Uruguay": "Uruguai", "Argentina": "Argentina", "Paraguay": "Paraguai", "Bolivia": "Bolívia", "Peru": "Peru", "Colombia": "Colômbia",
+         "Venezuela": "Venezuela", "Guyana": "Guiana", "Suriname": "Suriname"}
+if COUNTRIES_F:   # contorno de cada país vizinho (terra e costa, dentro do quadro do mapa) e um nome por país
+    res["countries"], res["cl"] = [], []
+    for f in json.load(open(COUNTRIES_F))["features"]:
+        adm = f["properties"]["ADMIN"]; g = f["geometry"]
+        polys = g["coordinates"] if g["type"] == "MultiPolygon" else [g["coordinates"]]
+        if adm == "France": name, polys = "Guiana Francesa", [pl for pl in polys if all(-56 < c[0] < -50 and 1 < c[1] < 7 for c in pl[0])]   # só a Guiana Francesa
+        elif adm in NEIGH: name = NEIGH[adm]
+        else: continue
+        inb = []
+        for pl in polys:
+            ring = [proj(c[0], c[1]) for c in pl[0]]
+            run = []
+            for q in ring + [None]:
+                if q is not None and -50 <= q[0] <= FW + 50 and -50 <= q[1] <= FH + 50: run.append(q); continue
+                if len(run) >= 2: res["countries"].append({"c": name, "p": flat(dp_ring(run, 1.1) if run[0] == run[-1] else dp(run, 1.1))})   # anel inteiro dentro do quadro: precisa do dp_ring
+                run = []
+            inb += [q for q in ring if 0 <= q[0] <= FW and 0 <= q[1] <= FH]
+        lx, ly = proj(f["properties"]["LABEL_X"], f["properties"]["LABEL_Y"]) if adm != "France" else (None, None)
+        if lx is None or not (0 < lx < FW and 0 < ly < FH):   # rótulo fora do quadro: usa o centro da parte visível
+            if not inb: continue
+            lx, ly = sum(q[0] for q in inb) / len(inb), sum(q[1] for q in inb) / len(inb)
+        res["cl"].append({"n": name, "x": round(lx), "y": round(ly)})
+    print("países vizinhos:", [c["n"] for c in res["cl"]], "| trechos", len(res["countries"]))
 res["rl"] = [{"n": n, "x": round(v[1][0]), "y": round(v[1][1]), "x2": round(v[1][2]), "y2": round(v[1][3]), "r": v[2]} for n, v in best.items()]
 print("rios sem nome descartados:", skipped, "| rótulos:", len(res["rl"]))
 print("rios", len(res["rivers"]))
@@ -204,8 +230,7 @@ for f in ([] if RIVERS_ONLY else json.load(open(places_f))["features"]):
         # fora do Brasil: só dentro da extensão de algum bioma (id 11 a 16)
         i, j = int(x / DS), int(y / DS)
         if 0 <= i < IW and 0 <= j < IH and idp[i, j] > 10:
-            if p["featurecla"] == "Admin-0 capital":
-                seen.add(p["name"]); res["capitals"].append({"n": {"Montevideo": "Montevidéu"}.get(p["name"], p["name"]), "uf": p["adm0name"], "x": round(x), "y": round(y), "f": 1})
+            if p["featurecla"] == "Admin-0 capital": pass   # capitais de outros países são irrelevantes aqui: omitidas
             elif p["pop_max"] >= 250000:
                 seen.add(p["name"]); res["cities"].append({"n": p["name"], "x": round(x), "y": round(y), "f": 1})
         continue
@@ -214,6 +239,7 @@ for f in ([] if RIVERS_ONLY else json.load(open(places_f))["features"]):
         seen.add(p["name"]); res["capitals"].append({"n": p["name"], "uf": p["adm1name"], "sg": CAP_UF[p["name"]], "x": round(x), "y": round(y)})
     elif p["pop_max"] >= 450000 and p["name"] != "Jaboatao":
         seen.add(p["name"]); res["cities"].append({"n": p["name"], "x": round(x), "y": round(y)})
+if RIVERS_ONLY: res["capitals"] = [c for c in res["capitals"] if not c.get("f")]
 print("capitais", len(res["capitals"]), "(inclui", sum(1 for c in res["capitals"] if c.get("f")), "fora do Brasil) cidades", len(res["cities"]))
 assert RIVERS_ONLY or sum(1 for c in res["capitals"] if not c.get("f")) == 27, "faltam capitais"
 import os

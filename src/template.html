@@ -91,6 +91,9 @@ main { position: relative; z-index: 1; }
 .uf { position: absolute; left: 0; top: 0; pointer-events: none; white-space: nowrap; font: 700 13px var(--body); letter-spacing: .08em; color: #fff; transition: opacity .3s;
   -webkit-text-stroke: 3px rgba(5,9,6,.78); paint-order: stroke fill; text-shadow: 0 0 6px rgba(0,0,0,.7); }
 .uf.off { opacity: 0; }
+.pais { position: absolute; left: 0; top: 0; pointer-events: none; white-space: nowrap; font: 600 12px var(--body); letter-spacing: .22em; text-transform: uppercase; color: #e4ddc2; opacity: .85; transition: opacity .3s;
+  -webkit-text-stroke: 3px rgba(5,9,6,.7); paint-order: stroke fill; text-shadow: 0 0 6px rgba(0,0,0,.7); }
+.pais.off { opacity: 0; }
 .mk i { position: absolute; left: -4px; top: -4px; width: 8px; height: 8px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 2px rgba(0,0,0,.55); pointer-events: auto; cursor: default; }
 .mk.cap i { left: -5px; top: -5px; width: 10px; height: 10px; background: #f5d67a; border-radius: 2px; transform: rotate(45deg); }
 .mk .t { position: absolute; left: 9px; top: -9px; white-space: nowrap; font: 500 12px var(--body); color: #fff; opacity: 0; transition: opacity .2s; pointer-events: none;
@@ -258,7 +261,7 @@ html.nav-in .navstack .pill, html.nav-in .compass, html.nav-in .pill.zm, html.na
 .lablist li small { color: #7fa0b4; }
 .lablist li b { color: #ffd66b; font-weight: 600; }
 .labsel { padding: 6px 8px; margin: 6px 0; font-size: 12px; background: rgba(255, 255, 255, .05); border-radius: 5px; }
-body.lab-on .lbl, body.lab-on .rl, body.lab-on .uf, body.lab-on .cont, body.lab-on .mk .t { pointer-events: auto; cursor: pointer; }
+body.lab-on .lbl, body.lab-on .rl, body.lab-on .uf, body.lab-on .pais, body.lab-on .cont, body.lab-on .mk .t { pointer-events: auto; cursor: pointer; }
 .labbox { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); border: 1.5px dashed #5ad1ff; box-sizing: border-box; pointer-events: none; z-index: 6; }
 .labbox i { position: absolute; width: 12px; height: 12px; border-radius: 50%; background: #fff; border: 2px solid #1aa5e6; box-sizing: border-box; pointer-events: auto; transform: translate(-50%, -50%) scale(var(--inv, 1)); }
 .labbox i[data-h="rot"], .labbox i[data-h="sp"], .labbox i[data-h="arc"], .labbox i[data-h="mv"] { display: grid; place-items: center; font-style: normal; line-height: 1; box-shadow: 0 1px 6px rgba(0, 0, 0, .5);
@@ -995,7 +998,7 @@ function measureChars(t, text) {
   return [...text].map(ch => _cv.measureText(ch).width + ls);
 }
 function renderText(L) {
-  const c = cfgGet(L.id), key = [c.a, c.l, L.text].join("|");
+  const c = cfgGet(L.id), arc = L.flip ? -c.a : c.a, key = [arc, c.l, L.text].join("|");   // texto virado 180° (mapa girado): o arco inverte, para continuar acompanhando a costa
   if (L.key === key) return; L.key = key;
   const t = L.t;
   t.style.letterSpacing = ""; t.style.marginRight = "";
@@ -1003,8 +1006,8 @@ function renderText(L) {
   t.className = "txt"; t.textContent = L.text;
   const ls = parseFloat(getComputedStyle(t).letterSpacing) || 0;
   const ws = measureChars(t, L.text), W = ws.reduce((x, y) => x + y, 0); L.w = W;
-  if (!c.a) { if (ls > 0) t.style.marginRight = (-ls) + "px"; return; }   // sem arco: tira o espaço que sobra depois da última letra, para o centro do texto ser o centro da caixa
-  const R = W / (c.a * Math.PI / 180);   // raio que faz o texto cobrir o ângulo do arco
+  if (!arc) { if (ls > 0) t.style.marginRight = (-ls) + "px"; return; }   // sem arco: tira o espaço que sobra depois da última letra, para o centro do texto ser o centro da caixa
+  const R = W / (arc * Math.PI / 180);   // raio que faz o texto cobrir o ângulo do arco
   t.className = "txt arc"; t.textContent = "";
   let x = -W / 2; const pos = [];
   [...L.text].forEach((ch, i) => { const th = (x + ws[i] / 2) / R; x += ws[i]; pos.push({ ch, th, px: R * Math.sin(th), py: R * (1 - Math.cos(th)) }); });
@@ -1279,6 +1282,7 @@ async function init3d() {
   const CREAM = [1, .96, .84];
   addLines(LAYERS.states.flatMap(st => st.rings.map(r => ({ p: r }))), { width: .8, color: [.06, .055, .05], opacity: .85, on: uniforms.uSt, order: 2 });   // por baixo das demais linhas
   addLines(LAYERS.borders, { width: 2.1, color: CREAM, opacity: .95, on: uniforms.uSt, order: 3 });
+  addLines((LAYERS.countries || []).map(c => ({ p: c.p })), { width: 1.1, color: CREAM, opacity: .6, on: uniforms.uSt, order: 2.9 });   // contorno dos países vizinhos (com Divisas e fronteiras)
   addLines(LAYERS.rivers.filter(r => r.r > 4), { width: 1.2, color: [.42, .78, 1], opacity: .85, on: uniforms.uRv, order: 3.1 });
   addLines(LAYERS.rivers.filter(r => r.r <= 4), { width: 2.1, color: [.42, .78, 1], opacity: .95, on: uniforms.uRv, order: 3.2 });
   // Realce de um rio (usado pelo lab de rios): linha verde-limão por cima das demais, criada só quando pedida
@@ -1368,6 +1372,12 @@ async function init3d() {
   });
 
   // Siglas dos estados: no ponto mais largo do maior pedaço de cada UF (varredura horizontal na altura do centroide)
+  // Nomes dos países vizinhos (camada Divisas e fronteiras), editáveis no lab de textos (ids pais:Argentina…)
+  const paisLbls = (LAYERS.cl || []).map(c => {
+    const e = el("div", { class: "pais off" }, c.n); labelsEl.appendChild(e);
+    const L = registerLabel("pais:" + c.n, e, "pais"), u = c.x / MAPW, v = c.y / MAPH;
+    return { id: "pais:" + c.n, e, L, u, v, wx: (u - .5) * WORLD_W, wz: (v - .5) * WORLD_H };
+  });
   const ufLbls = LAYERS.states.map(st => {
     let best = null, ba = -1;
     for (const r of st.rings) {
@@ -1670,7 +1680,9 @@ async function init3d() {
       if (l.b.marine && rc && rc.r) {   // o texto inclinado do litoral é ancorado no terreno: gira e inclina junto com o mapa
         const k = WORLD_W * .05, ra = rc.r * Math.PI / 180;
         v4.set(l.pos.x + o.x + Math.cos(ra) * k, hh, l.pos.z + o.z + Math.sin(ra) * k).project(camera);
-        const ang = readable(Math.atan2((v3.y - v4.y) / 2 * Hh, (v4.x - v3.x) / 2 * W) * 180 / Math.PI, rc.r);
+        const raw = Math.atan2((v3.y - v4.y) / 2 * Hh, (v4.x - v3.x) / 2 * W) * 180 / Math.PI, ang = readable(raw, rc.r);
+        const flip = Math.abs((((raw - ang) % 360) + 360) % 360 - 180) < 1;   // o texto foi virado 180°: inverte o arco também
+        if (flip !== !!l.L.flip) { l.L.flip = flip; renderText(l.L); }
         l.e.style.transform = `translate(${((v3.x + 1) / 2 * W).toFixed(1)}px, ${((1 - v3.y) / 2 * Hh).toFixed(1)}px) translate(-50%, -50%) rotate(${ang.toFixed(1)}deg) scale(${rc.s || 1})`;
       } else
       l.e.style.transform = `translate(${((v3.x + 1) / 2 * W).toFixed(1)}px, ${((1 - v3.y) / 2 * Hh).toFixed(1)}px) translate(-50%, -50%)` + cfgTf(l.id);
@@ -1693,6 +1705,14 @@ async function init3d() {
     });
     {
       const zs = cam.fit0 / (cam.fit * cam.user), fs = Math.max(.8, Math.min(1.7, Math.sqrt(zs) * .95));   // cresce um pouco com o zoom
+      paisLbls.forEach(k => {
+        const show = LABUI.all || LABUI.sel === k.id || layerOn.estados;
+        k.e.classList.toggle("off", !show);
+        if (!show) return;
+        const hh = heightAt(k.u, k.v) + .04, o = labOff(k.id); k.L.hh = hh;
+        v3.set(k.wx + o.x, hh, k.wz + o.z).project(camera);
+        k.e.style.transform = `translate(${((v3.x + 1) / 2 * W).toFixed(1)}px, ${((1 - v3.y) / 2 * Hh).toFixed(1)}px) translate(-50%, -50%) scale(${fs.toFixed(3)})` + cfgTf(k.id);
+      });
       ufLbls.forEach(k => {
         const show = LABUI.all || LABUI.sel === k.id || (layerOn.siglas && (!sel || BIOME_UFS[sel].has(k.uf)));   // com um bioma selecionado, só os estados que o contêm
         k.e.classList.toggle("off", !show);
