@@ -135,3 +135,9 @@ O que conferir depois:
 - O `assert` das 27 capitais continua passando.
 - Nenhum `id` `rio:...` em `data/labels.json` ficou órfão. Hoje não há nenhum, só `bio:`, `cont:` e `geo:`.
 - No navegador, na vista inicial: "Rio Paraguai" aparece no Pantanal, e o "Rio Amazonas" fica a leste de Manaus.
+
+## Correções adicionais (Mamoré e foz do Amazonas)
+
+- **Rio Mamoré:** no Natural Earth, o trecho de baixo (da foz do Guaporé, −65,02°/−11,89°, até o início do Madeira, −65,40°/−10,39°) vem com o nome `Guaporé` e `scalerank == 3`. Isso deixava o Mamoré truncado em −12° (com o nome num toco de 2 pontos) e um Guaporé falso na fronteira. `river_label` agora renomeia `Guaporé` com rank 3 para "Rio Mamoré".
+- **Foz do Amazonas:** a feição `Amazonas` do Natural Earth 10m termina em −52,71°/−1,58°, a ~170 km do mar. O trecho final foi traçado à mão (`EXTRA_RIVERS` em `build/layers.py`, canal norte por Gurupá e Macapá até −49,8°/0,3°); é uma aproximação, não dado oficial.
+- **Refazer só os rios:** `python3 -I build/layers.py data/map.json data/ids.png - rivers.geojson - - data/layers.json --rivers-only` (reaproveita o `layers.json` atual; `rivers.geojson` é o `ne_10m_rivers_lake_centerlines` do Natural Earth).

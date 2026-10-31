@@ -5,10 +5,13 @@ Fontes:
   - IBGE, malha de UFs 2022 (BR_UF_2022.shp/.dbf)
   - Natural Earth 1:10m: rivers_lake_centerlines, populated_places_simple e admin_0_boundary_lines_land
 Uso: python3 -I layers.py data/map.json data/ids.png BR_UF_2022(sem extensao) rivers.geojson places.geojson borders.geojson data/layers.json
+     python3 -I layers.py data/map.json data/ids.png - rivers.geojson - - data/layers.json --rivers-only   (refaz só rios e nomes de rios, reaproveitando o layers.json atual)
 """
 import json, math, struct, sys
 from PIL import Image
 
+RIVERS_ONLY = "--rivers-only" in sys.argv
+sys.argv = [a for a in sys.argv if a != "--rivers-only"]
 meta = json.load(open(sys.argv[1]))
 ids = Image.open(sys.argv[2]); IW, IH = ids.size; idp = ids.load()
 shp_base, rivers_f, places_f, borders_f, out = sys.argv[3], sys.argv[4], sys.argv[5], sys.argv[6], sys.argv[7]
@@ -96,7 +99,8 @@ def read_dbf(path):
     return rows
 
 res = {"states": [], "borders": [], "rivers": [], "capitals": [], "cities": []}
-for rec, rings in zip(read_dbf(shp_base), read_shp(shp_base)):
+if RIVERS_ONLY: res = json.load(open(out)); res["rivers"] = []
+for rec, rings in ([] if RIVERS_ONLY else zip(read_dbf(shp_base), read_shp(shp_base))):
     out_rings = []
     for ring in rings:
         pts = dp_ring([proj(x, y) for x, y in ring], 1.1)
@@ -105,7 +109,7 @@ for rec, rings in zip(read_dbf(shp_base), read_shp(shp_base)):
 print("estados", len(res["states"]))
 
 FW, FH = meta["w"], meta["h"]
-for f in json.load(open(borders_f))["features"]:
+for f in ([] if RIVERS_ONLY else json.load(open(borders_f))["features"]):
     g = f["geometry"]; lines = g["coordinates"] if g["type"] == "MultiLineString" else [g["coordinates"]]
     for ln in lines:
         run = []
@@ -127,6 +131,7 @@ def river_label(n, r=None, lon=None, lat=None):
         return "Rio Cuiabá" if lat > -17.94 else "Rio Paraguai"
     if n == "Amazonas" and -69.95 < lon < -59.9:          # trecho brasileiro a montante do Encontro das Águas
         return "Rio Solimões"
+    if n == "Guaporé" and r == 3: return "Rio Mamoré"        # no Natural Earth, o baixo Mamoré (da foz do Guaporé até o Madeira) vem como "Guaporé"
     if n in RIVER_FIX: return RIVER_FIX[n]
     return n if n.startswith("Rio ") else "Rio " + n
 
@@ -161,7 +166,11 @@ def add(label, r, run):
         key = (o == 0, L)
         if label not in best or key > best[label][0]: best[label] = (key, pos, r)
 
-for f in json.load(open(rivers_f))["features"]:
+# O Natural Earth 10m termina o Amazonas em -52,71° (a ~170 km da foz). Trecho final traçado à mão, pelo canal norte, passando por Gurupá e Macapá até o Atlântico.
+EXTRA_RIVERS = [{"properties": {"name": "Amazonas", "scalerank": 1}, "geometry": {"type": "LineString", "coordinates": [
+    [-52.71, -1.58], [-52.45, -1.50], [-52.20, -1.43], [-51.95, -1.38], [-51.65, -1.36], [-51.45, -1.20], [-51.30, -0.95], [-51.15, -0.60],
+    [-51.05, -0.25], [-50.95, -0.05], [-50.75, 0.05], [-50.50, 0.12], [-50.25, 0.20], [-50.00, 0.25], [-49.80, 0.30]]}}]
+for f in json.load(open(rivers_f))["features"] + EXTRA_RIVERS:
     g = f["geometry"]
     if not g: continue
     name = (f["properties"]["name"] or "").strip(); r = f["properties"]["scalerank"]
@@ -187,7 +196,7 @@ CAP_UF = {"Rio Branco": "AC", "Maceió": "AL", "Macapá": "AP", "Manaus": "AM", 
           "Curitiba": "PR", "Recife": "PE", "Teresina": "PI", "Rio de Janeiro": "RJ", "Natal": "RN", "Porto Alegre": "RS", "Porto Velho": "RO",
           "Boa Vista": "RR", "Florianópolis": "SC", "São Paulo": "SP", "Aracaju": "SE", "Palmas": "TO"}
 seen = set()
-for f in json.load(open(places_f))["features"]:
+for f in ([] if RIVERS_ONLY else json.load(open(places_f))["features"]):
     p = f["properties"]
     if p["name"] in seen: continue
     x, y = proj(p["longitude"], p["latitude"])
@@ -206,7 +215,7 @@ for f in json.load(open(places_f))["features"]:
     elif p["pop_max"] >= 450000 and p["name"] != "Jaboatao":
         seen.add(p["name"]); res["cities"].append({"n": p["name"], "x": round(x), "y": round(y)})
 print("capitais", len(res["capitals"]), "(inclui", sum(1 for c in res["capitals"] if c.get("f")), "fora do Brasil) cidades", len(res["cities"]))
-assert sum(1 for c in res["capitals"] if not c.get("f")) == 27, "faltam capitais"
+assert RIVERS_ONLY or sum(1 for c in res["capitals"] if not c.get("f")) == 27, "faltam capitais"
 import os
 d0 = os.path.dirname(out)
 res["outlines"] = [pc for f in ("outlines.json", "foreign.json") if os.path.exists(os.path.join(d0, f)) for pc in json.load(open(os.path.join(d0, f)))]

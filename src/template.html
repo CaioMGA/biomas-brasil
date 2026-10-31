@@ -1260,7 +1260,7 @@ async function init3d() {
   let riverHl = null;
   LABHOOK.hlRiver = name => {
     if (!riverHl) { if (!name) return; riverHl = addLines([], { width: 4.4, color: [.65, 1, 0], opacity: 1, on: { value: 1 }, order: 3.6 }); }
-    const old = riverHl.geometry; riverHl.geometry = lineGeometry(name ? LAYERS.rivers.filter(r => r.n === name) : []); old.dispose(); riverHl.visible = !!name;
+    const old = riverHl.geometry; riverHl.geometry = lineGeometry(name ? LAYERS.rivers.filter(r => r.n === name).map(r => ({ p: r.p })) : [])   // sem o dono (o): o realce mostra o rio inteiro, também fora do Brasil; old.dispose(); riverHl.visible = !!name;
   };
   // Brilho do contorno do bioma sob o mouse: halos largos e suaves, somados à luz, na cor do bioma
   const GLOW_VERT = `
