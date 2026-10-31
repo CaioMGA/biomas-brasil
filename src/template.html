@@ -236,9 +236,6 @@ html.nav-in .navstack .pill, html.nav-in .compass, html.nav-in .pill.zm, html.na
 @keyframes bin { from { opacity: 0; translate: 14px 0; } to { opacity: 1; translate: 0 0; } }
 @media (prefers-reduced-motion: reduce) { #loader { transition-duration: .3s; } html.boot .panel { translate: 0 0; } }
 /*LAB:CSS*/
-.labbtn { position: fixed; left: 12px; bottom: 12px; z-index: 30; padding: 4px 10px; font: 600 12px var(--body); letter-spacing: .08em; text-transform: uppercase; color: #d6f5ff;
-  background: rgba(10, 30, 45, .85); border: 1px dashed rgba(120, 200, 255, .6); border-radius: 6px; cursor: pointer; opacity: .55; }
-.labbtn:hover, body.lab-on .labbtn { opacity: 1; }
 .labpanel { position: fixed; left: 12px; bottom: 48px; z-index: 31; width: 340px; max-height: 80vh; overflow-y: auto; padding: 12px 14px; font-size: 13px; color: #dfeef7;
   background: rgba(8, 18, 28, .95); border: 1px solid rgba(120, 200, 255, .45); border-radius: 8px; backdrop-filter: blur(10px); }
 .labpanel[hidden] { display: none; }
@@ -272,6 +269,31 @@ body.lab-on .lbl, body.lab-on .rl, body.lab-on .cont, body.lab-on .mk .t { point
 .labbox i[data-h="nw"] { left: 0; top: 0; cursor: nwse-resize; } .labbox i[data-h="ne"] { left: 100%; top: 0; cursor: nesw-resize; }
 .labbox i[data-h="sw"] { left: 0; top: 100%; cursor: nesw-resize; } .labbox i[data-h="se"] { left: 100%; top: 100%; cursor: nwse-resize; }
 body.lab-on .cont:has(.labbox) { z-index: 5; }   /* o texto selecionado no lab sobe, para as alças ficarem acessíveis */
+
+.labmenu { position: fixed; inset: 0; z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 24px; color: #dfeef7; background: #08121c; font-family: var(--body); overflow-y: auto; }
+.labmenu[hidden] { display: none; }
+.labmenu h1 { margin: 0; font-size: 22px; font-weight: 600; letter-spacing: .04em; }
+.labmenu p { margin: 0 0 8px; font-size: 13px; color: #9fb8c8; text-align: center; }
+.labmenu a { display: block; width: min(420px, 100%); box-sizing: border-box; padding: 14px 18px; text-decoration: none; color: #dfeef7; background: rgba(120, 200, 255, .12); border: 1px solid rgba(120, 200, 255, .45); border-radius: 8px; }
+.labmenu a:hover { background: rgba(120, 200, 255, .28); }
+.labmenu a b { display: block; font-size: 16px; margin-bottom: 3px; }
+.labmenu a span { font-size: 12px; color: #9fb8c8; }
+.labrios { position: fixed; right: 12px; top: 12px; bottom: 12px; z-index: 31; width: 330px; display: flex; flex-direction: column; gap: 6px; padding: 12px 14px; font-size: 13px; color: #dfeef7;
+  background: rgba(8, 18, 28, .95); border: 1px solid rgba(120, 200, 255, .45); border-radius: 8px; backdrop-filter: blur(10px); }
+.labrios[hidden] { display: none; }
+.labrios header { display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
+.labrios button { font: 500 12px var(--body); padding: 4px 10px; color: #dfeef7; background: rgba(120, 200, 255, .14); border: 1px solid rgba(120, 200, 255, .4); border-radius: 5px; cursor: pointer; }
+.labrios button:hover { background: rgba(120, 200, 255, .3); }
+.labrios input[type="search"], .labrios input[type="text"] { width: 100%; box-sizing: border-box; padding: 5px 8px; font: 13px var(--body); color: #fff; background: rgba(255, 255, 255, .08); border: 1px solid rgba(120, 200, 255, .3); border-radius: 5px; }
+.labrios textarea { width: 100%; box-sizing: border-box; padding: 6px; font: 11px/1.35 ui-monospace, Menlo, Consolas, monospace; color: #cfe; background: rgba(0, 0, 0, .4); border: 1px solid rgba(120, 200, 255, .3); border-radius: 5px; }
+.labrios .labhelp { margin: 0; }
+.labrios .labrow { margin: 0; }
+.labrios .lablist { flex: 1; min-height: 80px; max-height: none; }
+.labrios .lablist li { align-items: center; }
+.labrios .lablist li.on { background: rgba(166, 255, 0, .22); outline: 1px solid #a6ff00; }
+.labrios .lablist li input { padding: 3px 6px; }
+.labrios .lablist li s { color: #7fa0b4; font-size: 11px; }
+body.lab-rios .rl:not(.gl) { pointer-events: auto; cursor: pointer; }
 /*LAB:CSS-END*/
 
 </style>
@@ -290,6 +312,10 @@ body.lab-on .cont:has(.labbox) { z-index: 5; }   /* o texto selecionado no lab s
 <script>
 /* Loader: só usa o que está neste HTML (SVG, CSS e este script), então desenha antes de qualquer outra coisa carregar. */
 (function () {
+  if (new URLSearchParams(location.search).has("skipintro")) {   // ?skipintro: sem loading nem animações de abertura
+    window.__skipIntro = true; const r = document.documentElement; r.classList.remove("boot", "navhide");
+    const l = document.getElementById("loader"); if (l) l.remove(); return;
+  }
   const line = document.getElementById("ldLine"), glow = document.querySelector("#loader .glow"), head = document.getElementById("ldHead");
   const DRAW = 4600, MIN = 5000;   // o contorno é desenhado uma única vez (4,6 s) e o loader fica pelo menos 5 s
   const total = line.getTotalLength ? line.getTotalLength() : 1;   // pathLength=1 normaliza só o traço; o brilho usa o comprimento real
@@ -357,7 +383,6 @@ body.lab-on .cont:has(.labbox) { z-index: 5; }   /* o texto selecionado no lab s
 </main>
 
 <!--LAB:HTML-->
-<button type="button" id="labBtn" class="labbtn" title="Lab de textos (Ctrl+Shift+L)">Lab</button>
 <aside id="lab" class="labpanel" hidden aria-label="Lab de textos">
   <header><strong>Lab de textos</strong><button type="button" id="labClose" aria-label="Fechar o lab">×</button></header>
   <p class="labhelp">Clique em um texto do mapa ou na lista. Arraste os cantos para o tamanho, ↻ gira, ⌒ curva em arco e A↔A muda o espaçamento entre letras. No centro, o gizmo ✥ move o texto em qualquer direção (Shift trava no eixo).</p>
@@ -369,6 +394,21 @@ body.lab-on .cont:has(.labbox) { z-index: 5; }   /* o texto selecionado no lab s
   <div class="labrow"><button type="button" id="labExport">Exportar e copiar</button><button type="button" id="labImport">Importar</button></div>
   <textarea id="labOut" rows="6" spellcheck="false" placeholder="A configuração exportada aparece aqui. Para importar, cole um JSON aqui e clique em Importar."></textarea>
   <p id="labMsg" class="labhelp"></p>
+</aside>
+<div id="labMenu" class="labmenu" hidden role="dialog" aria-label="Escolha um lab">
+  <h1>Labs</h1>
+  <p>Escolha um lab: a página reabre com o parâmetro correspondente.</p>
+  <div id="labMenuBtns" style="display:contents"></div>
+</div>
+<aside id="labRios" class="labrios" hidden aria-label="Lab de nomes de rios">
+  <header><strong>Lab · nomes dos rios</strong></header>
+  <p class="labhelp">Clique em um rio: ele fica em verde-limão no mapa. Para mudar o nome, edite o texto do rio selecionado (só o texto: posição, giro, tamanho e arco não mudam aqui).</p>
+  <input id="lrFilter" type="search" placeholder="filtrar rios…" autocomplete="off" aria-label="Filtrar rios">
+  <ul id="lrList" class="lablist"></ul>
+  <div class="labrow"><button type="button" id="lrReset">Restaurar este nome</button><button type="button" id="lrClear">Restaurar todos</button></div>
+  <div class="labrow"><button type="button" id="lrExport">Exportar e copiar</button><button type="button" id="lrImport">Importar</button></div>
+  <textarea id="lrOut" rows="7" spellcheck="false" placeholder="O texto exportado aparece aqui. Para importar, cole um export (ou só o JSON) e clique em Importar."></textarea>
+  <p id="lrMsg" class="labhelp"></p>
 </aside>
 <!--LAB:HTML-END-->
 <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
@@ -1209,6 +1249,12 @@ async function init3d() {
   addLines(LAYERS.borders, { width: 2.1, color: CREAM, opacity: .95, on: uniforms.uSt, order: 3 });
   addLines(LAYERS.rivers.filter(r => r.r > 4), { width: 1.2, color: [.42, .78, 1], opacity: .85, on: uniforms.uRv, order: 3.1 });
   addLines(LAYERS.rivers.filter(r => r.r <= 4), { width: 2.1, color: [.42, .78, 1], opacity: .95, on: uniforms.uRv, order: 3.2 });
+  // Realce de um rio (usado pelo lab de rios): linha verde-limão por cima das demais, criada só quando pedida
+  let riverHl = null;
+  LABHOOK.hlRiver = name => {
+    if (!riverHl) { if (!name) return; riverHl = addLines([], { width: 4.4, color: [.65, 1, 0], opacity: 1, on: { value: 1 }, order: 3.6 }); }
+    const old = riverHl.geometry; riverHl.geometry = lineGeometry(name ? LAYERS.rivers.filter(r => r.n === name) : []); old.dispose(); riverHl.visible = !!name;
+  };
   // Brilho do contorno do bioma sob o mouse: halos largos e suaves, somados à luz, na cor do bioma
   const GLOW_VERT = `
     uniform sampler2D uH, uM1, uM2;
@@ -1786,19 +1832,121 @@ function drawFx(dt) {
   $("labClear").addEventListener("click", () => { mods().forEach(id => { LABEL_CFG[id] = clean({}); const L = LABELS.get(id); if (L) apply(L); }); save(); details(); renderList(); msg.textContent = "Tudo zerado."; });
   $("labAll").addEventListener("change", e => { LABUI.all = e.target.checked; });
   $("labClose").addEventListener("click", () => setOpen(false));
-  $("labBtn").addEventListener("click", () => setOpen(!open));
   filt.addEventListener("input", renderList);
   addEventListener("keydown", e => {
-    if (e.ctrlKey && e.shiftKey && (e.key === "L" || e.key === "l")) { e.preventDefault(); setOpen(!open); return; }
     if (!open || /^(INPUT|TEXTAREA)$/.test(e.target.tagName)) return;
     if (e.key === "Escape") { selId = null; LABUI.sel = null; box.remove(); details(); renderList(); }
     else if ((e.key === "Delete" || e.key === "Backspace") && selId) { $("labReset").click(); }
   });
   requestAnimationFrame(tick);
-  if (new URLSearchParams(location.search).has("lab")) {   // abrir com ?lab já ativa o lab
+  if (new URLSearchParams(location.search).get("lab") === "textos") {   // só abre com ?lab=textos
     setOpen(true);
     const poll = setInterval(() => { if (LABELS.size) { renderList(); clearInterval(poll); } }, 300);
   }
+})();
+
+// ---------- Menu de labs (?lab) e lab de nomes de rios (?lab=rios) ----------
+(function () {
+  const $ = id => document.getElementById(id);
+  const LABS = [
+    { id: "textos", nome: "Textos do mapa", desc: "Mover, girar, redimensionar, curvar e espaçar os textos do mapa." },
+    { id: "rios", nome: "Nomes dos rios", desc: "Lista de todos os rios; clicar realça o rio em verde-limão e permite trocar só o texto do nome." }
+  ];
+  const q = new URLSearchParams(location.search);
+  if (!q.has("lab")) return;
+  const which = q.get("lab");
+  if (which !== "rios" && which !== "textos") {   // ?lab sem valor (ou valor desconhecido): tela com um botão para cada lab
+    const menu = $("labMenu"), box = $("labMenuBtns");
+    LABS.forEach(l => {
+      const a = document.createElement("a"), u = new URL(location.href); u.searchParams.set("lab", l.id);
+      a.href = u.toString(); a.innerHTML = "<b></b><span></span>"; a.firstChild.textContent = l.nome; a.lastChild.textContent = l.desc; box.appendChild(a);
+    });
+    menu.hidden = false; return;
+  }
+  if (which !== "rios") return;
+
+  const KEY = "biomas-lab-rios", ID = n => "rio:" + n;
+  const names = LAYERS.rl.map(r => r.n).sort((a, b) => a.localeCompare(b, "pt-BR"));
+  const info = new Map(LAYERS.rl.map(r => [r.n, r]));
+  let ren = {};   // nome original (Natural Earth, como está em layers.json) -> nome novo
+  try { const st = JSON.parse(localStorage.getItem(KEY) || "null"); if (st) ren = st; } catch (e) {}
+  const panel = $("labRios"), listEl = $("lrList"), filt = $("lrFilter"), out = $("lrOut"), msg = $("lrMsg");
+  let sel = null;
+  const cur = n => (ren[n] != null && ren[n] !== "" ? ren[n] : n);
+  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(ren)); } catch (e) {} };
+  function applyName(n) {   // troca só o texto do rótulo no mapa; a configuração de posição/giro/tamanho/arco fica como está
+    const L = LABELS.get(ID(n)); if (!L) return;
+    L.text = cur(n); renderText(L);
+  }
+  function select(n) {
+    sel = n; LABUI.sel = n ? ID(n) : null;
+    if (LABHOOK.hlRiver) LABHOOK.hlRiver(n);
+    render();
+    const inp = listEl.querySelector("li.on input"); if (inp) { inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length); }
+  }
+  function render() {
+    const f = filt.value.trim().toLowerCase();
+    const shown = names.filter(n => !f || n.toLowerCase().includes(f) || cur(n).toLowerCase().includes(f));
+    listEl.replaceChildren(...shown.map(n => {
+      const li = document.createElement("li"); li.dataset.river = n;
+      if (n === sel) {
+        li.className = "on";
+        const inp = document.createElement("input"); inp.type = "text"; inp.value = cur(n); inp.setAttribute("aria-label", "Nome do rio selecionado");
+        inp.addEventListener("input", () => { const v = inp.value.trim(); if (!v || v === n) delete ren[n]; else ren[n] = v; save(); applyName(n); });
+        inp.addEventListener("keydown", e => { if (e.key === "Enter") inp.blur(); else if (e.key === "Escape") { sel = null; LABUI.sel = null; LABHOOK.hlRiver && LABHOOK.hlRiver(null); render(); } e.stopPropagation(); });
+        li.appendChild(inp);
+      } else {
+        const a = document.createElement("span"); a.textContent = cur(n);
+        if (ren[n] != null) { const m = document.createElement("s"); m.textContent = " ← " + n; a.append(m); }
+        li.appendChild(a);
+        li.addEventListener("click", () => select(n));
+      }
+      return li;
+    }));
+    const on = listEl.querySelector("li.on"); if (on && on.scrollIntoViewIfNeeded) on.scrollIntoViewIfNeeded(false);
+  }
+  filt.addEventListener("input", render);
+  // clicar no nome do rio no mapa também seleciona
+  $("labels").addEventListener("pointerdown", ev => {
+    const t = ev.target.closest && ev.target.closest(".rl[data-lab^='rio:']"); if (!t) return;
+    ev.stopPropagation(); ev.preventDefault(); select(t.dataset.lab.slice(4));
+  }, true);
+  $("labels").addEventListener("click", ev => { if (ev.target.closest && ev.target.closest(".rl[data-lab^='rio:']")) { ev.stopPropagation(); ev.preventDefault(); } }, true);
+
+  $("lrReset").addEventListener("click", () => { if (!sel) return; delete ren[sel]; save(); applyName(sel); render(); });
+  $("lrClear").addEventListener("click", () => { const ks = Object.keys(ren); ren = {}; save(); ks.forEach(applyName); render(); msg.textContent = "Todos os nomes restaurados."; });
+
+  // Exportação em texto (para colar no chat e passar a um agente) + JSON
+  function exportText() {
+    const ks = names.filter(n => ren[n] != null);
+    const lines = ks.map(n => { const r = info.get(n); return `- "${n}" → "${ren[n]}"   (ponto do nome no mapa: x=${r.x}, y=${r.y}; escalerank=${r.r})`; });
+    return [
+      "LAB DOS NOMES DOS RIOS · Biomas do Brasil",
+      `${ks.length} rio(s) renomeado(s) de ${names.length}. Só o texto muda: posição, giro, tamanho e arco dos nomes não foram alterados.`,
+      "Onde corrigir: build/layers.py (nome do rio em data/layers.json: rios[].n e rl[].n). A chave é o nome original, como está hoje em layers.json.",
+      "",
+      ...(lines.length ? lines : ["(nenhuma alteração)"]),
+      "",
+      "JSON (nome original → nome novo):",
+      JSON.stringify({ lab: "rios", versao: 1, nomes: Object.fromEntries(ks.map(n => [n, ren[n]])) }, null, 1)
+    ].join("\n");
+  }
+  $("lrExport").addEventListener("click", () => {
+    const t = exportText(); out.value = t; out.select();
+    const n = Object.keys(ren).length; msg.textContent = `${n} rio(s) renomeado(s). Copiando…`;
+    (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(() => { msg.textContent = `${n} rio(s) exportado(s) e copiado(s): cole no chat.`; }, () => { msg.textContent = `${n} rio(s) exportado(s). Não consegui copiar sozinho: o texto está selecionado, use Ctrl+C.`; });
+  });
+  $("lrImport").addEventListener("click", () => {
+    try {
+      const raw = out.value, i = raw.indexOf("{"), d = JSON.parse(i >= 0 ? raw.slice(i) : raw), t = d.nomes || d; let n = 0;
+      for (const k in t) if (info.has(k) && typeof t[k] === "string") { ren[k] = t[k]; n++; applyName(k); }
+      save(); render(); msg.textContent = `${n} nome(s) importado(s).`;
+    } catch (e) { msg.textContent = "JSON inválido: " + e.message; }
+  });
+
+  document.body.classList.add("lab-rios"); panel.hidden = false;
+  const boot = setInterval(() => { if (LABELS.has(ID(names[0]))) { clearInterval(boot); Object.keys(ren).forEach(applyName); if (!sel) render(); } }, 200);
+  render();
 })();
 /*LAB:JS-END*/
 
@@ -1808,6 +1956,7 @@ select(location.hash.slice(1) || null, true);
 let revealed = false;
 function revealSite() {
   if (revealed) return; revealed = true;
+  if (window.__skipIntro) return;
   const ld = document.getElementById("loader"), root = document.documentElement, L = window.__ld;
   const wait = ms => new Promise(r => setTimeout(r, ms));
   const drawn = () => L ? new Promise(r => L.whenDrawn(r)) : Promise.resolve();
