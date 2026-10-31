@@ -950,7 +950,7 @@ document.getElementById("exReset").addEventListener("click", () => animateExag(E
 // x, y = deslocamento do texto em unidades do mapa (x para leste, y para sul; 1 unidade ≈ 1,11 km), preso à geografia.
 const LABEL_CFG = __LABELCFG__;
 const LABHOOK = {};   // ponte com o mapa 3D (converte um ponto da tela em ponto do terreno)
-const LABUI = { all: false, sel: null };   // modo lab: mostrar todos os textos / texto selecionado (sempre visível)
+const LABUI = { all: false, sel: null, rivers: false };   // modo lab: mostrar todos os textos / texto selecionado (sempre visível)
 const LABELS = new Map();
 const cfgGet = id => Object.assign({ r: 0, s: 1, a: 0, l: 0, x: 0, y: 0 }, LABEL_CFG[id]);
 const labOff = id => { const c = LABEL_CFG[id]; return c && (c.x || c.y) ? { x: (c.x || 0) * WORLD_W / MAPW, z: id.startsWith("geo:") ? 0 : (c.y || 0) * WORLD_H / MAPH } : { x: 0, z: 0 }; };   // nomes dos paralelos: o espaço até a linha é fixo (GEO_PAD), só o x vale
@@ -1657,7 +1657,7 @@ async function init3d() {
     for (let n = 1; n <= 6; n++) { const pm = prisms[n]; if (!pm) continue; const h = (n === sel ? l1 : n === prevSel ? l2 : 0) * (1 - elevV) * LIFT; pm.visible = h > .0004; pm.scale.z = Math.max(h, 1e-4); }
     const scale = cam.fit * cam.user / cam.fit0 * 1.05, thr = Math.max(4, Math.min(9, Math.round(4 + (1.05 / scale - 1) * 4)));   // mais rios nomeados quanto mais perto
     rlbls.forEach(k => {
-      const show = LABUI.all || LABUI.sel === k.id || (layerOn.nomesRios && k.r.r <= thr && (k.f ? sel && k.bid === sel : (!sel || k.bid === sel)));
+      const show = LABUI.all || LABUI.rivers || LABUI.sel === k.id || (layerOn.nomesRios && k.r.r <= thr && (k.f ? sel && k.bid === sel : (!sel || k.bid === sel)));
       k.e.classList.toggle("off", !show);
       if (!show) return;
       const hh = heightAt(k.u, k.v) + (k.bid === sel && !k.f ? LIFT * l1 * (1 - elevV) : 0) + .02;
@@ -1945,6 +1945,11 @@ function drawFx(dt) {
   });
 
   document.body.classList.add("lab-rios"); panel.hidden = false;
+  LABUI.rivers = true;   // todos os nomes de rio visíveis no mapa, em qualquer zoom e com qualquer bioma
+  LAYER_DEFS.forEach(([k, nome]) => {   // camadas ativas: só Rios e Nome dos rios
+    const want = k === "rios" || k === "nomesRios";
+    if (layerOn[k] !== want) { const b = [...document.querySelectorAll("#layers .sw")].find(x => x.textContent === nome); if (b) b.click(); }
+  });
   const boot = setInterval(() => { if (LABELS.has(ID(names[0]))) { clearInterval(boot); Object.keys(ren).forEach(applyName); if (!sel) render(); } }, 200);
   render();
 })();
