@@ -253,7 +253,7 @@ html.nav-in .navstack .pill, html.nav-in .compass, html.nav-in .pill.zm, html.na
 .lablist li small { color: #7fa0b4; }
 .lablist li b { color: #ffd66b; font-weight: 600; }
 .labsel { padding: 6px 8px; margin: 6px 0; font-size: 12px; background: rgba(255, 255, 255, .05); border-radius: 5px; }
-body.lab-on .lbl, body.lab-on .rl, body.lab-on .cont, body.lab-on .mk .t { pointer-events: auto; cursor: pointer; }
+body.lab-on .lbl, body.lab-on .rl, body.lab-on .uf, body.lab-on .cont, body.lab-on .mk .t { pointer-events: auto; cursor: pointer; }
 .labbox { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); border: 1.5px dashed #5ad1ff; box-sizing: border-box; pointer-events: none; z-index: 6; }
 .labbox i { position: absolute; width: 12px; height: 12px; border-radius: 50%; background: #fff; border: 2px solid #1aa5e6; box-sizing: border-box; pointer-events: auto; transform: translate(-50%, -50%) scale(var(--inv, 1)); }
 .labbox i[data-h="rot"], .labbox i[data-h="sp"], .labbox i[data-h="arc"], .labbox i[data-h="mv"] { display: grid; place-items: center; font-style: normal; line-height: 1; box-shadow: 0 1px 6px rgba(0, 0, 0, .5);
@@ -874,7 +874,7 @@ function setEffect(key, instant) {
 
 /* ---------- Camadas ---------- */
 const LAYER_DEFS = [["relevo", "Relevo"], ["estados", "Divisas e fronteiras"], ["siglas", "Siglas dos estados"], ["equador", "Linha do Equador"], ["tropico", "Trópico de Capricórnio"], ["rios", "Rios"], ["nomesRios", "Nome dos rios"], ["capitais", "Capitais"], ["cidades", "Centros urbanos"]];
-const layerOn = { relevo: true, estados: false, siglas: false, equador: false, tropico: false, rios: true, nomesRios: true, capitais: true, cidades: false };
+const layerOn = { relevo: true, estados: true, siglas: true, equador: false, tropico: false, rios: true, nomesRios: false, capitais: false, cidades: false };   // camadas ligadas quando o visitante abre o site
 const layersEl = document.getElementById("layers");
 LAYER_DEFS.forEach(([k, name]) => {
   const b = el("button", { type: "button", class: "sw", role: "switch", "aria-checked": String(layerOn[k]) }, name);
@@ -1355,8 +1355,9 @@ async function init3d() {
     xs.sort((p, q) => p - q);
     let x = cx, wmax = -1; for (let i = 0; i + 1 < xs.length; i += 2) if (xs[i + 1] - xs[i] > wmax) { wmax = xs[i + 1] - xs[i]; x = (xs[i] + xs[i + 1]) / 2; }
     const e = el("div", { class: "uf off" }, st.uf); labelsEl.appendChild(e);
+    const L = registerLabel("uf:" + st.uf, e, "uf");   // editável no lab de textos (id uf:SP, uf:RJ…)
     const u = x / MAPW, v = cy / MAPH;
-    return { uf: st.uf, e, u, v, wx: (u - .5) * WORLD_W, wz: (v - .5) * WORLD_H };
+    return { uf: st.uf, id: "uf:" + st.uf, L, e, u, v, wx: (u - .5) * WORLD_W, wz: (v - .5) * WORLD_H };
   });
 
   // Nomes dos rios: um por rio, no ponto médio do trecho mais longo, orientado pelo curso
@@ -1666,11 +1667,12 @@ async function init3d() {
     {
       const zs = cam.fit0 / (cam.fit * cam.user), fs = Math.max(.8, Math.min(1.7, Math.sqrt(zs) * .95));   // cresce um pouco com o zoom
       ufLbls.forEach(k => {
-        const show = layerOn.siglas && (!sel || BIOME_UFS[sel].has(k.uf));   // com um bioma selecionado, só os estados que o contêm
+        const show = LABUI.all || LABUI.sel === k.id || (layerOn.siglas && (!sel || BIOME_UFS[sel].has(k.uf)));   // com um bioma selecionado, só os estados que o contêm
         k.e.classList.toggle("off", !show);
         if (!show) return;
-        v3.set(k.wx, heightAt(k.u, k.v) + .04, k.wz).project(camera);
-        k.e.style.transform = `translate(${((v3.x + 1) / 2 * W).toFixed(1)}px, ${((1 - v3.y) / 2 * Hh).toFixed(1)}px) translate(-50%, -50%) scale(${fs.toFixed(3)})`;
+        const hh = heightAt(k.u, k.v) + .04, o = labOff(k.id); k.L.hh = hh;
+        v3.set(k.wx + o.x, hh, k.wz + o.z).project(camera);
+        k.e.style.transform = `translate(${((v3.x + 1) / 2 * W).toFixed(1)}px, ${((1 - v3.y) / 2 * Hh).toFixed(1)}px) translate(-50%, -50%) scale(${fs.toFixed(3)})` + cfgTf(k.id);
       });
     }
     for (let n = 1; n <= 6; n++) { const pm = prisms[n]; if (!pm) continue; const h = (n === sel ? l1 : n === prevSel ? l2 : 0) * (1 - elevV) * LIFT; pm.visible = h > .0004; pm.scale.z = Math.max(h, 1e-4); }
