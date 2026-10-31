@@ -94,6 +94,8 @@ main { position: relative; z-index: 1; }
 .mk .t { position: absolute; left: 9px; top: -9px; white-space: nowrap; font: 500 12px var(--body); color: #fff; opacity: 0; transition: opacity .2s; pointer-events: none;
   -webkit-text-stroke: 3.5px rgba(5,9,6,.85); paint-order: stroke fill; text-shadow: 0 0 5px rgba(0,0,0,.95), 0 0 12px rgba(0,0,0,.8); }
 .mk:hover .t, .mk.in .t { opacity: 1; }
+.mk.nodot i { display: none; }
+.mk.nodot .t { left: 0; transform: translate(-50%, -50%); top: 0; }
 .nav { position: absolute; z-index: 3; top: 20px; bottom: 20px; right: calc(var(--panel-w) + 24px + 16px); display: flex; flex-direction: column; align-items: flex-end; gap: 8px; overflow-y: auto; scrollbar-width: none; padding-left: 4px; }
 .nav::-webkit-scrollbar { display: none; }
 .nav, .nav *, .compass text { -webkit-user-select: none; user-select: none; }
@@ -780,8 +782,8 @@ function setEffect(key, instant) {
 }
 
 /* ---------- Camadas ---------- */
-const LAYER_DEFS = [["relevo", "Relevo"], ["estados", "Divisas e fronteiras"], ["siglas", "Siglas dos estados"], ["equador", "Linha do Equador"], ["tropico", "Trópico de Capricórnio"], ["rios", "Rios"], ["nomesRios", "Nome dos rios"], ["capitais", "Capitais"], ["cidades", "Centros urbanos"]];
-const layerOn = { relevo: true, estados: true, siglas: true, equador: false, tropico: false, rios: true, nomesRios: false, capitais: false, cidades: false };   // camadas ligadas quando o visitante abre o site
+const LAYER_DEFS = [["relevo", "Relevo"], ["estados", "Divisas e fronteiras"], ["siglas", "Siglas dos estados"], ["equador", "Linha do Equador"], ["tropico", "Trópico de Capricórnio"], ["rios", "Rios"], ["nomesRios", "Nome dos rios"], ["capitais", "Capitais"], ["nomesCapitais", "Nomes das capitais"], ["cidades", "Centros urbanos"], ["nomesCidades", "Nomes dos centros urbanos"]];
+const layerOn = { relevo: true, estados: true, siglas: true, equador: false, tropico: false, rios: true, nomesRios: false, capitais: false, nomesCapitais: false, cidades: false, nomesCidades: false };   // camadas ligadas quando o visitante abre o site
 const layersEl = document.getElementById("layers");
 LAYER_DEFS.forEach(([k, name]) => {
   const b = el("button", { type: "button", class: "sw", role: "switch", "aria-checked": String(layerOn[k]) }, name);
@@ -1563,10 +1565,12 @@ async function init3d() {
     marks.forEach(k => {
       const here = k.kind === "capitais" && !k.f ? !sel || BIOME_UFS[sel].has(k.m.sg) : !sel || k.bid === sel;   // capital: aparece se o estado tem o bioma, mesmo que ela fique fora dele
       const forced = LABUI.all || LABUI.sel === k.id;
-      const show = forced || (layerOn[k.kind] && (k.f ? sel && k.bid === sel : here));
+      const nameKey = k.kind === "capitais" ? "nomesCapitais" : "nomesCidades";   // o nome tem a própria camada (e aparece ao passar o mouse no ponto)
+      const show = forced || ((layerOn[k.kind] || layerOn[nameKey]) && (k.f ? sel && k.bid === sel : here));
       k.e.classList.toggle("off", !show);
       if (!show) return;
-      k.e.classList.toggle("in", !!sel || forced);
+      k.e.classList.toggle("nodot", !layerOn[k.kind] && !forced);   // só o nome ligado: sem o ponto
+      k.e.classList.toggle("in", forced || layerOn[nameKey]);
       const hh = heightAt(k.u, k.v) + (k.bid === sel && !k.f ? LIFT * l1 * (1 - elevV) : 0) + .03;
       v3.set(k.wx, hh, k.wz).project(camera);
       const o = labOff(k.id); k.L.hh = hh;   // só o nome se move; o ponto continua na cidade
