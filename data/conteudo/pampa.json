@@ -1,5 +1,6 @@
 {
   "intro": "Campos abertos, coxilhas suaves e vento minuano: a paisagem dos gaúchos.",
+  "emblema": { "n": "Quero-quero", "porque": "Vive em todo campo aberto e avisa com o grito quando alguém se aproxima do ninho. Faz parte da paisagem sonora do campo gaúcho." },
   "secoes": [
     {
       "id": "paisagem", "titulo": "Paisagem e clima", "chuva": true,

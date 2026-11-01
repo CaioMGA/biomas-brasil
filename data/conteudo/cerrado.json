@@ -1,5 +1,6 @@
 {
   "intro": "A savana mais rica do planeta, onde nascem as águas de boa parte do Brasil.",
+  "emblema": { "n": "Lobo-guará", "porque": "Suas pernas finas e longas desenham a silhueta mais reconhecível do Cerrado. É o maior canídeo da América do Sul e aparece na nota de R$ 200." },
   "secoes": [
     {
       "id": "paisagem",

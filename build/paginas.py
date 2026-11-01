@@ -123,7 +123,7 @@ class Site:
     # ---- peças de HTML ----
     def casca(self, titulo, descricao, corpo, ativo, accent="var(--ink)", dados=None, extra_body=""):
         nav = "".join(f'<a class="nav" href="{h}"{" aria-current=\"page\"" if k == ativo else ""}>{t}</a>'
-                      for k, h, t in [("mapa", "/", "Mapa"), ("biomas", "/biomas/", "Biomas"), ("sobre", "/sobre/", "Sobre")])
+                      for k, h, t in [("mapa", "/", "Mapa"), ("biomas", "/biomas/", "Biomas"), ("sobre", "/sobre/", "Sobre"), ("tutorial", "/?tutorial", "Tutorial")])
         js = f'<script id="dados" type="application/json">{json.dumps(dados, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")}</script>\n' if dados else ""
         return f"""<!DOCTYPE html>
 <html lang="pt-BR">

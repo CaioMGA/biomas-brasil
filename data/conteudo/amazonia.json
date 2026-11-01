@@ -1,5 +1,6 @@
 {
   "intro": "A maior floresta tropical do planeta e o maior sistema de rios da Terra.",
+  "emblema": { "n": "Onça-pintada", "porque": "É o maior felino das Américas e caça até jacarés. No topo da cadeia alimentar, é a espécie que mais se associa à imagem da floresta." },
   "secoes": [
     {
       "id": "paisagem", "titulo": "Paisagem e clima", "chuva": true,

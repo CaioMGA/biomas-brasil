@@ -1,5 +1,6 @@
 {
   "intro": "Manguezais, restingas, dunas, recifes e o mar que banha o Brasil.",
+  "emblema": { "n": "Baleia-jubarte", "porque": "Salta e bate a cauda na água, e vem ao litoral da Bahia para se reproduzir: um dos espetáculos mais conhecidos do mar brasileiro." },
   "secoes": [
     {
       "id": "paisagem", "titulo": "Paisagem e clima",

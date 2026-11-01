@@ -1,5 +1,6 @@
 {
   "intro": "A maior planície alagável do planeta, onde o ritmo é dado pelo sobe e desce das águas.",
+  "emblema": { "n": "Tuiuiú", "porque": "É a ave símbolo do Pantanal, e seus ninhos enormes, no alto das árvores, marcam a paisagem da planície alagada." },
   "secoes": [
     {
       "id": "paisagem", "titulo": "Paisagem e clima", "chuva": true,

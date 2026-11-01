@@ -34,6 +34,17 @@ Páginas estáticas geradas por `build/build.py` (leves, sem three.js, boas no c
 
 Eixo em mm por mês (comum a todos os biomas), valor em mm sobre cada barra e % da chuva do ano embaixo.
 
+## Ferramentas do mapa
+
+- **Ocultar controles:** botão embaixo à esquerda esconde a coluna de navegação, seleção de biomas, camadas e escala (o título e o painel ficam).
+- **Screenshot:** gera um PNG só com o mapa (e os textos dele), o título e a tagline; embaixo à esquerda, a marca da brchad com o endereço do site. Controles, painel e o texto de ajuda não entram. Usa `html-to-image` (carregado sob demanda do cdnjs).
+- **Tutorial:** botão no menu de navegação (`/?tutorial` nas outras páginas) abre um overlay que destaca cada recurso, com Anterior e Próximo; mapa e painel ficam inertes enquanto ele está aberto.
+- Visualização padrão: rios e siglas dos estados desligados; o texto de ajuda do mapa quebra em linhas.
+
+## Painel do mapa
+
+A linha "Espécies" (3 caixinhas) foi substituída pelo bloco **Mais emblemática** (`emblema` em `data/conteudo/<bioma>.json`), com foto opcional (`emblema.foto = { src, credito }`) e link para as fichas do bioma.
+
 ## Mantido como está
 
 - Quiz e passaporte, com o mesmo armazenamento (`localStorage`, chave `biomas:prog`).

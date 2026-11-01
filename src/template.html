@@ -8,7 +8,7 @@
 <link rel="apple-touch-icon" href="__ICONPNG__">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<link crossorigin="anonymous" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <noscript><link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet"></noscript>
 <style>
 /* Layout: palco de tela cheia com o mapa 3D como herói; o painel de informações flutua à direita (embaixo no celular). */
@@ -69,6 +69,32 @@ html.nav-in .sitenav { animation: bin .4s cubic-bezier(.2,.8,.3,1) backwards; }
 .lbl.big { font: 400 52px var(--display); -webkit-text-stroke: 7px rgba(5,9,6,.8); text-shadow: 0 0 8px rgba(0,0,0,.95), 0 0 20px rgba(0,0,0,.85), 0 0 40px rgba(0,0,0,.6); }
 
 .dock { position: absolute; left: 24px; bottom: 20px; right: 24px; display: flex; flex-direction: column; gap: 10px; align-items: flex-start; pointer-events: none; }
+.hint { max-width: min(480px, calc(100vw - var(--panel-w) - 340px)); line-height: 1.45; }
+.tools { display: flex; gap: 8px; pointer-events: auto; }
+.tools button { display: flex; align-items: center; gap: 7px; padding: 7px 12px; font-size: 13px; cursor: pointer; color: var(--ink); background: var(--glass); border: 1px solid var(--rule); backdrop-filter: blur(8px); }
+.tools button:hover { background: rgba(255,255,255,.12); }
+.tools button:disabled { opacity: .6; cursor: progress; }
+.tools svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linejoin: round; stroke-linecap: round; }
+.tools .slash { display: none; } .tools button[aria-pressed="true"] .slash { display: block; }
+html.sem-controles .nav { display: none; }
+html.nav-off .tools, html.nav-off .hint { opacity: 0; pointer-events: none; }
+.sitenav button { padding: 3px 10px; font: inherit; font-size: 12px; line-height: 1.2; color: var(--muted); background: none; border: 0; border-bottom: 2px solid transparent; cursor: pointer; }
+.sitenav button:hover { color: var(--ink); }
+/* Tutorial: o overlay cobre tudo e o mapa e o painel ficam inertes enquanto ele está aberto */
+#tutorial { position: fixed; inset: 0; z-index: 100; touch-action: none; }
+#tutorial .tut-hole { position: fixed; pointer-events: none; border: 2px solid var(--ink); box-shadow: 0 0 0 100vmax rgba(4, 8, 5, .72); transition: left .25s, top .25s, width .25s, height .25s; }
+#tutorial .tut-card { position: fixed; width: min(340px, calc(100vw - 24px)); padding: 16px 18px 14px; background: #101711; color: var(--ink); border: 1px solid var(--rule); border-top: 4px solid var(--ink); box-shadow: 0 16px 40px rgba(0,0,0,.6); }
+#tutorial .tut-step { margin: 0; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+#tutorial h2 { margin: 4px 0 0; font: 400 28px/1.05 var(--display); }
+#tutorial .tut-text { margin: 8px 0 0; font-size: 15px; line-height: 1.5; }
+#tutorial .tut-nav { display: flex; align-items: center; gap: 8px; margin-top: 14px; }
+#tutorial .tut-nav button { padding: 7px 14px; font-size: 14px; cursor: pointer; color: var(--ink); background: transparent; border: 1px solid var(--rule); }
+#tutorial .tut-nav button:hover:not(:disabled) { background: rgba(255,255,255,.1); }
+#tutorial .tut-nav button:disabled { opacity: .35; cursor: default; }
+#tutorial .tut-nav .prox { color: #11160f; background: var(--ink); border-color: var(--ink); font-weight: 600; }
+#tutorial .tut-nav .prox:hover { filter: brightness(1.1); background: var(--ink) !important; }
+#tutorial .tut-skip { margin-left: auto; border: 0 !important; color: var(--muted) !important; text-decoration: underline; text-underline-offset: 3px; padding: 7px 0 !important; }
+@media (prefers-reduced-motion: reduce) { #tutorial .tut-hole { transition: none; } }
 .hint { margin: 0; font-size: 13px; color: #d3d7c4; text-shadow: 0 1px 4px #000, 0 0 10px #000, 0 0 20px rgba(0,0,0,.8); }
 .chips { display: flex; flex-direction: column; gap: 4px; align-self: stretch; margin: 6px 0 0; padding: 0; list-style: none; pointer-events: auto; }
 .chip { display: flex; align-items: center; gap: 8px; flex: 1; white-space: nowrap; padding: 4px 14px 4px 10px; cursor: pointer; background: var(--glass); border: 1px solid var(--rule); border-radius: 999px; font-size: 14px; font-weight: 500; backdrop-filter: blur(6px); }
@@ -179,6 +205,14 @@ html.nav-in .sitenav { animation: bin .4s cubic-bezier(.2,.8,.3,1) backwards; }
 dl { margin: 16px 0 0; display: grid; grid-template-columns: 84px 1fr; gap: 12px 14px; }
 dt { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); padding-top: 3px; }
 dd { margin: 0; }
+.emb { margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--rule); }
+.emb h3 { margin: 6px 0 0; font: 400 38px/1.05 var(--display); }
+.emb h3 small { margin-left: 10px; font: 500 11px var(--body); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+.emb em { display: block; margin-top: 2px; font-size: 14px; color: var(--muted); }
+.emb .porque { margin: 10px 0 0; font: italic 400 20px/1.3 var(--display); }
+.emb .ficha { margin: 8px 0 0; font-size: 14px; line-height: 1.5; color: var(--muted); }
+.emb-foto { margin: 10px 0 0; } .emb-foto img { display: block; width: 100%; height: auto; } .emb-foto figcaption { margin-top: 4px; font-size: 11px; color: var(--muted); }
+.emb-link { display: inline-block; margin-top: 10px; font-size: 14px; color: var(--ink); text-underline-offset: 3px; }
 .spp { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
 .spp li { border: 1px solid var(--rule); padding: 4px 10px; font-size: 14px; background: rgba(255,255,255,.04); }
 .spp li small { color: var(--muted); font-size: 11px; margin-left: 6px; text-transform: uppercase; letter-spacing: .05em; }
@@ -223,6 +257,8 @@ dd { margin: 0; }
   .nav { right: 12px; top: 12px; bottom: 36px; gap: 8px; }
   .pill button { width: 40px; height: 40px; }
   .dock { left: 16px; right: 16px; bottom: 10px; }
+  .hint { max-width: none; }
+  .tools button span { display: none; } .tools button { padding: 9px; }   /* no celular, só os ícones: a coluna de controles ocupa a direita */
   .layers { gap: 3px; margin-top: 6px; }
   .exag { left: 16px; top: 130px; width: 190px; padding: 8px 10px 6px; }
     .sw { padding: 3px 10px 3px 5px; font-size: 12px; }
@@ -339,7 +375,7 @@ body.lab-rios .rl:not(.gl) { pointer-events: auto; cursor: pointer; }
 </style>
 </head>
 <body>
-<nav class="sitenav" aria-label="Site"><a href="/" aria-current="page">Mapa</a><a href="/biomas/">Biomas</a><a href="/sobre/">Sobre</a></nav>
+<nav class="sitenav" aria-label="Site"><a href="/" aria-current="page">Mapa</a><a href="/biomas/">Biomas</a><a href="/sobre/">Sobre</a><button type="button" id="tutBtn">Tutorial</button></nav>
 <div id="loader" role="status" aria-live="polite" aria-label="Carregando o mapa">
   <svg viewBox="__BRVB__" aria-hidden="true">
     <defs><path id="ldBase" d="__BRD__" pathLength="1" fill="none"/></defs>
@@ -443,6 +479,10 @@ __DEMCHUNKS__
       <h1>Biomas<br><em>do <span class="bra">Brasil</span></em></h1>
     </div>
     <div class="dock">
+      <div class="tools" id="tools" role="group" aria-label="Ferramentas do mapa">
+        <button type="button" id="ctlBtn" aria-pressed="false" aria-label="Ocultar controles" title="Ocultar controles"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/><path class="slash" d="M4 4l16 16"/></svg><span>Ocultar controles</span></button>
+        <button type="button" id="shotBtn" aria-label="Gerar screenshot do mapa" title="Gerar screenshot do mapa"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Screenshot</span></button>
+      </div>
       <p class="hint">Arraste para mover o mapa. Arraste a bússola (ou use o botão direito) para girar e inclinar, Shift + arrastar só inclina e a roda do mouse dá zoom. Clique em um bioma para destacá-lo e use a mira ao lado dele para enquadrá-lo inteiro.</p>
     </div>
     <p class="nogl" id="nogl">Este navegador não conseguiu abrir o mapa 3D. As informações de cada bioma continuam disponíveis nos botões acima.</p>
@@ -584,6 +624,7 @@ const el = (tag, attrs = {}, text) => {
 
 /* ---------- Estado ---------- */
 let current = null;           // id do bioma selecionado ou null (Brasil)
+let grabMap = () => null;     // quadro fresco do WebGL copiado para um canvas 2D (preenchido pelo mapa 3D, usado pelo screenshot)
 let frameRegion = () => {};   // enquadra um bioma (1-7) ou o Brasil (0); preenchido pelo mapa 3D
 let onSelect = () => {};      // preenchido pelo mapa 3D e pelos efeitos
 
@@ -645,6 +686,21 @@ function growBars(root) {
   requestAnimationFrame(() => bars.forEach(i => { i.style.height = ""; i.style.width = ""; }));
 }
 
+/* Espécie mais emblemática do bioma: nome, nome científico, por que representa a região e link para as fichas. Foto opcional (emblema.foto = { src, credito }). */
+function emblema(id) {
+  const c = CONT[id]; if (!c || !c.emblema) return null;
+  const sp = (c.especies || []).find(e => e.n === c.emblema.n); if (!sp) return null;
+  const box = el("section", { class: "emb", "data-nocount": "" });
+  box.appendChild(el("p", { class: "kicker" }, "Mais emblemática"));
+  if (c.emblema.foto) { const fg = el("figure", { class: "emb-foto" }); fg.appendChild(el("img", { src: c.emblema.foto.src, alt: sp.n, loading: "lazy" })); if (c.emblema.foto.credito) fg.appendChild(el("figcaption", {}, c.emblema.foto.credito)); box.appendChild(fg); }
+  const h = el("h3", {}, sp.n); h.appendChild(el("small", {}, sp.t)); box.appendChild(h);
+  box.appendChild(el("em", {}, sp.c));
+  box.appendChild(el("p", { class: "porque" }, c.emblema.porque));
+  box.appendChild(el("p", { class: "ficha" }, sp.d));
+  box.appendChild(el("a", { class: "emb-link", href: `/biomas/${id}/#sec-especies` }, "Ver todas as espécies do bioma →"));
+  return box;
+}
+
 /* ---------- Painel ---------- */
 const panel = document.getElementById("panel");
 const brchadFoot = () => { const f = el("div", { class: "brfoot" }); f.append(el("span", {}, "Site criado por Caio Amaral"), el("img", { class: "brchad", src: "__BRCHAD__", width: "80", height: "15", alt: "brchad 2026" })); return f; };
@@ -673,11 +729,8 @@ function renderPanel() {
     wrap.appendChild(nums);
     const dl = el("dl");
     [["Estados", b.states], ...(b.abroad ? [["Fora do Brasil", b.abroad]] : []), ["Clima", b.climate], ["Vegetação", b.veg]].forEach(([k, v]) => dl.append(el("dt", {}, k), el("dd", {}, v)));
-    dl.appendChild(el("dt", {}, "Espécies"));
-    const dd = el("dd"), ul = el("ul", { class: "spp" });
-    b.spp.forEach(([n, t]) => { const li = el("li", {}, n); li.appendChild(el("small", {}, t)); ul.appendChild(li); });
-    dd.appendChild(ul); dl.appendChild(dd);
     wrap.appendChild(dl);
+    const emb = emblema(b.id); if (emb) wrap.appendChild(emb);
     const r = RAIN[b.id];
     if (r) {
       const sec = el("div", { class: "rain" });
@@ -992,7 +1045,7 @@ function setEffect(key, instant) {
 
 /* ---------- Camadas ---------- */
 const LAYER_DEFS = [["relevo", "Relevo"], ["estados", "Divisas e fronteiras"], ["siglas", "Siglas dos estados"], ["equador", "Linha do Equador"], ["tropico", "Trópico de Capricórnio"], ["rios", "Rios"], ["nomesRios", "Nome dos rios"], ["capitais", "Capitais"], ["nomesCapitais", "Nomes das capitais"], ["cidades", "Centros urbanos"], ["nomesCidades", "Nomes dos centros urbanos"]];
-const layerOn = { relevo: true, estados: true, siglas: true, equador: false, tropico: false, rios: true, nomesRios: false, capitais: false, nomesCapitais: false, cidades: false, nomesCidades: false };   // camadas ligadas quando o visitante abre o site
+const layerOn = { relevo: true, estados: true, siglas: false, equador: false, tropico: false, rios: false, nomesRios: false, capitais: false, nomesCapitais: false, cidades: false, nomesCidades: false };   // camadas ligadas quando o visitante abre o site
 const layersEl = document.getElementById("layers");
 // Hierarquia das camadas: o nome (filho) só é interativo com a camada-mãe ligada; ligar a mãe liga o filho e desligar a mãe desliga o filho.
 // Rios é diferente: ligar "Nome dos rios" liga "Rios", mas desligar um não mexe no outro.
@@ -1692,6 +1745,7 @@ async function init3d() {
   compassEl.addEventListener("pointerup", () => { if (cd && !cd.moved) goTo(0, cam.pitchT ?? cam.pitch); cd = null; });
   compassEl.addEventListener("pointercancel", () => { cd = null; });
   compassEl.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); goTo(0, cam.pitchT ?? cam.pitch); } });
+  grabMap = () => { renderer.render(scene, camera); const c = document.createElement("canvas"); c.width = glc.width; c.height = glc.height; c.getContext("2d").drawImage(glc, 0, 0); return c; };
   frameRegion = n => { framed = n; cam.userT = 1; goTo(0, cam.pitchT ?? cam.pitch); };   // centraliza, põe o norte para cima e mantém a inclinação;   // mira ao lado de cada bioma: pan e zoom para mostrá-lo inteiro
   const ACT = { zin: () => zoomBy(.96), zout: () => zoomBy(1.04), home, tilt3d: () => goTo(0, cam.pitch > 1.3 ? PITCH0 : PITCH_TOP) };
   const HOLD = new Set(["zin", "zout"]);
@@ -2174,13 +2228,154 @@ function drawFx(dt) {
 })();
 /*LAB:JS-END*/
 
+
+/* ---------- Ferramentas do mapa: ocultar controles, screenshot e tutorial ---------- */
+(() => {
+  const $ = id => document.getElementById(id), root = document.documentElement;
+  const sitenav = document.querySelector(".sitenav");
+
+  // Ocultar controles: some a coluna de navegação, seleção de biomas, camadas e escala; o título, o painel e as ferramentas ficam.
+  const ctlBtn = $("ctlBtn");
+  function setControles(hide) {
+    root.classList.toggle("sem-controles", hide);
+    ctlBtn.setAttribute("aria-pressed", String(hide));
+    ctlBtn.querySelector("span").textContent = hide ? "Mostrar controles" : "Ocultar controles";
+    ctlBtn.setAttribute("aria-label", hide ? "Mostrar controles" : "Ocultar controles"); ctlBtn.title = hide ? "Mostrar controles" : "Ocultar controles";
+  }
+  ctlBtn.addEventListener("click", () => setControles(!root.classList.contains("sem-controles")));
+
+  // Screenshot: só o mapa (com os textos dele), o título, a tagline e, embaixo à esquerda, a marca da brchad com o endereço do site.
+  // O texto de ajuda, os controles e o painel não entram.
+  const H2I = "https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js";   // rasteriza o DOM com o próprio navegador (respeita transformações, contornos e sombras dos textos)
+  let h2cLoading = null;
+  const loadH2C = () => window.htmlToImage ? Promise.resolve(window.htmlToImage) : (h2cLoading = h2cLoading || new Promise((ok, no) => {
+    const sc = document.createElement("script"); sc.src = H2I; sc.crossOrigin = "anonymous";
+    sc.onload = () => ok(window.htmlToImage); sc.onerror = () => { h2cLoading = null; no(new Error("html-to-image")); };
+    document.head.appendChild(sc);
+  }));
+  const loadImg = src => new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = src; });
+  const shotBtn = $("shotBtn"), shotLbl = shotBtn.querySelector("span");
+  async function screenshot() {
+    shotBtn.disabled = true; shotLbl.textContent = "Gerando…";
+    try {
+      const h2c = await loadH2C();
+      const stage = $("stage"), sr = stage.getBoundingClientRect(), dpr = Math.min(devicePixelRatio || 1, 2);
+      const desktop = innerWidth > 860, cw = Math.round(desktop ? Math.max(240, $("panel").getBoundingClientRect().left - 24 - sr.left) : sr.width), ch = Math.round(sr.height);
+      const out = document.createElement("canvas"); out.width = Math.round(cw * dpr); out.height = Math.round(ch * dpr);
+      const ctx = out.getContext("2d");
+      ctx.fillStyle = "#0b100c"; ctx.fillRect(0, 0, out.width, out.height);
+      const fxc = $("fx"); ctx.drawImage(fxc, 0, 0, fxc.width, fxc.height, -sr.left * dpr, -sr.top * dpr, innerWidth * dpr, innerHeight * dpr);   // efeito de fundo do bioma
+      const map = grabMap(); if (map) ctx.drawImage(map, 0, 0, map.width, map.height, 0, 0, sr.width * dpr, sr.height * dpr);   // copiado antes de qualquer await: o buffer do WebGL não é preservado
+      const labels = $("labels"), brand = stage.querySelector(".brand");
+      const keep = n => n === stage || n.nodeType !== 1 || !!n.closest("#labels, .brand") || n.contains(labels) || n.contains(brand);   // só os textos do mapa e o título; o resto da fase fica de fora
+      const opts = { pixelRatio: dpr, width: cw, height: ch, filter: keep, style: { background: "none" } };
+      await h2c.toCanvas(stage, opts);                   // 1ª passada: aquece as fontes embutidas
+      const over = await h2c.toCanvas(stage, opts);
+      ctx.drawImage(over, 0, 0, out.width, out.height);
+      // rodapé: logo da brchad e o endereço do site, ao lado, no canto inferior esquerdo
+      const logo = await loadImg("__BRCHAD__"), lh = 15 * dpr * 1.25, lw = lh * (logo.naturalWidth / logo.naturalHeight), m = 18 * dpr, by = out.height - m;
+      ctx.drawImage(logo, m, by - lh, lw, lh);
+      ctx.font = `600 ${13 * dpr}px "Instrument Sans", system-ui, sans-serif`; ctx.textBaseline = "middle"; ctx.fillStyle = "#fff";
+      ctx.shadowColor = "rgba(0,0,0,.9)"; ctx.shadowBlur = 5 * dpr; ctx.fillText(location.host, m + lw + 10 * dpr, by - lh / 2);
+      ctx.shadowBlur = 0;
+      const blob = await new Promise(r => out.toBlob(r, "image/png"));
+      const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "biomas-do-brasil.png"; document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+      shotLbl.textContent = "Screenshot";
+    } catch (e) {
+      console.error(e); shotLbl.textContent = "Não foi possível gerar";
+      setTimeout(() => { shotLbl.textContent = "Screenshot"; }, 2500);
+    }
+    shotBtn.disabled = false;
+  }
+  shotBtn.addEventListener("click", screenshot);
+
+  // Tutorial: destaca cada recurso da interface com botões Anterior e Próximo; mapa e painel ficam inertes enquanto ele está aberto.
+  const mapRect = () => { const sr = $("stage").getBoundingClientRect(), pr = $("panel").getBoundingClientRect(), d = innerWidth > 860; return { left: sr.left, top: sr.top, width: d ? pr.left - 24 - sr.left : sr.width, height: sr.height }; };
+  const STEPS = [
+    { rect: mapRect, title: "O mapa", text: "Arraste para mover o mapa e use a roda do mouse (ou dois dedos no celular) para dar zoom. Clique em um bioma para destacá-lo e ver as informações dele no painel.", where: "inside" },
+    { sel: "#nav .navrow", title: "Vista e bússola", text: "Arraste a bússola para girar e inclinar o mapa; um clique nela põe o norte para cima. O botão 3D alterna entre as vistas 2D e 3D, ⌂ reinicia a visão e + e − aproximam e afastam." },
+    { sel: "#chips", title: "Biomas", text: "Escolha um bioma por aqui. A mira ao lado de cada nome enquadra o bioma inteiro no mapa." },
+    { sel: "#layers", title: "Camadas", text: "Ligue e desligue o relevo, as divisas, as siglas dos estados, os rios, as capitais e outros detalhes do mapa." },
+    { sel: "#exag", title: "Escala vertical", text: "Exagera a altura do relevo. Arraste para ajustar; 1× é a escala real do terreno." },
+    { sel: "#panel", title: "Painel de informações", text: "Números, clima, chuvas e a espécie mais emblemática do bioma selecionado. O botão Mergulhar abre a página de leitura completa." },
+    { sel: "#tools", title: "Controles e screenshot", text: "Oculte os controles para ver só o mapa, ou gere um screenshot dele com o título do site. O texto de ajuda não entra na imagem." },
+    { sel: ".sitenav", title: "Navegação do site", text: "Biomas reúne os textos, vídeos e quizzes de cada bioma sem precisar do mapa. Sobre conta como o site foi feito e como falar com o autor." }
+  ];
+  let tut = null;
+  function startTutorial() {
+    if (tut) return;
+    const wasHidden = root.classList.contains("sem-controles"); setControles(false);
+    const hole = document.createElement("div"); hole.className = "tut-hole";
+    const card = document.createElement("div"); card.className = "tut-card"; card.setAttribute("role", "dialog"); card.setAttribute("aria-modal", "true"); card.setAttribute("aria-labelledby", "tutTitulo");
+    const ov = document.createElement("div"); ov.id = "tutorial"; ov.append(hole, card); document.body.appendChild(ov);
+    const inertEls = [document.querySelector("main"), sitenav, $("loader")].filter(Boolean); inertEls.forEach(e => { e.inert = true; });
+    let i = 0;
+    const rectOf = st => {
+      if (st.rect) return st.rect();
+      const e = document.querySelector(st.sel); if (!e) return null;
+      const nav = e.closest(".nav"); if (nav) e.scrollIntoView({ block: "nearest" });
+      if (st.sel === "#panel" && innerWidth <= 860) e.scrollIntoView({ block: "start" });
+      const r = e.getBoundingClientRect(); return r.width && r.height ? r : null;
+    };
+    function show() {
+      let st = STEPS[i], r = rectOf(st);
+      const dir = show.dir || 1; while (!r && i + dir >= 0 && i + dir < STEPS.length) { i += dir; st = STEPS[i]; r = rectOf(st); }
+      if (!r) return end();
+      const pad = st.where === "inside" ? 0 : 8, hl = Math.max(4, r.left - pad), ht = Math.max(4, r.top - pad);
+      const hw = Math.min(innerWidth - 8, r.left + r.width + pad) - hl, hh = Math.min(innerHeight - 8, r.top + r.height + pad) - ht;
+      Object.assign(hole.style, { left: hl + "px", top: ht + "px", width: hw + "px", height: hh + "px" });
+      card.replaceChildren();
+      const mk = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
+      const h = mk("h2", "", st.title); h.id = "tutTitulo";
+      const nav = mk("div", "tut-nav"), prev = mk("button", "", "Anterior"), next = mk("button", "prox", i === STEPS.length - 1 ? "Concluir" : "Próximo"), skip = mk("button", "tut-skip", "Pular");
+      prev.type = next.type = skip.type = "button"; prev.disabled = i === 0;
+      prev.addEventListener("click", () => { show.dir = -1; i = Math.max(0, i - 1); show(); });
+      next.addEventListener("click", () => { if (i === STEPS.length - 1) end(); else { show.dir = 1; i++; show(); } });
+      skip.addEventListener("click", end);
+      nav.append(prev, next, skip);
+      card.append(mk("p", "tut-step", `Passo ${i + 1} de ${STEPS.length}`), h, mk("p", "tut-text", st.text), nav);
+      // posição do cartão: ao lado do destaque, senão abaixo ou acima, senão dentro dele (mapa e painel grandes)
+      const cw = card.offsetWidth, chh = card.offsetHeight, g = 14, vw = innerWidth, vh = innerHeight, cl = (v, a, b) => Math.max(a, Math.min(b, v));
+      const cands = st.where === "inside" ? [] : [[hl + hw + g, ht], [hl - cw - g, ht], [hl, ht + hh + g], [hl, ht - chh - g]];
+      let pos = cands.find(([x, y]) => x >= 8 && y >= 8 && x + cw <= vw - 8 && y + chh <= vh - 8);
+      if (!pos) pos = [hl + 16, ht + hh - chh - 16];
+      card.style.left = cl(pos[0], 8, Math.max(8, vw - cw - 8)) + "px"; card.style.top = cl(pos[1], 8, Math.max(8, vh - chh - 8)) + "px";
+      (i === STEPS.length - 1 ? next : next).focus({ preventScroll: true });
+    }
+    function end() {
+      if (!tut) return; tut = null;
+      document.removeEventListener("keydown", key, true); removeEventListener("resize", show);
+      ov.remove(); inertEls.forEach(e => { e.inert = false; }); if (wasHidden) setControles(true);
+      $("tutBtn").focus({ preventScroll: true });
+    }
+    function key(e) {
+      if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); end(); }
+      else if (e.key === "ArrowRight") { e.preventDefault(); e.stopPropagation(); if (i < STEPS.length - 1) { show.dir = 1; i++; show(); } }
+      else if (e.key === "ArrowLeft") { e.preventDefault(); e.stopPropagation(); if (i > 0) { show.dir = -1; i--; show(); } }
+      else if (e.key === "Tab") { const f = [...card.querySelectorAll("button:not(:disabled)")], k = f.indexOf(document.activeElement); e.preventDefault(); f[(k + (e.shiftKey ? -1 : 1) + f.length) % f.length].focus(); }
+      else e.stopPropagation();   // nenhuma outra tecla chega ao mapa enquanto o tutorial está aberto
+    }
+    ov.addEventListener("pointerdown", e => e.stopPropagation()); ov.addEventListener("wheel", e => e.preventDefault(), { passive: false });
+    document.addEventListener("keydown", key, true); addEventListener("resize", show);
+    tut = { end }; show.dir = 1; show();
+  }
+  $("tutBtn").addEventListener("click", startTutorial);
+  window.__startTutorial = startTutorial;
+})();
+
 /* ---------- Início ---------- */
 select(location.hash.slice(1) || null, true);
 /* ---------- Entrada: loader -> pop -> mapa -> painel -> controles ---------- */
 let revealed = false;
+function maybeTutorial() {   // /?tutorial (link do menu das outras páginas) abre o tutorial assim que o mapa aparece
+  if (!new URLSearchParams(location.search).has("tutorial")) return;
+  try { history.replaceState(null, "", location.pathname + location.hash); } catch (e) {}
+  setTimeout(() => window.__startTutorial && window.__startTutorial(), 500);
+}
 function revealSite() {
   if (revealed) return; revealed = true;
-  if (window.__skipIntro) return;
+  if (window.__skipIntro) { maybeTutorial(); return; }
   const ld = document.getElementById("loader"), root = document.documentElement, L = window.__ld;
   const wait = ms => new Promise(r => setTimeout(r, ms));
   const drawn = () => L ? new Promise(r => L.whenDrawn(r)) : Promise.resolve();
@@ -2204,7 +2399,7 @@ function revealSite() {
     const items = [...document.querySelectorAll(".navstack .pill, .compass, .pill.zm, .chips > *, .layers > *, .exag")];
     items.forEach((el, i) => el.style.setProperty("--i", i));
     root.classList.remove("navhide"); root.classList.add("nav-in");   // os controles ficam escondidos até aqui
-    setTimeout(() => { root.classList.remove("nav-in"); items.forEach(el => el.style.removeProperty("--i")); ld.remove(); }, 400 + items.length * 15 + 100);
+    setTimeout(() => { root.classList.remove("nav-in"); items.forEach(el => el.style.removeProperty("--i")); ld.remove(); maybeTutorial(); }, 400 + items.length * 15 + 100);
   })();
 }
 setTimeout(revealSite, 25000);   // rede lenta ou erro: não prende o visitante na tela preta

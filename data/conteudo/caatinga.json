@@ -1,5 +1,6 @@
 {
   "intro": "O único bioma exclusivamente brasileiro: uma floresta seca que reverdece em poucos dias de chuva.",
+  "emblema": { "n": "Ararinha-azul", "porque": "Considerada extinta na natureza, voltou a voar livre em Curaçá, na Bahia, em 2022. É a imagem da Caatinga e da possibilidade de recuperação." },
   "secoes": [
     {
       "id": "paisagem", "titulo": "Paisagem e clima", "chuva": true,

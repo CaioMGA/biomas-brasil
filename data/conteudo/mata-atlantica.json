@@ -1,5 +1,6 @@
 {
   "intro": "A floresta que o Brasil encontrou primeiro, e onde vive a maior parte dos brasileiros.",
+  "emblema": { "n": "Mico-leão-dourado", "porque": "Ameaçado e restrito às matas do Rio de Janeiro, virou o grande símbolo da conservação da Mata Atlântica." },
   "secoes": [
     {
       "id": "paisagem", "titulo": "Paisagem e clima", "chuva": true,
