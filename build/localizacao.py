@@ -7,7 +7,7 @@ Dois passos, ambos fora do build do site:
       -> data/localizacao/<id>.json  (contorno do bioma, vindo de data/mapas/<id>.json, e os países que ele toca)
 O build lê esses arquivos (`figura()`) e embute um SVG pequeno e estático no começo da página; sem JavaScript.
 """
-import html, json, os, sys
+import html, json, math, os, sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import mapas
@@ -51,8 +51,10 @@ def bioma(id, root):
     ctx = json.load(open(os.path.join(root, "data", "localizacao", "america-do-sul.json"), encoding="utf-8"))
     m = json.load(open(os.path.join(root, "data", "mapas", id + ".json"), encoding="utf-8"))
     aneis = mapas.aneis(m["limite"])
-    simp = [q for q in (dp_ring([tuple(p) for p in r], .03) for r in aneis) if q]
-    contorno = [[[round(x, 2), round(y, 2)] for x, y in l] for l in (dp([tuple(p) for p in l], .03) for l in m.get("limite_contorno", [])) if len(l) > 1]   # contorno externo, quando o limite vem de várias peças
+    xs = [p[0] for r in aneis for p in r]; ys = [p[1] for r in aneis for p in r]
+    eps = max(.03, math.hypot(max(xs) - min(xs), max(ys) - min(ys)) * .002)   # a figura é pequena: biomas grandes podem ser mais simplificados
+    simp = [q for q in (dp_ring([tuple(p) for p in r], eps) for r in aneis) if q]
+    contorno = [[[round(x, 2), round(y, 2)] for x, y in l] for l in (dp([tuple(p) for p in l], eps) for l in m.get("limite_contorno", [])) if len(l) > 1]   # contorno externo, quando o limite vem de várias peças
     amostra = [p for r in simp for p in r[::max(1, len(r) // 40)]]
     tocados = [p["nome"] for p in ctx["paises"] if any(inside(pt, [tuple(v) for v in r]) for pt in amostra for r in p["rings"])]
     out = os.path.join(root, "data", "localizacao", id + ".json")
