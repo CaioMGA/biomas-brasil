@@ -1,6 +1,7 @@
-/* Mapas temáticos das páginas de bioma (planos). Carregado só nas páginas que têm mapa; independente do HERO MAP. */
+/* Mapas temáticos das páginas de bioma (planos). Carregado só nas páginas que têm mapa; independente do HERO MAP.
+   O mapa usa cores tradicionais de atlas (terra clara, água azul, áreas protegidas verdes), sem a cor de destaque do bioma. */
 .mt { margin: 22px 0 0; }
-.mt-ctl { display: grid; gap: 12px; font-size: 14px; }
+.mt-ctl { display: grid; gap: 14px; padding: 12px 0 4px; font-size: 14px; }
 .mt fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
 .mt legend { padding: 0; margin-bottom: 4px; font: 500 12px var(--body); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
 .mt-camadas, .mt-filtros { display: flex; flex-wrap: wrap; gap: 6px 16px; }
@@ -9,28 +10,56 @@
 .mt-filtro legend { float: left; margin: 0 8px 0 0; padding: 0; line-height: 1.6; }
 .mt label { display: inline-flex; align-items: center; gap: 6px; min-height: 28px; cursor: pointer; }
 .mt input { accent-color: var(--accent); width: 16px; height: 16px; margin: 0; }
-.mt-vp { position: relative; margin-top: 14px; border: 1px solid var(--rule); background: rgba(255, 255, 255, .03); display: flex; justify-content: center; align-items: center; min-height: 180px; }
-.mt-msg { margin: 0; padding: 40px 16px; font-size: 14px !important; color: var(--muted); }
-.mt-svg { display: block; width: 100%; height: auto; max-height: 78vh; touch-action: pan-y; }
-.mt-limite-fundo { fill: rgba(255, 255, 255, .04); }
-.mt-limite { fill: none; stroke: var(--accent); stroke-width: 2px; vector-effect: non-scaling-stroke; }
-.mt-agua, .mt-leg .mt-agua { fill: rgba(37, 163, 186, .55); stroke: none; }
-.mt-rio { fill: none; stroke: #7fd3e6; stroke-width: 1.1px; stroke-linecap: round; stroke-linejoin: round; }
-.mt-rio[data-navegavel="sim"] { stroke-width: 2px; }
+/* painel recolhível: sempre começa fechado (o HTML não traz "open" e o JS nunca o abre) */
+.mt-painel { border: 1px solid var(--rule); background: rgba(255, 255, 255, .03); padding: 0 14px; }
+.mt-painel > summary { cursor: pointer; padding: 11px 0; font-weight: 500; list-style: none; display: flex; align-items: center; gap: 8px; }
+.mt-painel > summary::-webkit-details-marker { display: none; }
+.mt-painel > summary::before { content: "▸"; display: inline-block; transition: transform .15s; color: var(--accent); }
+.mt-painel[open] > summary::before { transform: rotate(90deg); }
+.mt-painel[open] > summary { border-bottom: 1px solid var(--rule); }
+.mt-painel > summary:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+.mt-vp { position: relative; margin-top: 12px; border: 1px solid var(--rule); background: #d9e4ea; display: flex; justify-content: center; align-items: center; min-height: 180px; }
+.mt-msg { margin: 0; padding: 40px 16px; font-size: 14px !important; color: #333; }
+.mt-svg { display: block; width: 100%; height: auto; max-height: 86vh; touch-action: pan-y; }
+.mt-oc, .mt-fil { display: none; }
+
+/* ---- paleta do mapa ---- */
+.mt-terra { fill: #f1eedf; }
+.mt-pais-0 { fill: #f4eed2; } .mt-pais-1 { fill: #ecdfc8; } .mt-pais-2 { fill: #efd9d2; }
+.mt-pais-3 { fill: #e2e6d3; } .mt-pais-4 { fill: #e8dfe6; } .mt-pais-5 { fill: #dfe6e8; }
+.mt-grade { fill: none; stroke: #8fa3ad; stroke-width: .8px; stroke-dasharray: 3 4; vector-effect: non-scaling-stroke; }
+.mt-regiao { fill: #cfe3b3; stroke: none; }
+.mt-regiao-borda { fill: none; stroke: #4f7d33; stroke-width: 2px; }
+.mt-oficial { fill: none; stroke: #2e5a1a; stroke-width: 1.4px; stroke-dasharray: 6 3; }
+.mt-leg-reg { stroke: #4f7d33; stroke-width: 1.5px; }
+.mt-agua { fill: #8cc4e8; stroke: none; }
+.mt-rio { fill: none; stroke: #3f93cf; stroke-width: 1.1px; stroke-linecap: round; stroke-linejoin: round; }
+.mt-rio[data-navegavel="sim"] { stroke-width: 2.2px; }
 .mt-uc { stroke-width: 1.2px; }
-.mt-uc-PI { stroke: #e3b341; stroke-width: 1.8px; fill: rgba(227, 179, 65, .34); }
-.mt-uc-US { stroke: #e3b341; fill: rgba(227, 179, 65, .08); stroke-dasharray: 5 3; }
-.mt-uc.mt-sel { stroke-width: 3px; stroke: #fff; }
+.mt-uc-PI { stroke: #1b5e20; stroke-width: 1.8px; fill: rgba(46, 125, 50, .45); }
+.mt-uc-US { stroke: #2e7d32; fill: rgba(139, 195, 74, .38); stroke-dasharray: 5 3; }
+.mt-uc.mt-sel { stroke-width: 3.2px; stroke: #000; }
 .mt-uc, .mt-pin { cursor: pointer; }
-.mt-pt { stroke: #0b100c; stroke-width: 1.5px; }
-.mt-pt-cid, .mt-pt-cid * { fill: #ece6d4; }
-.mt-pt-indigena { fill: #ef8a62; stroke: #0b100c; stroke-width: 1.2px; }
-.mt-pt-quilombola { fill: #b88be0; stroke: #0b100c; stroke-width: 1.2px; }
-.mt-pin.mt-sel .mt-pt { stroke: #fff; stroke-width: 2.5px; }
-.mt-rot { font: 500 12px var(--body); fill: var(--ink); paint-order: stroke; stroke: #0b100c; stroke-width: 3.5px; stroke-linejoin: round; pointer-events: none; }
-.mt-rot-rio { font-style: italic; fill: #bfeaf4; }
+.mt-front { fill: none; stroke: #6a3d6e; stroke-width: 1.8px; stroke-dasharray: 8 3 2 3; }
+.mt-uf { fill: none; stroke: #9c8f6c; stroke-width: .9px; stroke-dasharray: 2 3; }
+.mt-pt { stroke: #fff; stroke-width: 1.4px; }
+.mt-pt-cid { fill: #222; }
+.mt-pt-indigena { fill: #e65100; }
+.mt-pt-quilombola { fill: #7b1fa2; }
+.mt-pin.mt-sel .mt-pt { stroke: #000; stroke-width: 2.5px; }
+.mt-rot { font: 500 12px var(--body); fill: #222; paint-order: stroke; stroke: rgba(255, 255, 255, .92); stroke-width: 3.5px; stroke-linejoin: round; pointer-events: none; }
+.mt-rot-rio { font-style: italic; fill: #1b5e8c; }
+.mt-rot-uf { font-size: 10.5px; fill: #7a6e4d; letter-spacing: .12em; text-transform: uppercase; }
+.mt-rot-pais { font-size: 17px; font-weight: 600; fill: #8a7d9a; letter-spacing: .3em; text-transform: uppercase; stroke-width: 3px; }
+.mt-rot-grade { font-size: 10.5px; fill: #5c7380; font-weight: 400; stroke-width: 3px; }
+.mt-rot-esc { font-size: 12px; font-weight: 600; }
+.mt-escala { stroke: #222; stroke-width: 3px; stroke-linecap: butt; }
+.mt-norte { fill: #222; }
+
 .mt-leg { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 10px; font-size: 13px; color: var(--muted); }
 .mt-li { display: inline-flex; align-items: center; gap: 6px; }
+.mt-leg .mt-uc-PI, .mt-leg .mt-uc-US, .mt-leg .mt-agua, .mt-leg .mt-leg-reg, .mt-leg .mt-regiao { vector-effect: none; }
+.mt-leg .mt-front, .mt-leg .mt-uf { stroke-width: 1.8px; }
 .mt-info { min-height: 3.2em; margin: 10px 0 0 !important; padding: 8px 12px; font-size: 15px !important; line-height: 1.45 !important; border-left: 3px solid var(--accent); background: rgba(255, 255, 255, .04); }
 .mt-det { margin-top: 14px; border-top: 1px solid var(--rule); padding-top: 10px; }
 .mt-det summary { cursor: pointer; font-weight: 500; }
@@ -48,8 +77,9 @@
 .mt-lnk:hover { text-decoration-color: var(--accent); }
 .mt-lnk:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
 @media (max-width: 860px) {
-  .mt-svg { max-height: 70vh; }
+  .mt-svg { max-height: 78vh; }
   .mt label { min-height: 36px; }
   .mt input { width: 20px; height: 20px; }
 }
-@media (forced-colors: active) { .mt-uc-PI, .mt-uc-US { stroke: CanvasText; } .mt-limite { stroke: CanvasText; } }
+@media (prefers-reduced-motion: reduce) { .mt-painel > summary::before { transition: none; } }
+@media (forced-colors: active) { .mt-uc-PI, .mt-uc-US { stroke: CanvasText; } .mt-regiao-borda { stroke: CanvasText; } }
