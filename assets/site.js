@@ -449,6 +449,7 @@ const BiomasUI = (() => {
         if (!en.isIntersecting) return;
         const sid = en.target.dataset.end; if (sid === "quiz") return;   // o quiz só conta quando respondido
         if (links[sid]) links[sid].classList.add("vis");
+        if (sid === "mapa") return;   // o mapa temático não é gravado no progresso compartilhado com o HERO MAP
         if (!lidas.has(sid)) { lidas.add(sid); setProg(id, p => { p.lidas = [...lidas]; }); }
       }));
       document.querySelectorAll("[data-end]").forEach(n => obs.observe(n));

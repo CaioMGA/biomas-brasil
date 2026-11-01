@@ -56,7 +56,8 @@ def dados_cliente(d):
             o["grupos"] = [{"tipo": t, "d": caminho(P, [r for rs in v for r in rs], True)} for t, v in g.items()]
         elif c["id"] == "rios":
             o["grupos"] = [{"navegavel": "sim" if k == "nav" else "nao", "d": caminho(P, [l for r in it for l in r[k]], False)} for k in ("nav", "nao")]
-            o["rotulos"] = [{"nome": r["nome"], "p": P(*r["rotulo"])} for r in it if r.get("rotulo")]
+            nav = lambda r: "sim" if tuple(r["rotulo"]) in {tuple(p) for l in r["nav"] for p in l} else "nao"   # o rótulo segue o filtro da linha onde está
+            o["rotulos"] = [{"nome": r["nome"], "p": P(*r["rotulo"]), "navegavel": nav(r)} for r in it if r.get("rotulo")]
         elif c["tipo"] == "poligono":
             o["itens"] = [{**{k: i[k] for k in i if k != "rings"}, "d": caminho(P, i["rings"], True)} for i in it]
         else:
@@ -84,6 +85,15 @@ def secao_html(d, nome_bioma):
         f'<tr data-grupo="{E(u["grupo"])}" data-esfera="{E(u["esfera"])}"><th scope="row">{E(u["nome"])}</th><td>{E(u["categoria"])}</td>'
         f'<td>{"Proteção integral" if u["grupo"] == "PI" else "Uso sustentável"}</td><td>{E(u["esfera"])}</td><td>{E(u["uf"].title())}</td>'
         f'<td class="n">{n_pt(u["ha"])}</td><td>{E(u["ano"])}</td></tr>' for u in ucs)
+    def tabela(cid, cab, linhas):
+        return (f'<div class="mt-tw"><table class="mt-tab" data-camada="{cid}"><thead><tr>' + "".join(f'<th scope="col">{c}</th>' for c in cab)
+                + f'</tr></thead><tbody>{linhas}</tbody></table></div>')
+    cidades = next(c for c in d["camadas"] if c["id"] == "cidades")["itens"]
+    povos = next(c for c in d["camadas"] if c["id"] == "povos")["itens"]
+    t_cid = tabela("cidades", ["Sede municipal", "UF"], "".join(f'<tr><th scope="row">{E(i["nome"])}</th><td>{E(i["uf"])}</td></tr>' for i in sorted(cidades, key=lambda i: i["nome"])))
+    t_pov = tabela("povos", ["Localidade", "Tipo", "UF"], "".join(
+        f'<tr data-tipo="{E(i["tipo"])}"><th scope="row">{E(i["nome"])}</th><td>{"Indígena" if i["tipo"] == "indigena" else "Quilombola"}</td><td>{E(i["uf"])}</td></tr>'
+        for i in sorted(povos, key=lambda i: i["nome"])))
     fontes = "".join(
         f'<li><a href="{E(f["url"])}" target="_blank" rel="noopener">{E(f["titulo"])}</a> — dados de {E(f["data"])}; {E(f["licenca"])}.</li>'
         for k, f in d["fontes"].items())
@@ -101,8 +111,10 @@ def secao_html(d, nome_bioma):
 <p class="mt-info" role="status" aria-live="polite">Toque ou passe o mouse sobre uma unidade de conservação, sede ou localidade para ver os detalhes.</p>
 <figcaption class="cap">{E(d.get("titulo", ""))}. Mapa plano, sem zoom: use as camadas e os filtros. Limite do bioma recortando as camadas.</figcaption>
 <details class="mt-det"><summary>Unidades de conservação do {E(nome_bioma)} ({len(ucs)}) em lista</summary>
-<div class="mt-tw"><table class="mt-tab"><thead><tr><th scope="col">Nome</th><th scope="col">Categoria</th><th scope="col">Proteção</th><th scope="col">Esfera</th><th scope="col">UF</th><th scope="col">Área (ha)</th><th scope="col">Criada em</th></tr></thead><tbody>{linhas}</tbody></table></div>
+<div class="mt-tw"><table class="mt-tab" data-camada="ucs"><thead><tr><th scope="col">Nome</th><th scope="col">Categoria</th><th scope="col">Proteção</th><th scope="col">Esfera</th><th scope="col">UF</th><th scope="col">Área (ha)</th><th scope="col">Criada em</th></tr></thead><tbody>{linhas}</tbody></table></div>
 </details>
+<details class="mt-det"><summary>Sedes municipais ({len(cidades)}) em lista</summary>{t_cid}</details>
+<details class="mt-det"><summary>Localidades indígenas e quilombolas ({len(povos)}) em lista</summary>{t_pov}</details>
 <details class="mt-det"><summary>Sobre os dados deste mapa</summary>
 <ul class="mt-fonte">{notas}</ul>
 <h4>Fontes</h4><ul class="mt-fonte">{fontes}</ul>
