@@ -37,6 +37,7 @@ PAISES = {"BRA", "PRY", "ARG", "URY", "BOL"}
 LIMITE_HA = 1000   # UCs menores que isso entram nas contagens, mas não no desenho (invisíveis nesta escala)
 # nomes dos rios do Natural Earth em português (a base escreve "Paraiba" para o Paraíba do Sul, confirmado pela posição, e "Uruguay")
 RIOS_PT = {"Paraiba": "Paraíba do Sul", "Uruguay": "Uruguai"}
+SEM_ESTADO = {"Amazonas"}   # só aparece um cantinho do estado no canto do mapa, sem relação com o bioma: fica de fora (pintura, nome e divisas)
 ESFERAS = {"Federal": "federais", "Estadual": "estaduais", "Municipal": "municipais"}
 milhar = lambda n: f"{round(n):,}".replace(",", ".")   # 1234567 → 1.234.567
 
@@ -104,7 +105,7 @@ def receita(raw):
                     "nota": "Países vizinhos com seu nome e uma cor para cada um; as fronteiras vêm do Natural Earth (escala 1:10 milhões) e podem divergir em detalhe dos limites oficiais.",
                     "itens": paises, "fronteiras": fronteiras})
     for a, gm in shp.read(f"{raw}/ne_10m_admin_1_states_provinces/ne_10m_admin_1_states_provinces", box):
-        if a["adm0_a3"] not in PAISES: continue
+        if a["adm0_a3"] not in PAISES or a["name"] in SEM_ESTADO: continue
         rings = [q for q in (recorta_anel(r, box) for r in gm) if q]
         if not rings: continue
         e = {"nome": a["name"], "lns": [l for r in gm for l in corta_linha([tuple(p) for p in r], box)], "rotulo": centro(rings, bbox)}
