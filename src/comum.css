@@ -10,6 +10,12 @@
 .chuva .ch-v.ch-pk { fill: var(--ink); }
 .chuva .ch-m { font: 500 10px var(--body); fill: var(--ink); }
 .chuva .ch-p { font: 400 8.6px var(--body); fill: var(--muted); }
-.folha { margin-top: 12px; max-width: 480px; box-shadow: 0 12px 32px rgba(0,0,0,.5), 0 0 0 1px rgba(0,0,0,.25); }
 .folha svg { display: block; width: 100%; height: auto; }
 .selo { margin-left: 8px; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--col, var(--accent)); font-weight: 600; }
+.folha { margin-top: 14px; max-width: 480px; transform: rotate(-.6deg); box-shadow: 0 2px 3px rgba(0,0,0,.45), 0 10px 18px rgba(0,0,0,.45), 0 26px 46px rgba(0,0,0,.5); }
+.pass-fim { margin-top: 10px; padding: 10px 14px; border-left: 4px solid #c8352b; background: rgba(200, 53, 43, .1); }
+.pass-fim strong { display: block; font: 400 26px/1.1 var(--display); color: var(--ink); }
+.pass-fim span { display: block; margin-top: 4px; font-size: 15px; line-height: 1.45; color: var(--ink); }
+.pass-btn { margin-top: 14px; padding: 8px 16px; font-size: 14px; cursor: pointer; color: var(--ink); background: transparent; border: 1px solid var(--rule); }
+.pass-btn:hover:not(:disabled) { background: rgba(255,255,255,.1); }
+.pass-btn:disabled { opacity: .6; cursor: progress; }

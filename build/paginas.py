@@ -17,12 +17,49 @@ POS = {"amazonia": (121, 87), "cerrado": (202, 162), "mata-atlantica": (216, 232
        "pantanal": (138, 196), "costeiro": (322, 222), "brasil": (64, 288)}
 
 
+def _dp(pts, eps):
+    """Douglas-Peucker (iterativo) em uma lista de pontos."""
+    if len(pts) < 3:
+        return pts
+    keep = [False] * len(pts); keep[0] = keep[-1] = True; st = [(0, len(pts) - 1)]
+    while st:
+        a, b = st.pop(); (x1, y1), (x2, y2) = pts[a], pts[b]; L = ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** .5 or 1
+        dm, im = 0, -1
+        for i in range(a + 1, b):
+            dd = abs((y2 - y1) * pts[i][0] - (x2 - x1) * pts[i][1] + x2 * y1 - y2 * x1) / L
+            if dd > dm: dm, im = dd, i
+        if dm > eps and im > 0:
+            keep[im] = True; st += [(a, im), (im, b)]
+    return [p for p, k in zip(pts, keep) if k]
+
+
+def contornos_biomas(root, x0, y0, eps=1.1, min_size=5):
+    """Contorno dos 6 biomas continentais (data/outlines.json) no sistema de coordenadas do contorno do Brasil, como um caminho SVG."""
+    from PIL import Image
+    m = json.load(open(os.path.join(root, "data/map.json")))
+    k = Image.open(os.path.join(root, "data/ids.png")).width / m["w"] / 6   # coordenadas do mapa -> mesma grade do contorno do Brasil (build/loader_path.py)
+    out = []
+    for r in json.load(open(os.path.join(root, "data/outlines.json"))):
+        if not 1 <= r["n"] <= 6:
+            continue
+        pts = [(r["p"][i] * k - x0, r["p"][i + 1] * k - y0) for i in range(0, len(r["p"]), 2)]
+        xs, ys = [q[0] for q in pts], [q[1] for q in pts]
+        if max(max(xs) - min(xs), max(ys) - min(ys)) < min_size:   # ilhotas viram ruído na folha
+            continue
+        h2 = len(pts) // 2   # anel fechado: simplifica as duas metades separadamente
+        pts = _dp(pts[:h2 + 1], eps)[:-1] + _dp(pts[h2:] + [pts[0]], eps)[:-1]
+        if len(pts) >= 3:
+            out.append("M" + "L".join(f"{x:.1f},{y:.1f}" for x, y in pts) + "Z")
+    return "".join(out)
+
+
 def passaporte(root, br_path):
-    """Dados da folha do passaporte (contorno do Brasil e posição dos carimbos), para o mapa e para as páginas."""
-    d, w, h = br_path
+    """Dados da folha do passaporte (contorno do Brasil, contorno dos biomas e posição dos carimbos), para o mapa e para as páginas."""
+    d, w, h = br_path[:3]
+    _, _, _, x0, y0 = brasil_path(root, with_offset=True)
     nomes = {b["id"]: b["name"] for b in biomas_do_template(root)}
     regs = [{"id": i, "nome": "Brasil" if i == "brasil" else nomes[i], "pos": list(POS[i])} for i in ORDEM + ["brasil"]]
-    return {"vb": [-24, -26, w + 136, h + 60], "d": d, "r": 44, "regs": regs}
+    return {"vb": [-24, -26, w + 136, h + 60], "d": d, "bio": contornos_biomas(root, x0, y0), "r": 44, "regs": regs}
 
 
 def rmin(x):

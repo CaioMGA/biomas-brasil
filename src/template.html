@@ -862,11 +862,8 @@ function mergulharBtn(id) {
 }
 function passaporte() {
   const sec = el("div", { class: "rain" });
-  sec.appendChild(el("p", { class: "kicker" }, "Passaporte"));
   const carim = {}; PASS_IDS.concat("brasil").forEach(i => { if (hasSeal(i)) carim[i] = (getProg(i).quiz.em) || ""; });
-  const n = PASS_IDS.filter(i => i in carim).length;
-  sec.appendChild(el("p", { class: "lead" }, `${n} de ${PASS_IDS.length} biomas carimbados. Leia um bioma e acerte o quiz para carimbá-lo na folha.`));
-  sec.appendChild(BiomasUI.folha(PASSAPORTE, carim));
+  sec.appendChild(BiomasUI.passaporte(PASSAPORTE, carim));   // texto de progresso ou mensagem de jornada completa, folha e botão de compartilhar
   return sec;
 }
 

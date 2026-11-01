@@ -39,8 +39,17 @@ const BiomasUI = (() => {
   const fit = (txt, w, max) => Math.min(max, w / (txt.length * .66));
   const FORMAS = ["circulo", "retangulo", "circulo2", "octogono", "elipse", "corte", "elipse2"];
 
+  // mesmas cores do :root do mapa (--c-*), em hex: a imagem de compartilhamento é um SVG isolado, sem variáveis CSS
+  const COR = { amazonia: "#5ea56e", cerrado: "#b38b3c", "mata-atlantica": "#2da895", caatinga: "#cb7a61", pampa: "#9486cf", pantanal: "#25a3ba", costeiro: "#5f96d2", brasil: "#1b2f8a", completa: "#c8352b" };
+
+  /* Aplica a tinta (falhas e borda irregular), a rotação e a mistura por multiplicação: onde dois carimbos se sobrepõem, as cores se somam. */
+  function acabar(id, cor, pos, g, rot, dx, dy, sc, seed) {
+    const defs = `<filter id="tt-${id}" x="-15%" y="-15%" width="130%" height="130%"><feTurbulence type="fractalNoise" baseFrequency="0.38" numOctaves="3" seed="${seed}" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  2.6 0 0 0 -0.42" result="m"/><feComposite in="SourceGraphic" in2="m" operator="in" result="g"/><feTurbulence type="turbulence" baseFrequency="0.035" numOctaves="2" seed="${seed + 5}" result="w"/><feDisplacementMap in="g" in2="w" scale="2.6" xChannelSelector="R" yChannelSelector="G"/></filter>`;
+    return { defs, g: `<g style="mix-blend-mode:multiply" filter="url(#tt-${id})" opacity=".9"><g transform="translate(${(pos[0] + +dx).toFixed(1)} ${(pos[1] + +dy).toFixed(1)}) rotate(${rot}) scale(${sc})" fill="none" stroke="${cor}" stroke-linecap="round" stroke-linejoin="round" font-family="'Instrument Sans',system-ui,sans-serif">${g}</g></g>` };
+  }
+
   function carimbo(reg, idx, pos, r, em) {
-    const id = reg.id, cor = id === "brasil" ? "#1b2f8a" : `var(--c-${id})`, nome = reg.nome.toUpperCase(), data = fmtData(em);
+    const id = reg.id, cor = COR[id], nome = reg.nome.toUpperCase(), data = fmtData(em);
     const rot = ((rnd(id, 1) - .5) * 34).toFixed(1), dx = ((rnd(id, 2) - .5) * 10).toFixed(1), dy = ((rnd(id, 3) - .5) * 10).toFixed(1), sc = (.95 + rnd(id, 4) * .1).toFixed(3);
     const seed = 1 + hash(id) % 90, forma = id === "brasil" ? "brasil" : FORMAS[idx % FORMAS.length];
     const TX = `fill="${cor}" stroke="none"`;
@@ -78,23 +87,101 @@ const BiomasUI = (() => {
       g += txt(nome, 5, fit(nome, 2 * rx - 30, 14), `font-weight="800" ${TX}`);
       g += txt(data || "★ ★ ★", ry * .62, 7.6, `font-weight="700" letter-spacing=".6" ${TX}`);
     }
-    const defs = `<filter id="tt-${id}" x="-15%" y="-15%" width="130%" height="130%"><feTurbulence type="fractalNoise" baseFrequency="0.38" numOctaves="3" seed="${seed}" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  2.6 0 0 0 -0.42" result="m"/><feComposite in="SourceGraphic" in2="m" operator="in" result="g"/><feTurbulence type="turbulence" baseFrequency="0.035" numOctaves="2" seed="${seed + 5}" result="w"/><feDisplacementMap in="g" in2="w" scale="2.6" xChannelSelector="R" yChannelSelector="G"/></filter>`;
-    return { defs, g: `<g style="mix-blend-mode:multiply" filter="url(#tt-${id})" opacity=".9"><g transform="translate(${(pos[0] + +dx).toFixed(1)} ${(pos[1] + +dy).toFixed(1)}) rotate(${rot}) scale(${sc})" fill="none" stroke="${cor}" stroke-linecap="round" stroke-linejoin="round" style="color:${cor}" font-family="'Instrument Sans',system-ui,sans-serif">${g}</g></g>` };
+    return acabar(id, cor, pos, g, rot, dx, dy, sc, seed);
   }
 
-  /* P = {vb, d, r, regs: [{id, nome, pos}]}; carimbados = {id: "AAAA-MM-DD" | ""} (só os biomas que passaram no quiz) */
-  function folha(P, carimbados) {
+  /* Carimbo vermelho de conclusão: aparece quando todos os biomas foram carimbados, no canto superior direito da folha. */
+  function carimboCompleta(P, c) {
+    const [vx, vy, vw] = P.vb, cor = COR.completa, id = "completa", W = 136, H = 82, pos = [vx + vw - W / 2 - 15, vy + H / 2 + 12];
+    const datas = P.regs.filter(r => r.id !== "brasil").map(r => c[r.id]).filter(Boolean).sort(), data = fmtData(datas[datas.length - 1]);
+    const TX = `fill="${cor}" stroke="none"`, tx = (t, y, fs, ex) => `<text x="0" y="${y}" text-anchor="middle" font-size="${fs.toFixed(1)}" ${ex} ${TX}>${t}</text>`;
+    let g = `<rect x="${-W / 2}" y="${-H / 2}" width="${W}" height="${H}" rx="5" stroke-width="3"/><rect x="${-W / 2 + 5}" y="${-H / 2 + 5}" width="${W - 10}" height="${H - 10}" rx="2.5" stroke-width="1.1"/>`;
+    g += tx("JORNADA PELOS", -H / 2 + 18, 8.4, 'font-weight="700" letter-spacing="1.8"') + tx("BIOMAS DO BRASIL", -H / 2 + 30, 9.4, 'font-weight="800" letter-spacing="1"');
+    g += `<line x1="${-W / 2 + 10}" x2="${W / 2 - 10}" y1="${-H / 2 + 36}" y2="${-H / 2 + 36}" stroke-width="1.1"/>` + tx("COMPLETA", 14, fit("COMPLETA", W - 22, 25), 'font-weight="900" letter-spacing="1.2"');
+    g += `<line x1="${-W / 2 + 10}" x2="${W / 2 - 10}" y1="22" y2="22" stroke-width="1.1"/>` + tx(data || "★ ★ ★", H / 2 - 11, 8, 'font-weight="700" letter-spacing=".8"');
+    return acabar(id, cor, pos, g, -8, 0, 0, 1, 37);
+  }
+
+  const PAPEL = `<filter id="papel" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency="0.012 0.017" numOctaves="4" seed="7" result="n"/><feDiffuseLighting in="n" surfaceScale="2.4" diffuseConstant="1.12" lighting-color="#fcf7e8" result="l"><feDistantLight azimuth="228" elevation="56"/></feDiffuseLighting><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="3" result="g"/><feColorMatrix in="g" type="matrix" values="0 0 0 0 .25  0 0 0 0 .2  0 0 0 0 .12  .16 0 0 0 0" result="gr"/><feBlend in="gr" in2="l" mode="normal"/></filter><radialGradient id="vig" cx="50%" cy="50%" r="75%"><stop offset="60%" stop-color="#7a5c28" stop-opacity="0"/><stop offset="100%" stop-color="#7a5c28" stop-opacity=".2"/></radialGradient>`;
+
+  /* Papel timbrado: nome do site em fonte do site, no canto inferior direito, com a barra de gradiente do painel do Brasil logo abaixo.
+     Medidas em unidades do viewBox da folha. */
+  const TIMBRE = { dir: 14, base: 24, fs: 19, larg: 124, barra: 3.6, folga: 5 };
+  const BANDEIRA = [["#009c3b", 0], ["#ffdf00", .3333], ["#002776", .6667], ["#fff", 1]];   // mesmo degradê da faixa do painel do Brasil na home
+  function timbre(P) {
+    const [vx, vy, vw, vh] = P.vb, lx = vx + vw - TIMBRE.dir, ly = vy + vh - TIMBRE.base;
+    return `<linearGradient id="bandeira" x1="0" x2="1" y1="0" y2="0">${BANDEIRA.map(([c, o]) => `<stop offset="${o}" stop-color="${c}"/>`).join("")}</linearGradient>
+<text x="${lx}" y="${ly}" text-anchor="end" font-size="${TIMBRE.fs}" font-family="'Instrument Serif',Georgia,serif" fill="#23241f" textLength="${TIMBRE.larg}" lengthAdjust="spacingAndGlyphs">Biomas do Brasil</text>
+<rect x="${lx - TIMBRE.larg}" y="${ly + TIMBRE.folga}" width="${TIMBRE.larg}" height="${TIMBRE.barra}" fill="url(#bandeira)" stroke="rgba(0,0,0,.28)" stroke-width=".3"/>`;
+  }
+
+  /* SVG da folha: papel levemente amassado, contorno do Brasil e dos biomas em traço fino e falho, e os carimbos. */
+  function svgFolha(P, c, isolado) {
     const [vx, vy, vw, vh] = P.vb;
-    let defs = `<filter id="falha" x="-2%" y="-2%" width="104%" height="104%"><feTurbulence type="fractalNoise" baseFrequency="0.55" numOctaves="2" seed="11" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  4 0 0 0 -1.15" result="m"/><feComposite in="SourceGraphic" in2="m" operator="in" result="g"/><feTurbulence type="turbulence" baseFrequency="0.06" numOctaves="1" seed="4" result="w"/><feDisplacementMap in="g" in2="w" scale="1.6" xChannelSelector="R" yChannelSelector="G"/></filter>`;
+    let defs = PAPEL + `<filter id="falha" x="-2%" y="-2%" width="104%" height="104%"><feTurbulence type="fractalNoise" baseFrequency="0.55" numOctaves="2" seed="11" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  4 0 0 0 -1.15" result="m"/><feComposite in="SourceGraphic" in2="m" operator="in" result="g"/><feTurbulence type="turbulence" baseFrequency="0.06" numOctaves="1" seed="4" result="w"/><feDisplacementMap in="g" in2="w" scale="1.6" xChannelSelector="R" yChannelSelector="G"/></filter>`;
     let marks = "";
-    P.regs.forEach((rg, i) => { if (carimbados[rg.id] == null) return; const c = carimbo(rg, i, rg.pos, P.r, carimbados[rg.id]); defs += c.defs; marks += c.g; });
-    const svg = `<svg viewBox="${vx} ${vy} ${vw} ${vh}" role="img" aria-label="Folha do passaporte: contorno do Brasil e os carimbos dos biomas já completados" style="isolation:isolate"><defs>${defs}</defs>
-<rect x="${vx}" y="${vy}" width="${vw}" height="${vh}" fill="#f6f1e4"/>
-<path d="${P.d}" fill="none" stroke="#161616" stroke-width=".85" stroke-linejoin="round" stroke-dasharray="13 1.6 7 2.4 19 1.2 5 2 10 1.4 25 2.8 8 1.8" filter="url(#falha)"/>${marks}</svg>`;
-    return wrap("folha", svg);
+    P.regs.forEach((rg, i) => { if (c[rg.id] == null) return; const k = carimbo(rg, i, rg.pos, P.r, c[rg.id]); defs += k.defs; marks += k.g; });
+    if (P.regs.filter(r => r.id !== "brasil").every(r => c[r.id] != null)) { const k = carimboCompleta(P, c); defs += k.defs; marks += k.g; }
+    return `<svg ${isolado ? `xmlns="http://www.w3.org/2000/svg" width="${vw * 4}" height="${vh * 4}" ` : ""}viewBox="${vx} ${vy} ${vw} ${vh}" role="img" aria-label="Folha do passaporte: contorno do Brasil e dos biomas e os carimbos dos biomas já completados" style="isolation:isolate"><defs>${defs}</defs>
+<rect x="${vx}" y="${vy}" width="${vw}" height="${vh}" fill="#f1ebda" filter="url(#papel)"/><rect x="${vx}" y="${vy}" width="${vw}" height="${vh}" fill="url(#vig)"/>
+<path d="${P.bio}" fill="none" stroke="#1c1c1c" stroke-width=".6" stroke-linejoin="round" stroke-dasharray="9 1.4 5 2.2 14 1 4 1.6 8 1.2 18 2.4" opacity=".8" filter="url(#falha)"/>
+<path d="${P.d}" fill="none" stroke="#161616" stroke-width=".9" stroke-linejoin="round" stroke-dasharray="13 1.6 7 2.4 19 1.2 5 2 10 1.4 25 2.8 8 1.8" filter="url(#falha)"/>${isolado ? "" : timbre(P)}${marks}</svg>`;
   }
 
-  return { graficoChuva, folha };
+  /* P = {vb, d, bio, r, regs: [{id, nome, pos}]}; carimbados = {id: "AAAA-MM-DD" | ""} (só os biomas que passaram no quiz) */
+  function folha(P, carimbados) { return wrap("folha", svgFolha(P, carimbados, false)); }
+
+  /* Imagem do passaporte para compartilhar: a folha (SVG) sobre fundo escuro, com título e endereço do site. */
+  async function imagemPassaporte(P, c) {
+    const svg = svgFolha(P, c, true), [, , vw, vh] = P.vb;
+    const img = await new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = URL.createObjectURL(new Blob([svg], { type: "image/svg+xml" })); });
+    const reg = P.regs.filter(r => r.id !== "brasil"), n = reg.filter(r => c[r.id] != null).length, completo = n === reg.length;
+    const W = 1600, m = 70, sw = W - 2 * m, sh = Math.round(sw * vh / vw), top = 170, H = top + sh + 130;
+    const cv = document.createElement("canvas"); cv.width = W; cv.height = H; const x = cv.getContext("2d");
+    x.fillStyle = "#0b100c"; x.fillRect(0, 0, W, H);
+    x.fillStyle = "#ece6d4"; x.textBaseline = "alphabetic";
+    x.font = '400 64px "Instrument Serif", Georgia, serif'; x.fillText("Meu passaporte dos Biomas do Brasil", m, 112);
+    x.save(); x.shadowColor = "rgba(0,0,0,.7)"; x.shadowBlur = 50; x.shadowOffsetY = 18; x.drawImage(img, m, top, sw, sh); x.restore();
+    {   // papel timbrado (o SVG isolado não enxerga as fontes da página, então ele é desenhado aqui)
+      const k = sw / vw, rx = m + sw - TIMBRE.dir * k, by = top + sh - TIMBRE.base * k;
+      x.save(); x.fillStyle = "#23241f"; x.textAlign = "right"; x.font = `400 ${TIMBRE.fs * k}px "Instrument Serif", Georgia, serif`;
+      x.fillText("Biomas do Brasil", rx, by, TIMBRE.larg * k);
+      const g = x.createLinearGradient(rx - TIMBRE.larg * k, 0, rx, 0); BANDEIRA.forEach(([c, o]) => g.addColorStop(o, c));
+      x.fillStyle = g; x.fillRect(rx - TIMBRE.larg * k, by + TIMBRE.folga * k, TIMBRE.larg * k, TIMBRE.barra * k);
+      x.strokeStyle = "rgba(0,0,0,.28)"; x.lineWidth = .3 * k; x.strokeRect(rx - TIMBRE.larg * k, by + TIMBRE.folga * k, TIMBRE.larg * k, TIMBRE.barra * k); x.restore();
+    }
+    x.font = '500 30px "Instrument Sans", system-ui, sans-serif'; x.fillStyle = completo ? "#e0675c" : "#b6bba4";
+    x.fillText(completo ? "Jornada pelos Biomas do Brasil completa" : `${n} de ${reg.length} biomas carimbados`, m, top + sh + 70);
+    x.fillStyle = "#ece6d4"; x.textAlign = "right"; x.fillText(location.host, W - m, top + sh + 70);
+    URL.revokeObjectURL(img.src);
+    return new Promise(r => cv.toBlob(r, "image/png"));
+  }
+  async function compartilhar(P, c, btn) {
+    const lbl = btn.textContent; btn.disabled = true; btn.textContent = "Gerando imagem…";
+    try {
+      const blob = await imagemPassaporte(P, c), file = new File([blob], "passaporte-biomas-do-brasil.png", { type: "image/png" });
+      const reg = P.regs.filter(r => r.id !== "brasil"), completo = reg.every(r => c[r.id] != null);
+      const dados = { files: [file], title: "Meu passaporte dos Biomas do Brasil", text: completo ? "Completei minha jornada pelos Biomas do Brasil!" : "Meu passaporte dos Biomas do Brasil" };
+      let enviado = false;
+      if (navigator.canShare && navigator.canShare(dados)) { try { await navigator.share(dados); enviado = true; } catch (e) { if (e && e.name === "AbortError") enviado = true; } }
+      if (!enviado) { const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = file.name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 5000); }
+    } catch (e) { console.error(e); btn.textContent = "Não foi possível gerar"; setTimeout(() => { btn.textContent = lbl; btn.disabled = false; }, 2500); return; }
+    btn.textContent = lbl; btn.disabled = false;
+  }
+
+  /* Bloco do passaporte: texto de progresso (ou a mensagem de jornada completa), a folha e o botão de compartilhar. */
+  function passaporte(P, c) {
+    const box = document.createElement("div"), reg = P.regs.filter(r => r.id !== "brasil"), n = reg.filter(r => c[r.id] != null).length, completo = n === reg.length;
+    const mk = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; e.textContent = txt; return e; };
+    box.appendChild(mk("p", "kicker", "Passaporte"));
+    if (completo) { const m = mk("div", "pass-fim"); m.append(mk("strong", "", "Você carimbou todos os biomas!"), mk("span", "", "Você completou sua jornada pelos Biomas do Brasil, parabéns!")); box.appendChild(m); }
+    else box.appendChild(mk("p", "lead", `${n} de ${reg.length} biomas carimbados. Acerte o quiz de um bioma para carimbá-lo na folha.`));
+    box.appendChild(folha(P, c));
+    if (n || c.brasil != null) { const b = mk("button", "pass-btn", "Compartilhar passaporte"); b.type = "button"; b.addEventListener("click", () => compartilhar(P, c, b)); box.appendChild(b); }
+    return box;
+  }
+
+  return { graficoChuva, folha, passaporte, todosCarimbados: (P, c) => P.regs.filter(r => r.id !== "brasil").every(r => c[r.id] != null) };
 })();
 
 /* Interatividade das páginas estáticas: progresso, quiz, vídeos, comparador, passaporte e sugestões. */
@@ -134,22 +221,17 @@ const BiomasUI = (() => {
 
   // ---- passaporte: folha com um carimbo por bioma completado (quiz com nota mínima) ----
   function carimbados() { const o = {}; regioes.forEach(r => { if (passou(r.id)) o[r.id] = getProg(r.id).quiz.em || ""; }); return o; }
-  function passaporte(box) {
-    const reg = regioes.filter(r => r.id !== "brasil"); const c = carimbados(); const n = reg.filter(r => r.id in c).length;
-    box.appendChild(el("p", { class: "kicker" }, "Passaporte"));
-    box.appendChild(el("p", { class: "lead" }, `${n} de ${reg.length} biomas carimbados. Acerte o quiz de um bioma para carimbá-lo na folha.`));
-    box.appendChild(BiomasUI.folha(D.passaporte, c));
-  }
+  function passaporte(box) { box.appendChild(BiomasUI.passaporte(D.passaporte, carimbados())); }
 
-  // ---- sugestões no rodapé: não lidos primeiro ----
+  // ---- rodapé: biomas ainda sem carimbo e já carimbados, em grupos separados ----
   function proximos(box) {
-    const outros = regioes.filter(r => r.id !== D.id);
-    const ordem = [...outros.filter(r => !lida(r)), ...outros.filter(lida)];
-    box.appendChild(el("h2", {}, ordem.some(r => !lida(r)) ? "Continue explorando" : "Você leu tudo. Releia o que quiser"));
+    const c = carimbados(), outros = regioes.filter(r => r.id !== D.id), completo = BiomasUI.todosCarimbados(D.passaporte, c);
+    const faltam = [...outros.filter(r => !(r.id in c) && !lida(r)), ...outros.filter(r => !(r.id in c) && lida(r))], feitos = outros.filter(r => r.id in c);
+    box.appendChild(el("h2", {}, completo ? "Revisite seus biomas" : "Continue explorando"));
     const pb = el("div", { class: "pass-bloco" }); passaporte(pb); box.appendChild(pb);
-    const ul = el("ul", { class: "cards" });
-    ordem.forEach(r => ul.appendChild(cartao(r)));
-    box.appendChild(ul);
+    const grupo = (titulo, lista) => { if (!lista.length) return; box.appendChild(el("h3", { class: "grupo-titulo" }, titulo)); const ul = el("ul", { class: "cards" }); lista.forEach(r => ul.appendChild(cartao(r))); box.appendChild(ul); };
+    grupo("Ainda sem carimbo", faltam);
+    grupo("Já carimbados", feitos);
   }
 
   // ---- gráficos de chuva (eixo comum a todos os biomas) ----

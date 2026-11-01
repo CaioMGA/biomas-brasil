@@ -35,22 +35,17 @@
 
   // ---- passaporte: folha com um carimbo por bioma completado (quiz com nota mínima) ----
   function carimbados() { const o = {}; regioes.forEach(r => { if (passou(r.id)) o[r.id] = getProg(r.id).quiz.em || ""; }); return o; }
-  function passaporte(box) {
-    const reg = regioes.filter(r => r.id !== "brasil"); const c = carimbados(); const n = reg.filter(r => r.id in c).length;
-    box.appendChild(el("p", { class: "kicker" }, "Passaporte"));
-    box.appendChild(el("p", { class: "lead" }, `${n} de ${reg.length} biomas carimbados. Acerte o quiz de um bioma para carimbá-lo na folha.`));
-    box.appendChild(BiomasUI.folha(D.passaporte, c));
-  }
+  function passaporte(box) { box.appendChild(BiomasUI.passaporte(D.passaporte, carimbados())); }
 
-  // ---- sugestões no rodapé: não lidos primeiro ----
+  // ---- rodapé: biomas ainda sem carimbo e já carimbados, em grupos separados ----
   function proximos(box) {
-    const outros = regioes.filter(r => r.id !== D.id);
-    const ordem = [...outros.filter(r => !lida(r)), ...outros.filter(lida)];
-    box.appendChild(el("h2", {}, ordem.some(r => !lida(r)) ? "Continue explorando" : "Você leu tudo. Releia o que quiser"));
+    const c = carimbados(), outros = regioes.filter(r => r.id !== D.id), completo = BiomasUI.todosCarimbados(D.passaporte, c);
+    const faltam = [...outros.filter(r => !(r.id in c) && !lida(r)), ...outros.filter(r => !(r.id in c) && lida(r))], feitos = outros.filter(r => r.id in c);
+    box.appendChild(el("h2", {}, completo ? "Revisite seus biomas" : "Continue explorando"));
     const pb = el("div", { class: "pass-bloco" }); passaporte(pb); box.appendChild(pb);
-    const ul = el("ul", { class: "cards" });
-    ordem.forEach(r => ul.appendChild(cartao(r)));
-    box.appendChild(ul);
+    const grupo = (titulo, lista) => { if (!lista.length) return; box.appendChild(el("h3", { class: "grupo-titulo" }, titulo)); const ul = el("ul", { class: "cards" }); lista.forEach(r => ul.appendChild(cartao(r))); box.appendChild(ul); };
+    grupo("Ainda sem carimbo", faltam);
+    grupo("Já carimbados", feitos);
   }
 
   // ---- gráficos de chuva (eixo comum a todos os biomas) ----
