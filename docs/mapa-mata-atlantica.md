@@ -29,6 +29,8 @@ RESOLVE Ecoregions 2017 (CC BY 4.0; citar Dinerstein et al., 2017, BioScience); 
 - **UCs no Paraguai e na Argentina:** a base mundial (WDPA) não permite redistribuição.
 - **Rios com nome e navegabilidade em detalhe:** só os principais do Natural Earth.
 - **Terras Indígenas e territórios quilombolas:** não incluídos.
+- **Costa sul do RS e do Uruguai:** a ecorregião "Atlantic Coast restingas" da RESOLVE desce até a fronteira com o Uruguai, mas o IBGE classifica essa costa como Pampa. As restingas são cortadas ao sul de ~30°S (limite sul do IBGE), então o bioma não avança sobre o litoral sul do RS. No Brasil, o IBGE é a referência.
+- **Terra até a borda:** países e estados são recortados numa caixa maior que a moldura do mapa; com a caixa menor sobravam faixas azuis ("oceano") nas laterais.
 - **Natural Earth:** as estimativas de população são defasadas (ex.: Joinville aparece com 433 mil), e o Natural Earth marca o Niterói como capital (o corte de população o mantém por mérito próprio).
 
 ## Pendências de validação

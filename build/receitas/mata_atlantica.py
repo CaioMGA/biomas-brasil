@@ -75,19 +75,28 @@ def titulo(nome):
 
 def receita(raw):
     # ---- a região: 8 ecorregiões RESOLVE (bioma inteiro) + limite oficial do IBGE na parte brasileira (sem as ilhas oceânicas)
+    ibge_todos = [r for a, g in shp.read(f"{raw}/biomas/lml_bioma_e250k_v20250911_A") if a["NM_BIOMA"] == "Mata Atlântica" for r in g]
+    # No Brasil o limite oficial é o do IBGE, que termina a ~30°S: as restingas da RESOLVE seguem pelo litoral sul do RS (e do Uruguai), onde o IBGE
+    # classifica o bioma como Pampa. A ecorregião de restingas é cortada ao sul do ponto mais ao sul do limite do IBGE.
+    corte_sul = min(p[1] for r in ibge_todos for p in r)
     ecos = []
     for arq, nome in ECOS:
         g = json.load(open(f"{raw}/resolve_ma/{arq}", encoding="utf-8"))["features"][0]["geometry"]
         polis = g["coordinates"] if g["type"] == "MultiPolygon" else [g["coordinates"]]
-        ecos.append((nome, [[tuple(p) for p in pol[0]] for pol in polis]))
+        aneis = [[tuple(p) for p in pol[0]] for pol in polis]
+        if "restingas" in arq: aneis = [q for q in (recorta_anel(r, (-180, corte_sul, 180, 90)) for r in aneis) if q]
+        ecos.append((nome, aneis))
     res_aneis = [r for _, rs in ecos for r in rs]
     xs, ys = [p[0] for r in res_aneis for p in r], [p[1] for r in res_aneis for p in r]
     reg = (min(xs), min(ys), max(xs), max(ys))
-    ibge_todos = [r for a, g in shp.read(f"{raw}/biomas/lml_bioma_e250k_v20250911_A") if a["NM_BIOMA"] == "Mata Atlântica" for r in g]
     dentro_reg = lambda r: reg[0] - .5 < sum(p[0] for p in r) / len(r) < reg[2] + .5 and reg[1] - .5 < sum(p[1] for p in r) / len(r) < reg[3] + .5
     ibge = [r for r in ibge_todos if dentro_reg(r)]   # fora ficam Fernando de Noronha, São Pedro e São Paulo e outras ilhas oceânicas
     P = .6
     bbox = (reg[0] - P, reg[1] - P, reg[2] + P, reg[3] + P); box = (bbox[0] - .3, bbox[1] - .3, bbox[2] + .3, bbox[3] + .3)
+    # a moldura do mapa vai até bbox ± 3% do tamanho (mapas.Proj); a terra (países, estados, fronteiras) é recortada numa caixa MAIOR que isso,
+    # para o desenho ir até a borda da imagem (com a caixa menor sobravam faixas de "oceano" nas laterais). Quais estados entram continua decidido por `box`.
+    dx, dy = (bbox[2] - bbox[0]) * .05 + .2, (bbox[3] - bbox[1]) * .05 + .2
+    vbox = (bbox[0] - dx, bbox[1] - dy, bbox[2] + dx, bbox[3] + dy)
     mask_res = Mascara(res_aneis, reg, .01)                 # só as ecorregiões (para o contorno externo)
     mask = Mascara(res_aneis + ibge, reg, .01)              # ecorregiões + IBGE (para decidir o que está dentro do bioma)
     limite = [r3(q) for q in (dp_ring(list(r), .01) for r in res_aneis) if q]
@@ -98,20 +107,21 @@ def receita(raw):
 
     # ---- países, fronteiras, estados/departamentos (estados do Brasil pintados em cores diferentes)
     paises, estados = [], []
-    for a, gm in shp.read(f"{raw}/ne_10m_admin_0_countries/ne_10m_admin_0_countries", box):
+    for a, gm in shp.read(f"{raw}/ne_10m_admin_0_countries/ne_10m_admin_0_countries", vbox):
         if a["ADM0_A3"] not in PAISES: continue
-        rings = [q for q in (recorta_anel(r, box) for r in gm) if q]
+        rings = [q for q in (recorta_anel(r, vbox) for r in gm) if q]
         rings = [q for q in (dp_ring(r + [r[0]], .02) for r in rings) if q]
         if rings: paises.append({"nome": a["NAME_PT"], "rings": [r3(r) for r in rings], "rotulo": centro(rings, bbox)})
-    fronteiras = [r3(dp(l, .02)) for a, gm in shp.read(f"{raw}/ne_10m_admin_0_boundary_lines_land/ne_10m_admin_0_boundary_lines_land", box) for ln in gm for l in corta_linha(ln, box)]
+    fronteiras = [r3(dp(l, .02)) for a, gm in shp.read(f"{raw}/ne_10m_admin_0_boundary_lines_land/ne_10m_admin_0_boundary_lines_land", vbox) for ln in gm for l in corta_linha(ln, vbox)]
     camadas.append({"id": "paises", "titulo": "Fronteiras entre países", "tipo": "contexto", "fonte": "ne", "ligada": True,
                     "nota": "Países vizinhos com seu nome e uma cor para cada um; as fronteiras vêm do Natural Earth (escala 1:10 milhões) e podem divergir em detalhe dos limites oficiais.",
                     "itens": paises, "fronteiras": fronteiras})
-    for a, gm in shp.read(f"{raw}/ne_10m_admin_1_states_provinces/ne_10m_admin_1_states_provinces", box):
+    for a, gm in shp.read(f"{raw}/ne_10m_admin_1_states_provinces/ne_10m_admin_1_states_provinces", vbox):
         if a["adm0_a3"] not in PAISES or a["name"] in SEM_ESTADO: continue
-        rings = [q for q in (recorta_anel(r, box) for r in gm) if q]
+        if not any(recorta_anel(r, box) for r in gm): continue   # quais estados entram: só os que tocam a caixa menor (a faixa extra não traz estados novos)
+        rings = [q for q in (recorta_anel(r, vbox) for r in gm) if q]
         if not rings: continue
-        e = {"nome": a["name"], "lns": [l for r in gm for l in corta_linha([tuple(p) for p in r], box)], "rotulo": centro(rings, bbox)}
+        e = {"nome": a["name"], "lns": [l for r in gm for l in corta_linha([tuple(p) for p in r], vbox)], "rotulo": centro(rings, bbox)}
         if a["adm0_a3"] == "BRA":
             e["rings"] = [r3(q) for q in (dp_ring(list(r) + [r[0]], .02) for r in rings) if q]
             e["vert"] = {(round(p[0], 2), round(p[1], 2)) for r in gm for p in r}
@@ -203,5 +213,6 @@ def receita(raw):
             "lacunas": ["Cobertura florestal remanescente (a floresta que restou): o Atlas da SOS Mata Atlântica/INPE exige cadastro e não tem licença aberta confirmada; o MapBiomas só sai pelo Google Earth Engine; o Hansen Global Forest Change (CC BY 4.0) conta qualquer árvore, inclusive plantios, e tem tiles de até 290 MB. Nada disso foi incluído.",
                         "Unidades de conservação no Paraguai e na Argentina: a base mundial (WDPA) não permite redistribuição.",
                         "Rios com nome e navegabilidade em detalhe: a drenagem do IBGE (BC250) tem milhões de trechos nesta área e não coube; o mapa traz só os rios principais do Natural Earth.",
+                        "Costa sul do Rio Grande do Sul e do Uruguai: a ecorregião de restingas da RESOLVE desce até lá, mas o IBGE classifica essa costa como Pampa; o mapa corta as restingas ao sul de 30°S (limite sul do IBGE).",
                         "Terras Indígenas e territórios quilombolas: não incluídos (limites oficiais da FUNAI indisponíveis; as milhares de localidades quilombolas do IBGE ficam para outra escala)."],
             "fontes": FONTES}
