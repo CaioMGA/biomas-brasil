@@ -255,7 +255,7 @@ class Site:
 
     def secao(self, id, i, n, s):
         c = self.C[id]
-        h = (f'<h2><small>{i + 1} de {n}</small>{E(s["titulo"])}</h2>')
+        h = f'<h2>{E(s["titulo"])}</h2>'
         k, corpo = s["kind"], ""
         if k == "texto":
             if s["s"].get("chuva") and id != "brasil":
@@ -291,7 +291,7 @@ class Site:
         elif k == "creditos":
             corpo += self.creditos(id)
         if k == "creditos":   # dobrável, começa fechado; o sentinela de leitura fica fora do bloco para continuar visível quando ele está fechado
-            return f'<section id="sec-{s["id"]}">{self.dobra(s["titulo"], corpo, f"<small>{i + 1} de {n}</small>")}<div data-end="{s["id"]}" aria-hidden="true"></div></section>'
+            return f'<section id="sec-{s["id"]}">{self.dobra(s["titulo"], corpo)}<div data-end="{s["id"]}" aria-hidden="true"></div></section>'
         return f'<section id="sec-{s["id"]}">{h}{corpo}<div data-end="{s["id"]}" aria-hidden="true"></div></section>'
 
     # ---- páginas ----

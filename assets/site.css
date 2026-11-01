@@ -41,7 +41,6 @@ a { color: inherit; }
 .rd-main .intro { margin: 12px 0 0; font: italic 400 26px/1.25 var(--display); color: var(--muted); }
 .rd-main section { margin-top: 56px; scroll-margin-top: 80px; }
 .rd-main h2 { margin: 0 0 6px; font: 400 clamp(32px, 4vw, 44px)/1.05 var(--display); text-wrap: balance; }
-.rd-main h2 small { display: block; margin-bottom: 4px; font: 500 12px var(--body); letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
 .rd-main p { margin: 16px 0 0; font-size: 18px; line-height: 1.7; }
 .rd-main .rainbars { max-width: 460px; }
 .rd-main .rainmo { max-width: 460px; }
