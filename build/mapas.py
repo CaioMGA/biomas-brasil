@@ -83,6 +83,11 @@ def dados_cliente(d):
             g = {}
             for m in it: g.setdefault(m["tipo"], []).append(m["rings"])
             o["grupos"] = [{"tipo": t, "d": caminho(P, [r for rs in v for r in rs], True)} for t, v in g.items()]
+        elif c["id"] == "rios" and c.get("por_rio"):
+            # cada rio é um elemento próprio, com atributos para os filtros (valores múltiplos separados por "|", ex.: países e estados que ele atravessa)
+            fixos = c.get("fixos", [])
+            o["grupos"] = [{"nome": r["nome"], "attrs": r["attrs"], "fixo": r["attrs"].get("margem") in fixos, "texto": r.get("texto", ""), "d": caminho(P, r["linhas"], False)} for r in it]
+            o["rotulos"] = [{"nome": r["nome"], "p": list(P(*r["rotulo"])), "attrs": r["attrs"], "fixo": r["attrs"].get("margem") in fixos} for r in it if r.get("rotulo")]
         elif c["id"] == "rios" and c.get("campo_grupo"):
             # rios agrupados por um campo próprio (ex.: margem do Amazonas); os valores em `fixos` (ex.: o rio principal) ignoram os filtros
             campo, fixos = c["campo_grupo"], c.get("fixos", [])

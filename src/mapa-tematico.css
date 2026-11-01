@@ -46,6 +46,7 @@
 .mt-ti { fill: rgba(190, 96, 52, .38); stroke: #8c3f1c; stroke-width: 1.1px; }
 .mt-ti.mt-sel { stroke-width: 3px; stroke: #000; }
 .mt-rio[data-margem="principal"] { stroke-width: 3.4px; }
+.mt-rio[data-margem] { cursor: pointer; }
 .mt-uc.mt-sel { stroke-width: 3.2px; stroke: #000; }
 .mt-uc, .mt-ti, .mt-pin { cursor: pointer; }
 .mt-front { fill: none; stroke: #6a3d6e; stroke-width: 1.8px; stroke-dasharray: 8 3 2 3; }

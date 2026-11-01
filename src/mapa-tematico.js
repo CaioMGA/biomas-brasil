@@ -49,7 +49,13 @@
     const cm = por("massas");
     if (cm) { const g = sv("g", { class: "mt-cam-massas" }); cm.grupos.filter(x => x.d).forEach(x => g.append(item("massas", sv("path", { d: x.d, class: "mt-agua", "fill-rule": "evenodd", "data-tipo": x.tipo })))); svg.append(g); add("massas", g); }
     const cr = por("rios");
-    if (cr) { const g = sv("g", { class: "mt-cam-rios" }); cr.grupos.filter(x => x.d).forEach(x => { const p = sv("path", { d: x.d, class: "mt-rio", "vector-effect": "non-scaling-stroke" }); p.dataset[x.campo || "navegavel"] = x.v ?? x.navegavel; if (x.fixo) p.dataset.fixo = "1"; g.append(item("rios", p)); }); svg.append(g); add("rios", g); }
+    if (cr) { const g = sv("g", { class: "mt-cam-rios" }); cr.grupos.filter(x => x.d).forEach(x => {
+      const p = sv("path", { d: x.d, class: "mt-rio", "vector-effect": "non-scaling-stroke" });
+      if (x.attrs) Object.assign(p.dataset, x.attrs); else p.dataset[x.campo || "navegavel"] = x.v ?? x.navegavel;
+      if (x.fixo) p.dataset.fixo = "1";
+      if (x.texto) { p.addEventListener("pointerenter", () => mostrar(x.texto, p)); p.addEventListener("click", () => mostrar(x.texto, p)); }
+      g.append(item("rios", p));
+    }); svg.append(g); add("rios", g); }
 
     // ---- unidades de conservação (PI: contorno contínuo; US: tracejado)
     const cti = por("tis");
@@ -85,7 +91,7 @@
     svg.append(sv("path", { d: d.contorno || d.limite, class: "mt-regiao-borda", "vector-effect": "non-scaling-stroke" }));
 
     // ---- rótulos e marcadores (px), do mais ao menos prioritário para a colisão
-    if (cr) for (const r of cr.rotulos || []) { const p = pino("rios", r.p[0], r.p[1], rotulo(r.nome, "mt-rot-rio", { "text-anchor": "middle" })); p.dataset[r.campo || "navegavel"] = r.v ?? r.navegavel; if (r.fixo) p.dataset.fixo = "1"; item("rios", p); pins.push({ pin: p, rot: p.firstChild, camada: "rios", centro: true }); }
+    if (cr) for (const r of cr.rotulos || []) { const p = pino("rios", r.p[0], r.p[1], rotulo(r.nome, "mt-rot-rio", { "text-anchor": "middle" })); if (r.attrs) Object.assign(p.dataset, r.attrs); else p.dataset[r.campo || "navegavel"] = r.v ?? r.navegavel; if (r.fixo) p.dataset.fixo = "1"; item("rios", p); pins.push({ pin: p, rot: p.firstChild, camada: "rios", centro: true }); }
     const ccid = por("cidades");
     if (ccid) for (const it of ccid.itens) {
       const p = pino("cidades", it.p[0], it.p[1], sv("circle", { r: 4.5, class: "mt-pt mt-pt-cid" }), rotulo(it.nome, "mt-rot-cid", { x: 8, y: 4 }));
@@ -141,7 +147,7 @@
     fig.querySelectorAll("input[data-camada]").forEach(cb => { liga(cb.dataset.camada, cb.checked); cb.addEventListener("change", () => { liga(cb.dataset.camada, cb.checked); legenda(); organizar(); }); });
     const filtros = [...fig.querySelectorAll("fieldset[data-filtro]")];
     const valor = f => (f.querySelector("input:checked") || {}).value || "";
-    const passa = (el, fs) => el.dataset.fixo === "1" || fs.every(f => !valor(f) || (el.dataset[f.dataset.campo] || "") === valor(f));
+    const passa = (el, fs) => el.dataset.fixo === "1" || fs.every(f => !valor(f) || (el.dataset[f.dataset.campo] || "").split("|").includes(valor(f)));
     function filtrar() {
       for (const k in itens) { const fs = filtros.filter(f => f.dataset.camada === k); itens[k].forEach(el => el.classList.toggle("mt-fil", !passa(el, fs))); }
       fig.querySelectorAll(".mt-tab[data-camada]").forEach(tb => { const fs = filtros.filter(f => f.dataset.camada === tb.dataset.camada); tb.querySelectorAll("tbody tr").forEach(tr => { tr.hidden = !passa(tr, fs); }); });
