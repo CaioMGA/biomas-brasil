@@ -170,3 +170,4 @@ html { scroll-behavior: smooth; }
 .folha svg .marca.novo { transform-box: fill-box; transform-origin: center; animation: bater .55s cubic-bezier(.2, .9, .3, 1.15) both; }
 @keyframes bater { from { transform: scale(1.7); opacity: 0; } 55% { opacity: .9; } to { transform: scale(1); } }
 @media (prefers-reduced-motion: reduce) { .folha svg .marca.novo { animation: none; } }
+.folha svg, .folha svg * { -webkit-user-select: none; user-select: none; }   /* o texto dos carimbos e do papel timbrado não pode ser selecionado */
