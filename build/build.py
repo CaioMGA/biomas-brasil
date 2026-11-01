@@ -48,6 +48,19 @@ def icon_png(n=180, ss=4):
     im2.paste((255, 255, 255, 255), mask=mask)
     import io; buf = io.BytesIO(); im2.resize((n, n), Image.LANCZOS).save(buf, "PNG"); return buf.getvalue()
 _svg = rd("data/icon.svg").decode()
+def pct_cx():
+    # centro horizontal da porcentagem: ponto médio entre a borda oeste e a leste do contorno, na faixa de altura do texto
+    # (assim sobra o mesmo espaço à esquerda e à direita; não é o centro da caixa do mapa)
+    pts = [tuple(map(float, q.split(","))) for q in BR_D.strip("MZ").split("L")]
+    cy, half = BR_H / 2 - 1, BR_W * .17 * .4
+    def row(y):
+        xs = []
+        for (x1, y1), (x2, y2) in zip(pts, pts[1:] + pts[:1]):
+            if (y1 <= y < y2) or (y2 <= y < y1): xs.append(x1 + (y - y1) * (x2 - x1) / (y2 - y1))
+        return min(xs), max(xs)
+    ys = [cy - half + 2 * half * i / 20 for i in range(21)]
+    left = max(row(y)[0] for y in ys); right = min(row(y)[1] for y in ys)
+    return (left + right) / 2
 def dem_chunks(n=300_000):
     # o relevo (PNG em base64, ~6 MB) vai fatiado em scripts pequenos; cada um avisa o loading, que sobe conforme o download avança
     d = uri("data/dem.png"); parts = [d[i:i + n] for i in range(0, len(d), n)]
@@ -59,7 +72,7 @@ rep = {
     "__ICONSVG__": "data:image/svg+xml," + urllib.parse.quote(_svg, safe="/:=,;"),
     "__ICONPNG__": "data:image/png;base64," + base64.b64encode(icon_png()).decode(),
     "__BRD__": BR_D, "__BRVB__": f"-8 -8 {BR_W + 14} {BR_H + 14}",
-    "__BRCX__": f"{BR_W / 2 - 1:.1f}", "__BRCY__": f"{BR_H / 2 - 1:.1f}", "__BRFS__": f"{BR_W * .17:.1f}",   # centro do mapa e tamanho da porcentagem
+    "__BRCX__": f"{pct_cx():.1f}", "__BRCY__": f"{BR_H / 2 - 1:.1f}", "__BRFS__": f"{BR_W * .17:.1f}",   # centro do mapa e tamanho da porcentagem
     "__W__": str(m["w"]), "__H__": str(m["h"]),
     "__CENT__": json.dumps(m["centroid"], ensure_ascii=False, separators=(",", ":")),
     "__BRCHAD__": uri("brchad-2026.png"),
