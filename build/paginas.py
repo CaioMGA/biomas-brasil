@@ -4,7 +4,7 @@ Chamado por build.py: gerar(root, dest_dir, br_path, brchad_uri). Plano em docs/
 import html, json, os, re, shutil, subprocess, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from loader_path import brasil_path
-import mapas
+import mapas, localizacao
 
 E = html.escape
 WPM, VIDEO_MIN, SPECIES_MIN, QUIZ_MIN = 200, 5, 2.5, 2
@@ -318,6 +318,7 @@ class Site:
 <p class="intro">{E(c.get("intro", ""))}</p>
 <p><span class="tm" style="color:var(--muted);font-size:14px">{fmt_min(self.total[id])} de leitura</span></p>
 <a class="voltar" href="/#{"" if id == "brasil" else id}">← Ver no mapa</a>
+{localizacao.figura(self.root, id, nome)}
 {self.vista_aerea(id)}
 {secs}
 </main>
