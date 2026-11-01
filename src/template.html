@@ -308,7 +308,7 @@ html.boot, html.boot body { overflow: hidden; }
 #loader .glow { fill: none; stroke: #f3e3a3; stroke-width: 7; stroke-linejoin: round; opacity: .35; filter: blur(5px); }
 #loader .line { fill: none; stroke: #f6ecc8; stroke-width: 2.4; stroke-linejoin: round; stroke-linecap: round; }
 #loader .head { fill: #fff; filter: drop-shadow(0 0 4px #fff3b8) drop-shadow(0 0 10px #ffd966) drop-shadow(0 0 22px #ffb83d); }
-.brchad { display: block; width: 160px; height: auto; image-rendering: pixelated; margin: 22px auto 4px; }
+.brchad { display: block; width: 80px; height: 15px; margin: 22px auto 4px; }
 #loader .brchad { margin: 0; opacity: .9; }
 #loader .msg { font: 500 13px/1 system-ui, -apple-system, "Segoe UI", sans-serif; letter-spacing: .28em; text-transform: uppercase; color: #cfd3bf; transition: opacity .3s ease; }
 #loader.filled .fill { fill-opacity: .75; }
@@ -401,7 +401,7 @@ body.lab-rios .rl:not(.gl) { pointer-events: auto; cursor: pointer; }
     <circle class="head" id="ldHead" r="3.6" cx="0" cy="0" opacity="0"/>
   </svg>
   <div class="msg">Carregando</div>
-  <img class="brchad" src="__BRCHAD__" width="160" height="30" alt="brchad 2026">
+  <img class="brchad" src="__BRCHAD__" width="80" height="15" alt="brchad 2026">
 </div>
 <noscript><style>#loader { display: none; } html.boot .panel { translate: 0 0; } html.navhide .navstack .pill, html.navhide .compass, html.navhide .pill.zm, html.navhide .chips > *, html.navhide .layers > *, html.navhide .exag { opacity: 1; }</style></noscript>
 <script>
@@ -670,7 +670,7 @@ function growBars(root) {
 
 /* ---------- Painel ---------- */
 const panel = document.getElementById("panel");
-const brchadFoot = () => el("img", { class: "brchad", src: "__BRCHAD__", width: "160", height: "30", alt: "brchad 2026" });
+const brchadFoot = () => el("img", { class: "brchad", src: "__BRCHAD__", width: "80", height: "15", alt: "brchad 2026" });
 const maxRain = Math.max(...LAND.map(b => RAIN[b.id].ano));
 function sources() {
   const s = el("div", { class: "src" });
