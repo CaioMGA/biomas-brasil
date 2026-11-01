@@ -43,10 +43,14 @@ main { position: relative; z-index: 1; }
 #gl.hover { cursor: pointer; }
 #gl.drag { cursor: grabbing; }
 
-.brand { position: absolute; left: 24px; top: 22px; pointer-events: none; }
-.brand .eyebrow { margin: 0 0 6px; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: #cfd3bf; text-shadow: 0 1px 4px #000, 0 0 10px rgba(0,0,0,.9); }
-.brand h1 { margin: 0; font: 400 clamp(38px, 5.2vw, 76px)/.95 var(--display); text-wrap: balance; text-shadow: 0 2px 6px rgba(0,0,0,.7), 0 0 26px rgba(0,0,0,.75); }
-.brand h1 em { font-style: italic; }
+.brand { position: absolute; left: 24px; top: 22px; pointer-events: none; isolation: isolate; }
+.brand::before { content: ""; position: absolute; z-index: -1; inset: -34px -70px -30px -44px; background: radial-gradient(ellipse 60% 62% at 40% 50%, rgba(5, 9, 6, .78) 0%, rgba(5, 9, 6, .5) 48%, transparent 100%); filter: blur(6px); }   /* mancha escura suave: separa o texto do relevo */
+.brand .eyebrow { margin: 0 0 8px; font: 700 12.5px/1.3 system-ui, -apple-system, "Segoe UI", sans-serif; letter-spacing: .14em; text-transform: uppercase; color: #fff1bf;
+  -webkit-text-stroke: 3px rgba(0,0,0,.85); paint-order: stroke fill; text-shadow: 0 1px 3px #000, 0 0 12px rgba(0,0,0,.95), 0 0 26px rgba(0,0,0,.8); }
+.brand h1 { margin: 0; font: 400 clamp(38px, 5.2vw, 76px)/.95 var(--display); text-wrap: balance; color: #fffaf0; letter-spacing: .005em;
+  -webkit-text-stroke: 7px rgba(4, 8, 5, .9); paint-order: stroke fill; stroke-linejoin: round;
+  text-shadow: 0 2px 0 rgba(0,0,0,.5), 0 4px 10px rgba(0,0,0,.65), 0 0 34px rgba(0,0,0,.85), 0 0 3px rgba(255, 214, 120, .35); }
+.brand h1 em { font-style: italic; color: #ffe8a3; }
 
 .labels { position: absolute; inset: 0; pointer-events: none; }
 .lbl { position: absolute; left: 0; top: 0; transform: translate(-50%, -50%); padding: 3px 10px; border: 0; background: transparent; cursor: pointer; pointer-events: auto;
