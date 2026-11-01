@@ -60,7 +60,8 @@ a { color: inherit; }
 .loc-br { fill: #efe29d; }
 .loc-uf { fill: none; stroke: #8c8c8c; stroke-width: .5px; vector-effect: non-scaling-stroke; stroke-linejoin: round; }
 .loc-br-borda { fill: none; stroke: #6f6f6f; stroke-width: .9px; vector-effect: non-scaling-stroke; stroke-linejoin: round; }
-.loc-bioma { fill: var(--accent); stroke: #8c8c8c; stroke-width: .6px; vector-effect: non-scaling-stroke; stroke-linejoin: round; }
+.loc-bioma { fill: var(--accent); stroke: none; }
+.loc-bioma-borda { fill: none; stroke: #8c8c8c; stroke-width: .6px; vector-effect: non-scaling-stroke; stroke-linejoin: round; }
 .loc figcaption { display: grid; gap: 12px; font-size: 15px; line-height: 1.5; color: var(--muted); }
 .loc-fonte { font-size: 12px; line-height: 1.45; }
 .loc-fonte a { text-decoration: underline; text-underline-offset: 2px; }

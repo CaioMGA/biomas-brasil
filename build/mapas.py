@@ -73,10 +73,12 @@ def dados_cliente(d):
         if c["id"] == "paises":
             o["itens"] = [{"nome": i["nome"], "d": caminho(P, i["rings"], True), "p": list(P(*i["rotulo"])) if i.get("rotulo") else None} for i in it]
             o["front"] = caminho(P, c.get("fronteiras", []), False)
-        elif c["id"] == "estados":
+        elif c["id"] in ("estados", "ecorregioes"):   # divisas com nomes (ecorregioes: só contornos, sem preenchimento)
             o["rotulos"] = [{"nome": i["nome"], "p": list(P(*i["rotulo"]))} for i in it if i.get("rotulo")]
             o["fills"] = [{"d": caminho(P, i["rings"], True), "i": i.get("cor", 0)} for i in it if i.get("rings")]   # estados pintados (cada um com sua cor); o bioma é desenhado por cima, de uma cor só
             o["front"] = caminho(P, c.get("fronteiras", []), False)
+        elif c["tipo"] == "cobertura":   # cobertura (ex.: floresta remanescente): polígonos fundidos num caminho só
+            o["d"] = caminho(P, [r for i in it for r in i["rings"]], True)
         elif c["id"] == "massas":
             g = {}
             for m in it: g.setdefault(m["tipo"], []).append(m["rings"])
@@ -92,7 +94,8 @@ def dados_cliente(d):
             o["itens"] = [{**{k: i[k] for k in i if k != "pt"}, "p": list(P(*i["pt"]))} for i in it]
         cam.append(o)
     return {"w": P.w, "h": P.h, "upk": round(P.u_por_km, 3), "limite": caminho(P, aneis(d["limite"]), True),
-            "limite_oficial": caminho(P, aneis(d.get("limite_oficial", [])), True), "limite_nome": d.get("limite_nome", "Limite do bioma"),
+            "contorno": caminho(P, d.get("limite_contorno", []), False),   # contorno externo do bioma (linhas abertas), quando o limite vem de várias peças
+            "limite_oficial": caminho(P, aneis(d.get("limite_oficial", [])), True), "oceano": bool(d.get("oceano")), "limite_nome": d.get("limite_nome", "Limite do bioma"),
             "limite_oficial_nome": d.get("limite_oficial_nome", ""), "grade": grade(P), "camadas": cam, "filtros": d["filtros"]}
 
 
@@ -104,7 +107,10 @@ def secao_html(d, nome_bioma):
     """Casca da seção: o SVG é montado pelo JS; sem JS ficam as listas, as fontes e as lacunas."""
     id = d["id"]
     por_id = {c["id"]: c for c in d["camadas"]}
-    ucs, cidades, povos = (por_id[k]["itens"] for k in ("ucs", "cidades", "povos"))
+    # camadas opcionais; "lista" = só as UCs que entram na lista em texto (as demais ficam fundidas no desenho)
+    ucs = por_id["ucs"].get("lista", por_id["ucs"]["itens"]) if "ucs" in por_id else []
+    cidades = por_id["cidades"]["itens"] if "cidades" in por_id else []
+    povos = por_id["povos"]["itens"] if "povos" in por_id else []
     ligados = "".join(
         f'<label class="mt-chk"><input type="checkbox" data-camada="{E(c["id"])}"{" checked" if c["ligada"] else ""}> {E(c["titulo"])}</label>'
         for c in d["camadas"]) + '<label class="mt-chk"><input type="checkbox" data-camada="grade"> Grade de coordenadas</label>'
@@ -124,6 +130,12 @@ def secao_html(d, nome_bioma):
     t_pov = tabela("povos", ["Localidade", "Tipo", "UF"], "".join(
         f'<tr data-tipo="{E(i["tipo"])}"><th scope="row">{E(i["nome"])}</th><td>{"Indígena" if i["tipo"] == "indigena" else "Quilombola"}</td><td>{E(i["uf"])}</td></tr>'
         for i in sorted(povos, key=lambda i: i["nome"])))
+    listas = ""
+    if ucs:
+        nota = por_id["ucs"].get("nota_lista", "")
+        listas += '<details class="mt-det"><summary>Unidades de conservação (%d) em lista</summary>%s%s</details>\n' % (len(ucs), ('<p class="cap">' + E(nota) + "</p>") if nota else "", t_uc)
+    if cidades: listas += '<details class="mt-det"><summary>Cidades (%d) em lista</summary>%s</details>\n' % (len(cidades), t_cid)
+    if povos: listas += '<details class="mt-det"><summary>Localidades indígenas e quilombolas (%d) em lista</summary>%s</details>\n' % (len(povos), t_pov)
     fontes = "".join(
         f'<li><a href="{E(f["url"])}" target="_blank" rel="noopener">{E(f["titulo"])}</a> — dados de {E(f["data"])}; {E(f["licenca"])}.</li>' for f in d["fontes"].values())
     notas = "".join(f'<li><b>{E(c["titulo"])}:</b> {E(c["nota"])}</li>' for c in d["camadas"])
@@ -146,10 +158,7 @@ def secao_html(d, nome_bioma):
 <div class="mt-leg" aria-hidden="true"></div>
 <p class="mt-info" role="status" aria-live="polite">Toque ou passe o mouse sobre uma unidade de conservação, sede ou localidade para ver os detalhes.</p>
 <figcaption class="cap">{E(d.get("titulo", ""))}. Mapa plano, sem zoom: use as camadas e os filtros. {E(d.get("aviso_escopo", ""))} <span class="mt-fonte-curta">{fontes_curtas}</span></figcaption>
-<details class="mt-det"><summary>Unidades de conservação ({len(ucs)}) em lista</summary>{t_uc}</details>
-<details class="mt-det"><summary>Sedes municipais ({len(cidades)}) em lista</summary>{t_cid}</details>
-<details class="mt-det"><summary>Localidades indígenas e quilombolas ({len(povos)}) em lista</summary>{t_pov}</details>
-<details class="mt-det"><summary>Sobre os dados deste mapa</summary>
+{listas}<details class="mt-det"><summary>Sobre os dados deste mapa</summary>
 <ul class="mt-fonte">{notas}</ul>
 <h4>Fontes</h4><ul class="mt-fonte">{fontes}</ul>
 <h4>Lacunas por validar</h4><ul class="mt-fonte">{lacunas}</ul>

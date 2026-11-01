@@ -25,6 +25,8 @@
 
 /* ---- paleta do mapa ---- */
 .mt-terra { fill: #f1eedf; }
+.mt-oceano { fill: #bcd9ec; }
+.mt-sem-paises .mt-pais { fill: #f1eedf; }
 .mt-pais-0 { fill: #f4eed2; } .mt-pais-1 { fill: #ecdfc8; } .mt-pais-2 { fill: #efd9d2; }
 .mt-pais-3 { fill: #e2e6d3; } .mt-pais-4 { fill: #e8dfe6; } .mt-pais-5 { fill: #dfe6e8; }
 /* estados do Brasil: cores diferentes (sem verde nem azul, que são do bioma e da água) */
@@ -44,6 +46,7 @@
 .mt-uc.mt-sel { stroke-width: 3.2px; stroke: #000; }
 .mt-uc, .mt-pin { cursor: pointer; }
 .mt-front { fill: none; stroke: #6a3d6e; stroke-width: 1.8px; stroke-dasharray: 8 3 2 3; }
+.mt-eco { fill: none; stroke: #2f6f66; stroke-width: 1px; stroke-dasharray: 1 3; stroke-linecap: round; }
 .mt-uf { fill: none; stroke: #9c8f6c; stroke-width: .9px; stroke-dasharray: 2 3; }
 .mt-pt { stroke: #fff; stroke-width: 1.4px; }
 .mt-pt-cid { fill: #222; }
@@ -54,6 +57,7 @@
 .mt-rot-rio { font-style: italic; fill: #1b5e8c; }
 .mt-rot-uf { font-size: 10.5px; fill: #7a6e4d; letter-spacing: .12em; text-transform: uppercase; }
 .mt-rot-pais { font-size: 17px; font-weight: 600; fill: #8a7d9a; letter-spacing: .3em; text-transform: uppercase; stroke-width: 3px; }
+.mt-rot-eco { font-size: 11px; font-style: italic; fill: #2f6f66; }
 .mt-rot-grade { font-size: 10.5px; fill: #5c7380; font-weight: 400; stroke-width: 3px; }
 .mt-rot-esc { font-size: 12px; font-weight: 600; }
 .mt-escala { stroke: #222; stroke-width: 3px; stroke-linecap: butt; }
