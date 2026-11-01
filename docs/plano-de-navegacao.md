@@ -9,7 +9,7 @@ Páginas estáticas geradas por `build/build.py` (leves, sem three.js, boas no c
 | URL | O que é |
 |---|---|
 | `/` | O mapa 3D, como hoje. |
-| `/biomas/` | Hub: passaporte no topo e um cartão por região (silhueta na cor do bioma, nome, introdução, tempo de leitura, "lido"/selo). Inclui o Brasil. |
+| `/biomas/` | Hub: passaporte no topo e um cartão por região (silhueta na cor do bioma, nome, introdução, "lido"/"carimbado"). Inclui o Brasil. |
 | `/biomas/<id>/` | Conteúdo de cada um dos 7 biomas (`amazonia`, `cerrado`, `mata-atlantica`, `caatinga`, `pampa`, `pantanal`, `costeiro`). |
 | `/brasil/` | Abertura do Brasil: comparador, glossário, linha do tempo, quiz final, créditos e fontes. |
 | `/sobre/` | Como foi feito: tecnologias, dados e fontes, créditos (repetidos do Brasil) e contato. |
@@ -18,8 +18,8 @@ Páginas estáticas geradas por `build/build.py` (leves, sem three.js, boas no c
 
 - Barra fixa em todas as páginas: **Mapa · Biomas · Sobre**. No mapa ela só aparece depois do loading e da abertura.
 - No mapa, **Mergulhar** navega para `/biomas/<id>/`. Lá, **Ver no mapa** leva a `/#<id>`, com o bioma enquadrado. Vindo de outra página do site (referrer do mesmo domínio), o mapa não mostra o loading com tempo mínimo nem a abertura: isso fica só para quem abre a home direto.
-- Páginas de conteúdo: layout do modo leitura atual no desktop (índice lateral, barra de progresso, minutos por seção, seções lidas marcadas).
-- Rodapé de cada página de conteúdo: passaporte e sugestões dos outros biomas, **primeiro os não lidos**, com tempo de leitura e selo, e por último os já lidos.
+- Páginas de conteúdo: layout do modo leitura atual no desktop (índice lateral, barra de progresso, seções lidas marcadas).
+- Rodapé de cada página de conteúdo: passaporte e sugestões dos outros biomas, **primeiro os não lidos**, e por último os já lidos e carimbados.
 - Passaporte também no topo do hub.
 - Sem tempos de leitura em cartões, índices e seções; o tempo total aparece só abaixo do tagline das páginas de bioma e do Brasil.
 
