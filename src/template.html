@@ -2102,7 +2102,8 @@ function drawFx(dt) {
   const $ = id => document.getElementById(id);
   const LABS = [
     { id: "textos", nome: "Textos do mapa", desc: "Mover, girar, redimensionar, curvar e espaçar os textos do mapa." },
-    { id: "rios", nome: "Nomes dos rios", desc: "Lista de todos os rios; clicar realça o rio em verde-limão e permite trocar só o texto do nome." }
+    { id: "rios", nome: "Nomes dos rios", desc: "Lista de todos os rios; clicar realça o rio em verde-limão e permite trocar só o texto do nome." },
+    { id: "carimbo", nome: "Carimbos e tremor", desc: "Timing das animações de carimbo e intensidade e duração do tremor do passaporte.", href: "/lab-carimbo/" }   // página própria, fora do mapa
   ];
   const q = new URLSearchParams(location.search);
   if (!q.has("lab") && !q.has("labs")) return;
@@ -2111,7 +2112,7 @@ function drawFx(dt) {
     const menu = $("labMenu"), box = $("labMenuBtns");
     LABS.forEach(l => {
       const a = document.createElement("a"), u = new URL(location.href); u.searchParams.delete("labs"); u.searchParams.set("lab", l.id);
-      a.href = u.toString(); a.innerHTML = "<b></b><span></span>"; a.firstChild.textContent = l.nome; a.lastChild.textContent = l.desc; box.appendChild(a);
+      a.href = l.href || u.toString(); a.innerHTML = "<b></b><span></span>"; a.firstChild.textContent = l.nome; a.lastChild.textContent = l.desc; box.appendChild(a);
     });
     menu.hidden = false; return;
   }
