@@ -51,7 +51,7 @@ main { position: relative; z-index: 1; }
   -webkit-text-stroke: 7px rgba(4, 8, 5, .9); paint-order: stroke fill; stroke-linejoin: round;
   text-shadow: 0 2px 0 rgba(0,0,0,.5), 0 4px 10px rgba(0,0,0,.65), 0 0 34px rgba(0,0,0,.85), 0 0 3px rgba(255, 214, 120, .35); }
 .brand h1 em { font-style: italic; color: #ffe8a3; }
-.brand h1 .bra span { color: color-mix(in srgb, var(--lc) 82%, #fff); }   /* uma cor de bioma por letra: 6 letras, 6 biomas continentais */
+.brand h1 .bra { color: color-mix(in srgb, var(--c-amazonia) 82%, #fff); }   /* "Brasil" na cor da Amazônia */
 
 .labels { position: absolute; inset: 0; pointer-events: none; }
 .lbl { position: absolute; left: 0; top: 0; transform: translate(-50%, -50%); padding: 3px 10px; border: 0; background: transparent; cursor: pointer; pointer-events: auto;
@@ -410,7 +410,7 @@ html.nav-in .navstack .pill, html.nav-in .compass, html.nav-in .pill.zm, html.na
     </div>
     <div class="brand">
       <p class="eyebrow">Atlas dos biomas · limites do IBGE, 2019</p>
-      <h1>Biomas<br><em>do <span class="bra" aria-label="Brasil"><span style="--lc: var(--c-amazonia)">B</span><span style="--lc: var(--c-cerrado)">r</span><span style="--lc: var(--c-mata-atlantica)">a</span><span style="--lc: var(--c-caatinga)">s</span><span style="--lc: var(--c-pampa)">i</span><span style="--lc: var(--c-pantanal)">l</span></span></em></h1>
+      <h1>Biomas<br><em>do <span class="bra">Brasil</span></em></h1>
     </div>
     <div class="dock">
       <p class="hint">Arraste para mover o mapa. Arraste a bússola (ou use o botão direito) para girar e inclinar, Shift + arrastar só inclina e a roda do mouse dá zoom. Clique em um bioma para destacá-lo e use a mira ao lado dele para enquadrá-lo inteiro.</p>
