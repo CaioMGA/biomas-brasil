@@ -85,8 +85,8 @@ def figura(root, id, nome):
     fonte = ('<span class="loc-fonte">Fontes: países e estados do Brasil: <a href="https://www.naturalearthdata.com/" target="_blank" rel="noopener">Natural Earth</a> (domínio público)' + ("; " + bio if bio else "") + ".</span>")
     S = max(P.w, P.h); vx, vy = -(S - P.w) // 2, -(S - P.h) // 2   # moldura quadrada: o continente fica centralizado, com oceano nas sobras
     return (f'<figure class="loc"><div class="loc-mapa"><svg viewBox="{vx} {vy} {S} {S}" role="img" aria-label="{E(desc)}" preserveAspectRatio="xMidYMid meet">'
-            f'<rect class="loc-mar" x="{vx}" y="{vy}" width="{S}" height="{S}"/><path class="loc-terra" d="{terra}"/><path class="loc-br" d="{brasil}"/>'
-            f'<path class="loc-uf" d="{estados}"/><path class="loc-br-borda" d="{brasil}"/><path class="loc-bioma" d="{biom}"/><path class="loc-bioma-borda" d="{borda}"/></svg>'
+            f'<rect class="loc-mar" x="{vx}" y="{vy}" width="{S}" height="{S}"/><path class="loc-terra" d="{terra}"/><path class="loc-br" d="{brasil}"/><path class="loc-bioma" d="{biom}"/>'
+            f'<path class="loc-front" d="{terra}"/><path class="loc-uf" d="{estados}"/><path class="loc-br-borda" d="{brasil}"/><path class="loc-bioma-borda" d="{borda}"/></svg>'
             f'<p class="loc-mini">{E(nome)} em destaque na América do Sul</p></div>'
             f'<figcaption>{cap}{fonte}<span class="loc-leg"><i class="loc-sw loc-sw-bioma"></i>{E(nome)}</span></figcaption></figure>')
 
