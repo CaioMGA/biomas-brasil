@@ -135,12 +135,35 @@ class Site:
             b.update(self.C.get(b["id"], {}).get("painel", {}))
         self.outl = json.load(open(os.path.join(root, "data/outlines.json")))
         self.mapas = {i: m for i, m in ((i, mapas.carregar(root, i)) for i in self.C) if m}   # mapas temáticos por bioma (opcional)
+        self.fotos = {i: f for i, f in ((i, self.carregar_fotos(i)) for i in self.C) if f}   # fotos das espécies (opcional): data/fotos/<id>.json, por nome científico
         self.plan = {i: plano(i, self.C[i], i in self.mapas) for i in self.C}
         self.total = {i: sum(s["min"] for s in p) for i, p in self.plan.items()}
         self.regioes = [self.regiao(i) for i in ["brasil"] + ORDEM if i in self.C]
         self.P = passaporte(root, br_path)
 
     # ---- dados de cada região ----
+    def carregar_fotos(self, id):
+        p = os.path.join(self.root, "data", "fotos", id + ".json")
+        return json.load(open(p, encoding="utf-8")) if os.path.exists(p) else None
+
+    def carrossel(self, id, esp, fotos):
+        """Fichas de espécies em carrossel: rolagem com snap (funciona sem JS); o JS acrescenta botões, contador e setas do teclado."""
+        n = len(esp); slides = []
+        for i, e in enumerate(esp):
+            f = fotos.get(e["c"])
+            if f:
+                cred = f'Foto: {E(f["autor"])} · <a href="{E(f["licenca_url"])}" target="_blank" rel="noopener">{E(f["licenca"])}</a> · <a href="{E(f["fonte_url"])}" target="_blank" rel="noopener">Wikimedia Commons</a>'
+                fig = (f'<figure class="car-fig"><img src="/assets/fotos/{id}/{E(f["arquivo"])}" width="{f["w"]}" height="{f["h"]}" alt="{E(f["alt"])}" loading="lazy" decoding="async">'
+                       f'<figcaption>{cred}</figcaption></figure>')
+            else:
+                fig = '<figure class="car-fig car-sem"><div>Sem foto de licença livre confirmada para esta espécie.</div></figure>'
+            slides.append(f'<li class="car-slide" role="group" aria-roledescription="slide" aria-label="{i + 1} de {n}: {E(e["n"])}">{fig}'
+                          f'<div class="sp"><h3>{E(e["n"])}<small>{E(e["t"])}</small></h3><em>{E(e["c"])}</em><p>{E(e["d"])}</p></div></li>')
+        return (f'<div class="car" role="region" aria-roledescription="carrossel" aria-label="Fichas de espécies: {E(self.nome(id))}">'
+                f'<div class="car-ctl" hidden><button type="button" class="car-prev" aria-label="Espécie anterior">←</button>'
+                f'<span class="car-n" aria-live="polite">1 de {n}</span><button type="button" class="car-next" aria-label="Próxima espécie">→</button></div>'
+                f'<ul class="car-track" tabindex="0" aria-label="Espécies, use as setas do teclado ou deslize">{"".join(slides)}</ul></div>')
+
     def nome(self, id):
         return "Brasil" if id == "brasil" else self.byId[id]["name"]
 
@@ -238,6 +261,9 @@ class Site:
             if s["s"].get("chuva") and id != "brasil":
                 corpo += f'<div class="chuva-bioma" data-bioma="{id}"></div>'
             corpo += "".join(f"<p>{E(t)}</p>" for t in s["s"]["p"])
+        elif k == "especies" and id in self.fotos:
+            corpo += self.carrossel(id, c["especies"], self.fotos[id])
+            corpo += '<p class="cap">Fotos de espécimes com licença livre, do Wikimedia Commons; autor e licença aparecem em cada ficha.</p>'
         elif k == "especies":
             corpo += '<div class="sp-grid">' + "".join(
                 f'<div class="sp"><h3>{E(e["n"])}<small>{E(e["t"])}</small></h3><em>{E(e["c"])}</em><p>{E(e["d"])}</p></div>' for e in c["especies"]) + "</div>"
@@ -404,6 +430,11 @@ class Site:
         rd = lambda f: open(os.path.join(self.root, f), encoding="utf-8").read()
         open(os.path.join(self.dest, "assets/site.css"), "w", encoding="utf-8").write(rd("src/pagina.css") + "\n" + rd("src/comum.css"))
         open(os.path.join(self.dest, "assets/site.js"), "w", encoding="utf-8").write(rd("src/comum.js") + "\n" + rd("src/pagina.js"))
+        if self.fotos:   # fotos das espécies (data/fotos/<id>/*.jpg) → assets/fotos/<id>/
+            for i in self.fotos:
+                os.makedirs(os.path.join(self.dest, "assets/fotos", i), exist_ok=True)
+                for f in os.listdir(os.path.join(self.root, "data/fotos", i)):
+                    shutil.copy(os.path.join(self.root, "data/fotos", i, f), os.path.join(self.dest, "assets/fotos", i, f))
         if self.mapas:   # mapas temáticos: CSS/JS próprios (nada disso entra no HERO MAP) e um JSON por bioma, carregado sob demanda
             os.makedirs(os.path.join(self.dest, "assets/mapas"), exist_ok=True)
             for f in ("mapa-tematico.css", "mapa-tematico.js"):

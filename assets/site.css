@@ -51,6 +51,21 @@ a { color: inherit; }
 .sp h3 small { margin-left: 8px; font: 500 11px var(--body); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
 .sp em { display: block; margin: 2px 0 6px; font-size: 14px; color: var(--muted); }
 .sp p { margin: 0; font-size: 16px; line-height: 1.55; }
+/* Carrossel de fichas de espécies (cada ficha tem foto, nomes e descrição); sem JS continua rolável com snap */
+.car { margin-top: 18px; }
+.car-ctl { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; font-size: 14px; color: var(--muted); }
+.car-ctl button { min-width: 44px; min-height: 44px; border: 1px solid var(--rule); background: rgba(255,255,255,.04); color: var(--ink); font-size: 20px; cursor: pointer; border-radius: 999px; }
+.car-ctl button:hover:not(:disabled) { background: rgba(255,255,255,.1); border-color: var(--accent); }
+.car-ctl button:disabled { opacity: .35; cursor: default; }
+.car-track { display: flex; margin: 0; padding: 0; list-style: none; overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; scrollbar-width: thin; }
+.car-slide { flex: 0 0 100%; min-width: 0; scroll-snap-align: start; }
+.car-fig { margin: 0; }
+.car-fig img { display: block; width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: cover; background: rgba(255,255,255,.05); }
+.car-fig figcaption { margin-top: 6px; font-size: 12px; color: var(--muted); }
+.car-fig figcaption a { text-decoration: underline; text-underline-offset: 2px; }
+.car-sem div { display: grid; place-items: center; aspect-ratio: 3 / 2; padding: 16px; text-align: center; font-size: 14px; color: var(--muted); border: 1px dashed var(--rule); }
+.car-slide .sp { margin-top: 10px; }
+@media (prefers-reduced-motion: reduce) { .car-track { scroll-behavior: auto; } }
 .vid-grid { display: grid; gap: 18px; margin-top: 18px; }
 .vid { margin: 0; }
 .vid .fr { position: relative; aspect-ratio: 16/9; background: #000 center/cover no-repeat; border: 0; width: 100%; padding: 0; cursor: pointer; display: block; }
