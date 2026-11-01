@@ -43,9 +43,10 @@ const BiomasUI = (() => {
   const COR = { amazonia: "#5ea56e", cerrado: "#b38b3c", "mata-atlantica": "#2da895", caatinga: "#cb7a61", pampa: "#9486cf", pantanal: "#25a3ba", costeiro: "#5f96d2", brasil: "#1b2f8a", completa: "#c8352b" };
 
   /* Aplica a tinta (falhas e borda irregular), a rotação e a mistura por multiplicação: onde dois carimbos se sobrepõem, as cores se somam. */
+  let novos = new Set();   // carimbos aceitos agora: entram na folha com a animação de carimbada
   function acabar(id, cor, pos, g, rot, dx, dy, sc, seed) {
     const defs = `<filter id="tt-${id}" x="-15%" y="-15%" width="130%" height="130%"><feTurbulence type="fractalNoise" baseFrequency="0.38" numOctaves="3" seed="${seed}" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  2.6 0 0 0 -0.42" result="m"/><feComposite in="SourceGraphic" in2="m" operator="in" result="g"/><feTurbulence type="turbulence" baseFrequency="0.035" numOctaves="2" seed="${seed + 5}" result="w"/><feDisplacementMap in="g" in2="w" scale="2.6" xChannelSelector="R" yChannelSelector="G"/></filter>`;
-    return { defs, g: `<g style="mix-blend-mode:multiply" filter="url(#tt-${id})" opacity=".9"><g transform="translate(${(pos[0] + +dx).toFixed(1)} ${(pos[1] + +dy).toFixed(1)}) rotate(${rot}) scale(${sc})" fill="none" stroke="${cor}" stroke-linecap="round" stroke-linejoin="round" font-family="'Instrument Sans',system-ui,sans-serif">${g}</g></g>` };
+    return { defs, g: `<g class="marca${novos.has(id) ? " novo" : ""}" style="mix-blend-mode:multiply" filter="url(#tt-${id})" opacity=".9"><g transform="translate(${(pos[0] + +dx).toFixed(1)} ${(pos[1] + +dy).toFixed(1)}) rotate(${rot}) scale(${sc})" fill="none" stroke="${cor}" stroke-linecap="round" stroke-linejoin="round" font-family="'Instrument Sans',system-ui,sans-serif">${g}</g></g>` };
   }
 
   function carimbo(reg, idx, pos, r, em) {
@@ -56,15 +57,22 @@ const BiomasUI = (() => {
     const txt = (t, y, fs, extra = "") => `<text x="0" y="${y}" text-anchor="middle" font-size="${fs.toFixed(1)}" ${extra}>${t}</text>`;
     const dupla = (draw) => draw(1, 2.6) + draw(0, 1);   // contorno grosso + fio interno
     let g = "";
-    if (forma === "circulo" || forma === "circulo2" || forma === "brasil") {
-      const R = forma === "brasil" ? r * 1.12 : r, a = R - 12.5, b = R - 8.5;
-      g += `<circle r="${R}" stroke-width="${forma === "brasil" ? 3.2 : 2.6}"/><circle r="${R - 5}" stroke-width="1" ${forma === "circulo2" ? 'stroke-dasharray="1.3 2.6"' : ""}/>`;
+    if (forma === "circulo" || forma === "circulo2") {
+      const R = r, a = R - 12.5, b = R - 8.5;
+      g += `<circle r="${R}" stroke-width="2.6"/><circle r="${R - 5}" stroke-width="1" ${forma === "circulo2" ? 'stroke-dasharray="1.3 2.6"' : ""}/>`;
       g += `<path id="at-${id}" d="M ${-a},0 A ${a} ${a} 0 0 1 ${a},0" fill="none" stroke="none"/><path id="ab-${id}" d="M ${-b},0 A ${b} ${b} 0 0 0 ${b},0" fill="none" stroke="none"/>`;
       g += `<text font-size="7.2" font-weight="700" letter-spacing="1.5" ${TX}><textPath href="#at-${id}" startOffset="50%" text-anchor="middle">BIOMAS DO BRASIL</textPath></text>`;
       g += `<text font-size="6.8" font-weight="700" letter-spacing="1.8" ${TX}><textPath href="#ab-${id}" startOffset="50%" text-anchor="middle">★ CARIMBADO ★</textPath></text>`;
       g += `<line x1="${-(R - 9)}" x2="${R - 9}" y1="-9" y2="-9" stroke-width="1"/><line x1="${-(R - 9)}" x2="${R - 9}" y1="9" y2="9" stroke-width="1"/>`;
       g += txt(nome, 4.5, fit(nome, 2 * R - 20, 13), `font-weight="800" ${TX}`);
       if (data) g += txt(data, 18.5, 7.6, `font-weight="700" letter-spacing=".6" ${TX}`);
+    } else if (forma === "brasil") {   // losango alongado na horizontal, na proporção do da bandeira (cerca de 1,4 : 1)
+      const Rx = r * 1.62, Ry = r * 1.16, rombo = k => `0,${-(Ry - k * .72)} ${Rx - k},0 0,${Ry - k * .72} ${-(Rx - k)},0`;
+      g += `<polygon points="${rombo(0)}" stroke-width="3.2"/><polygon points="${rombo(6)}" stroke-width="1"/>`;
+      g += txt("BIOMAS DO BRASIL", -Ry * .42, 7, `font-weight="700" letter-spacing="1.3" ${TX}`);
+      g += `<line x1="${-Rx * .55}" x2="${Rx * .55}" y1="${-Ry * .42 + 5}" y2="${-Ry * .42 + 5}" stroke-width="1"/><line x1="${-Rx * .55}" x2="${Rx * .55}" y1="${Ry * .3}" y2="${Ry * .3}" stroke-width="1"/>`;
+      g += txt(nome, 5, fit(nome, Rx * 1.05, 17), `font-weight="900" ${TX}`);
+      g += txt(data || "★ ★ ★", Ry * .3 + 12, 7.8, `font-weight="700" letter-spacing=".6" ${TX}`);
     } else if (forma === "retangulo" || forma === "corte") {
       const w = r * 2.25, h = r * 1.5;
       if (forma === "retangulo") g += `<rect x="${-w / 2}" y="${-h / 2}" width="${w}" height="${h}" rx="5" stroke-width="2.6"/><rect x="${-w / 2 + 4.5}" y="${-h / 2 + 4.5}" width="${w - 9}" height="${h - 9}" rx="2.5" stroke-width="1"/>`;
@@ -104,15 +112,11 @@ const BiomasUI = (() => {
 
   const PAPEL = `<filter id="papel" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency="0.012 0.017" numOctaves="4" seed="7" result="n"/><feDiffuseLighting in="n" surfaceScale="2.4" diffuseConstant="1.12" lighting-color="#fcf7e8" result="l"><feDistantLight azimuth="228" elevation="56"/></feDiffuseLighting><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="3" result="g"/><feColorMatrix in="g" type="matrix" values="0 0 0 0 .25  0 0 0 0 .2  0 0 0 0 .12  .16 0 0 0 0" result="gr"/><feBlend in="gr" in2="l" mode="normal"/></filter><radialGradient id="vig" cx="50%" cy="50%" r="75%"><stop offset="60%" stop-color="#7a5c28" stop-opacity="0"/><stop offset="100%" stop-color="#7a5c28" stop-opacity=".2"/></radialGradient>`;
 
-  /* Papel timbrado: nome do site em fonte do site, no canto inferior direito, com a barra de gradiente do painel do Brasil logo abaixo.
-     Medidas em unidades do viewBox da folha. */
-  const TIMBRE = { dir: 14, base: 24, fs: 19, larg: 124, barra: 3.6, folga: 5 };
-  const BANDEIRA = [["#009c3b", 0], ["#ffdf00", .3333], ["#002776", .6667], ["#fff", 1]];   // mesmo degradê da faixa do painel do Brasil na home
+  /* Papel timbrado: nome do site em fonte do site, no canto inferior direito. Medidas em unidades do viewBox da folha. */
+  const TIMBRE = { dir: 14, base: 20, fs: 19, larg: 124 };
   function timbre(P) {
     const [vx, vy, vw, vh] = P.vb, lx = vx + vw - TIMBRE.dir, ly = vy + vh - TIMBRE.base;
-    return `<linearGradient id="bandeira" x1="0" x2="1" y1="0" y2="0">${BANDEIRA.map(([c, o]) => `<stop offset="${o}" stop-color="${c}"/>`).join("")}</linearGradient>
-<text x="${lx}" y="${ly}" text-anchor="end" font-size="${TIMBRE.fs}" font-family="'Instrument Serif',Georgia,serif" fill="#23241f" textLength="${TIMBRE.larg}" lengthAdjust="spacingAndGlyphs">Biomas do Brasil</text>
-<rect x="${lx - TIMBRE.larg}" y="${ly + TIMBRE.folga}" width="${TIMBRE.larg}" height="${TIMBRE.barra}" fill="url(#bandeira)" stroke="rgba(0,0,0,.28)" stroke-width=".3"/>`;
+    return `<text x="${lx}" y="${ly}" text-anchor="end" font-size="${TIMBRE.fs}" font-family="'Instrument Serif',Georgia,serif" fill="#23241f" textLength="${TIMBRE.larg}" lengthAdjust="spacingAndGlyphs">Biomas do Brasil</text>`;
   }
 
   /* SVG da folha: papel levemente amassado, contorno do Brasil e dos biomas em traço fino e falho, e os carimbos. */
@@ -146,9 +150,7 @@ const BiomasUI = (() => {
       const k = sw / vw, rx = m + sw - TIMBRE.dir * k, by = top + sh - TIMBRE.base * k;
       x.save(); x.fillStyle = "#23241f"; x.textAlign = "right"; x.font = `400 ${TIMBRE.fs * k}px "Instrument Serif", Georgia, serif`;
       x.fillText("Biomas do Brasil", rx, by, TIMBRE.larg * k);
-      const g = x.createLinearGradient(rx - TIMBRE.larg * k, 0, rx, 0); BANDEIRA.forEach(([c, o]) => g.addColorStop(o, c));
-      x.fillStyle = g; x.fillRect(rx - TIMBRE.larg * k, by + TIMBRE.folga * k, TIMBRE.larg * k, TIMBRE.barra * k);
-      x.strokeStyle = "rgba(0,0,0,.28)"; x.lineWidth = .3 * k; x.strokeRect(rx - TIMBRE.larg * k, by + TIMBRE.folga * k, TIMBRE.larg * k, TIMBRE.barra * k); x.restore();
+      x.restore();
     }
     x.font = '500 30px "Instrument Sans", system-ui, sans-serif'; x.fillStyle = completo ? "#e0675c" : "#b6bba4";
     x.fillText(completo ? "Jornada pelos Biomas do Brasil completa" : `${n} de ${reg.length} biomas carimbados`, m, top + sh + 70);
@@ -169,19 +171,63 @@ const BiomasUI = (() => {
     btn.textContent = lbl; btn.disabled = false;
   }
 
-  /* Bloco do passaporte: texto de progresso (ou a mensagem de jornada completa), a folha e o botão de compartilhar. */
-  function passaporte(P, c) {
-    const box = document.createElement("div"), reg = P.regs.filter(r => r.id !== "brasil"), n = reg.filter(r => c[r.id] != null).length, completo = n === reg.length;
+  /* ---------- Estado dos carimbos (localStorage) ----------
+     biomas:carimbos = { <bioma>: { em: "AAAA-MM-DD" (dia em que o quiz foi vencido), aceito: true | false } }
+     O carimbo é ganho ao vencer o quiz e só entra na folha depois que o visitante aceita. */
+  const ler = (k, d, area = localStorage) => { try { const v = area.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } };
+  const gravar = (k, v, area = localStorage) => { try { area.setItem(k, JSON.stringify(v)); } catch (e) {} };
+  const hoje = () => new Date().toLocaleDateString("sv-SE");
+  const KC = "biomas:carimbos", KP = "biomas:prog", KA = "biomas:adiado";
+  const avisar = () => dispatchEvent(new CustomEvent("biomas:carimbos"));
+  function carimbos() {   // sincroniza com os quizzes já vencidos (quem venceu antes do aceite existir entra como pendente, com a data do quiz)
+    const c = ler(KC, {}), prog = ler(KP, {}); let mudou = false;
+    for (const id in prog) { const q = prog[id] && prog[id].quiz; if (q && q.ok / q.n >= .6 && !c[id]) { c[id] = { em: q.em || hoje(), aceito: false }; mudou = true; } }
+    if (mudou) gravar(KC, c);
+    return c;
+  }
+  function registrarGanho(id) { const c = carimbos(); if (!c[id]) { c[id] = { em: hoje(), aceito: false }; gravar(KC, c); } avisar(); }   // chamado quando o visitante vence o quiz
+  const carimbado = id => !!(carimbos()[id] && carimbos()[id].aceito);
+  const aceitos = () => { const o = {}, c = carimbos(); for (const id in c) if (c[id].aceito) o[id] = c[id].em; return o; };
+  const pendentes = ids => { const c = carimbos(); return ids.filter(id => c[id] && !c[id].aceito); };
+  function aceitar(ids) { const c = carimbos(); ids.forEach(id => { if (c[id]) c[id].aceito = true; }); gravar(KC, c); novos = new Set(ids); setTimeout(() => { novos = new Set(); }, 1500); avisar(); }
+  function adiar(ids) { gravar(KA, [...new Set([...ler(KA, [], sessionStorage), ...ids])], sessionStorage); avisar(); }   // "Depois": não pergunta de novo nesta sessão
+
+  /* Pergunta sobre a folha: aparece quando há carimbos ganhos e ainda não aceitos. */
+  function aviso(pend, nomeDe) {
+    const bi = pend.filter(i => i !== "brasil").map(nomeDe), br = pend.includes("brasil");
+    const lista = a => a.length > 1 ? a.slice(0, -1).join(", ") + " e " + a[a.length - 1] : a[0];
+    let t = "Você recebeu ";
+    if (!bi.length) t += "o carimbo do Brasil";
+    else t += `${bi.length > 1 ? "os carimbos dos biomas" : "o carimbo do bioma"} ${lista(bi)}${br ? " e o carimbo do Brasil" : ""}`;
+    t += ". Deseja carimbar seu passaporte agora?";
+    const box = document.createElement("div"); box.className = "folha-aviso"; box.setAttribute("role", "alertdialog"); box.setAttribute("aria-label", "Carimbos recebidos");
+    const p = document.createElement("p"); p.textContent = t;
+    const bs = document.createElement("div"); bs.className = "folha-aviso-bt";
+    const sim = document.createElement("button"), dep = document.createElement("button"); sim.type = dep.type = "button"; sim.className = "sim"; sim.textContent = "Sim"; dep.textContent = "Depois";
+    sim.addEventListener("click", () => aceitar(pend)); dep.addEventListener("click", () => adiar(pend));
+    bs.append(sim, dep); box.append(p, bs); return box;
+  }
+
+  /* Bloco do passaporte: texto de progresso (ou a mensagem de jornada completa), a folha com os carimbos aceitos, a pergunta sobre os pendentes e o botão de compartilhar. */
+  function passaporte(P) {
+    const box = document.createElement("div"), ids = P.regs.map(r => r.id), nomeDe = id => P.regs.find(r => r.id === id).nome;
     const mk = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; e.textContent = txt; return e; };
-    box.appendChild(mk("p", "kicker", "Passaporte"));
-    if (completo) { const m = mk("div", "pass-fim"); m.append(mk("strong", "", "Você carimbou todos os biomas!"), mk("span", "", "Você completou sua jornada pelos Biomas do Brasil, parabéns!")); box.appendChild(m); }
-    else box.appendChild(mk("p", "lead", `${n} de ${reg.length} biomas carimbados. Acerte o quiz de um bioma para carimbá-lo na folha.`));
-    box.appendChild(folha(P, c));
-    if (n || c.brasil != null) { const b = mk("button", "pass-btn", "Compartilhar passaporte"); b.type = "button"; b.addEventListener("click", () => compartilhar(P, c, b)); box.appendChild(b); }
+    function desenhar() {
+      const c = aceitos(), reg = P.regs.filter(r => r.id !== "brasil"), n = reg.filter(r => c[r.id] != null).length, completo = n === reg.length;
+      box.replaceChildren(mk("p", "kicker", "Passaporte"));
+      if (completo) { const m = mk("div", "pass-fim"); m.append(mk("strong", "", "Você carimbou todos os biomas!"), mk("span", "", "Você completou sua jornada pelos Biomas do Brasil, parabéns!")); box.appendChild(m); }
+      else box.appendChild(mk("p", "lead", `${n} de ${reg.length} biomas carimbados. Acerte o quiz de um bioma para ganhar o carimbo dele.`));
+      const f = folha(P, c), pend = pendentes(ids), adiados = ler(KA, [], sessionStorage);
+      if (pend.some(id => !adiados.includes(id))) f.appendChild(aviso(pend, nomeDe));
+      box.appendChild(f);
+      if (n || c.brasil != null) { const b = mk("button", "pass-btn", "Compartilhar passaporte"); b.type = "button"; b.addEventListener("click", () => compartilhar(P, c, b)); box.appendChild(b); }
+    }
+    const on = () => { if (box.__visto && !box.isConnected) { removeEventListener("biomas:carimbos", on); return; } if (box.isConnected) box.__visto = true; desenhar(); };
+    addEventListener("biomas:carimbos", on); desenhar();
     return box;
   }
 
-  return { graficoChuva, folha, passaporte, todosCarimbados: (P, c) => P.regs.filter(r => r.id !== "brasil").every(r => c[r.id] != null) };
+  return { graficoChuva, folha, passaporte, carimbos, carimbado, registrarGanho, todosCarimbados: P => { const c = aceitos(); return P.regs.filter(r => r.id !== "brasil").every(r => c[r.id] != null); } };
 })();
 
 /* Interatividade das páginas estáticas: progresso, quiz, vídeos, comparador, passaporte e sugestões. */
@@ -200,15 +246,13 @@ const BiomasUI = (() => {
   };
   const getProg = id => store.get("prog", {})[id] || { lidas: [], quiz: null };
   const setProg = (id, fn) => { const all = store.get("prog", {}); const p = all[id] || { lidas: [], quiz: null }; fn(p); all[id] = p; store.set("prog", all); };
-  const hasSeal = id => { const q = getProg(id).quiz; return !!q && q.ok / q.n >= .6; };
   const fmt = n => n.toLocaleString("pt-BR");
   const regioes = D ? D.regioes : [];
   const lida = r => getProg(r.id).lidas.length >= r.secoes;
 
-  const passou = id => { const q = getProg(id).quiz; return !!q && q.ok / q.n >= .6; };
   function estado(r) {
     const pr = getProg(r.id);
-    if (hasSeal(r.id)) return "Carimbado";
+    const cs = BiomasUI.carimbos(); if (cs[r.id]) return cs[r.id].aceito ? "Carimbado" : "Carimbo a receber";
     if (lida(r)) return "Lido";
     return pr.lidas.length ? `${pr.lidas.length} de ${r.secoes} seções` : "";
   }
@@ -219,19 +263,20 @@ const BiomasUI = (() => {
     a.appendChild(meta); li.appendChild(a); return li;
   }
 
-  // ---- passaporte: folha com um carimbo por bioma completado (quiz com nota mínima) ----
-  function carimbados() { const o = {}; regioes.forEach(r => { if (passou(r.id)) o[r.id] = getProg(r.id).quiz.em || ""; }); return o; }
-  function passaporte(box) { box.appendChild(BiomasUI.passaporte(D.passaporte, carimbados())); }
+  // ---- passaporte: folha com um carimbo por bioma completado, aceito pelo visitante ----
+  function passaporte(box) { box.appendChild(BiomasUI.passaporte(D.passaporte)); }
 
-  // ---- rodapé: biomas ainda sem carimbo e já carimbados, em grupos separados ----
+  // ---- rodapé: biomas ainda sem carimbo e já carimbados, em grupos separados (atualiza quando um carimbo é aceito) ----
   function proximos(box) {
-    const c = carimbados(), outros = regioes.filter(r => r.id !== D.id), completo = BiomasUI.todosCarimbados(D.passaporte, c);
-    const faltam = [...outros.filter(r => !(r.id in c) && !lida(r)), ...outros.filter(r => !(r.id in c) && lida(r))], feitos = outros.filter(r => r.id in c);
-    box.appendChild(el("h2", {}, completo ? "Revisite seus biomas" : "Continue explorando"));
-    const pb = el("div", { class: "pass-bloco" }); passaporte(pb); box.appendChild(pb);
-    const grupo = (titulo, lista) => { if (!lista.length) return; box.appendChild(el("h3", { class: "grupo-titulo" }, titulo)); const ul = el("ul", { class: "cards" }); lista.forEach(r => ul.appendChild(cartao(r))); box.appendChild(ul); };
-    grupo("Ainda sem carimbo", faltam);
-    grupo("Já carimbados", feitos);
+    const topo = el("div"), pb = el("div", { class: "pass-bloco" }), gr = el("div"); passaporte(pb); box.append(topo, pb, gr);
+    const draw = () => {
+      const cs = BiomasUI.carimbos(), feito = id => !!(cs[id] && cs[id].aceito), completo = BiomasUI.todosCarimbados(D.passaporte), outros = regioes.filter(r => r.id !== D.id);
+      const faltam = [...outros.filter(r => !feito(r.id) && !lida(r)), ...outros.filter(r => !feito(r.id) && lida(r))], feitos = outros.filter(r => feito(r.id));
+      topo.replaceChildren(el("h2", {}, completo ? "Revisite seus biomas" : "Continue explorando")); gr.replaceChildren();
+      const grupo = (titulo, lista) => { if (!lista.length) return; gr.appendChild(el("h3", { class: "grupo-titulo" }, titulo)); const ul = el("ul", { class: "cards" }); lista.forEach(r => ul.appendChild(cartao(r))); gr.appendChild(ul); };
+      grupo("Ainda sem carimbo", faltam); grupo("Já carimbados", feitos);
+    };
+    draw(); addEventListener("biomas:carimbos", draw);
   }
 
   // ---- gráficos de chuva (eixo comum a todos os biomas) ----
@@ -283,9 +328,9 @@ const BiomasUI = (() => {
           if (done === D.quiz.length) {
             const sel0 = ok / D.quiz.length >= .6;
             setProg(id, p => { const antes = p.quiz; if (antes && antes.ok / antes.n >= .6 && !sel0) return; p.quiz = { ok, n: D.quiz.length }; if (sel0) p.quiz.em = (antes && antes.em) || new Date().toLocaleDateString("sv-SE"); });
-            const sel = ok / D.quiz.length >= .6;
+            const sel = sel0; if (sel0) BiomasUI.registrarGanho(id);   // guarda o carimbo ganho e o dia em que o quiz foi vencido
             res.hidden = false;
-            res.replaceChildren(document.createTextNode(`Você acertou ${ok} de ${D.quiz.length}. ${sel ? (id === "brasil" ? "Carimbo do Brasil conquistado!" : "Carimbo conquistado!") : "Releia as seções e tente de novo para ganhar o carimbo."}`));
+            res.replaceChildren(document.createTextNode(`Você acertou ${ok} de ${D.quiz.length}. ${sel ? "Carimbo conquistado! Ele espera por você no passaporte, no fim da página." : "Releia as seções e tente de novo para ganhar o carimbo."}`));
             const again = el("button", { type: "button" }, "Refazer o quiz"); again.addEventListener("click", () => location.reload()); res.appendChild(again);
           }
         });
@@ -321,11 +366,12 @@ const BiomasUI = (() => {
   if (!D) return;
   if (D.id === "hub") {
     passaporte(document.getElementById("passaporte"));
-    document.querySelectorAll("a.card").forEach(a => {
+    const decorar = () => document.querySelectorAll("a.card").forEach(a => {
       const r = regioes.find(x => x.id === a.dataset.id); if (!r) return;
-      if (lida(r)) a.classList.add("lido");
-      const est = estado(r); if (est) a.querySelector(".estado").replaceChildren(el("span", { class: "selo", style: "margin-left:0" }, est));
+      a.classList.toggle("lido", lida(r));
+      const est = estado(r), slot = a.querySelector(".estado"); slot.replaceChildren(); if (est) slot.appendChild(el("span", { class: "selo", style: "margin-left:0" }, est));
     });
+    decorar(); addEventListener("biomas:carimbos", decorar);
   } else {
     leitura(); videos(); quiz(); comparador(); chuvas();
     proximos(document.getElementById("proximos"));

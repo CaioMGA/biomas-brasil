@@ -26,12 +26,13 @@ Páginas estáticas geradas por `build/build.py` (leves, sem three.js, boas no c
 ## Passaporte e carimbos
 
 - A folha de progresso começa em branco, só com o contorno do Brasil em traço preto, fino e falho.
-- Cada bioma completado (quiz com 60% ou mais) vira um carimbo de viagem na folha, na cor do bioma no mapa, com data. Os carimbos têm formas diferentes, ficam levemente tortos e deslocados, e as tintas se mesclam onde se sobrepõem (multiplicação de cor). O quiz do Brasil rende um carimbo azul à parte.
-- A folha é um papel levemente amassado (filtro SVG) que projeta sombra; o contorno do Brasil e o dos 6 biomas continentais são desenhados em traço fino e falho. Embaixo à direita, o nome do site em fonte do site, como papel timbrado, com a barra de gradiente do painel do Brasil.
+- Cada bioma completado (quiz com 60% ou mais) vira um carimbo de viagem na folha, na cor do bioma no mapa, com data. Os carimbos têm formas diferentes, ficam levemente tortos e deslocados, e as tintas se mesclam onde se sobrepõem (multiplicação de cor). O quiz do Brasil rende um carimbo azul à parte, em losango alongado como o da bandeira.
+- A folha é um papel levemente amassado (filtro SVG) que projeta sombra; o contorno do Brasil e o dos 6 biomas continentais são desenhados em traço fino e falho. Embaixo à direita, o nome do site em fonte do site, como papel timbrado (sem a barra de gradiente).
 - No fim das páginas de conteúdo, os outros biomas aparecem em dois grupos: "Ainda sem carimbo" e "Já carimbados".
 - Ao carimbar todos os biomas: mensagem "Você carimbou todos os biomas! Você completou sua jornada pelos Biomas do Brasil, parabéns!" e um carimbo vermelho "Jornada pelos Biomas do Brasil COMPLETA" no canto superior direito da folha.
 - **Compartilhar passaporte** gera um PNG da folha (Web Share com arquivo quando o navegador permite; senão baixa o arquivo).
-- Mesmo armazenamento de antes (`localStorage`, chave `biomas:prog`); o quiz agora guarda também a data do carimbo (`quiz.em`).
+- **Aceite do carimbo:** vencer o quiz dá direito ao carimbo, que fica pendente até o visitante aceitar. Com carimbos pendentes, a folha recebe um overlay: "Você recebeu o(s) carimbo(s) dos biomas X, Y… Deseja carimbar seu passaporte agora?" com **Sim** (os carimbos entram na folha com animação) e **Depois** (não pergunta de novo nesta sessão).
+- **Armazenamento local:** `biomas:carimbos` = `{ <bioma>: { em: "AAAA-MM-DD", aceito: true|false } }`. `em` é o dia em que o quiz foi vencido, e é essa data que aparece no carimbo, não a do aceite. O progresso de leitura continua em `biomas:prog`; quem já tinha vencido quizzes antes entra como pendente, com a data do quiz.
 - Código compartilhado entre o painel do mapa e as páginas: `src/comum.js` e `src/comum.css`.
 
 ## Gráfico de chuva

@@ -14,7 +14,7 @@ CONTATO = {"email": "caiomga@gmail.com", "pessoal": "https://caiomga.com", "proj
 
 # Centro de cada carimbo no sistema de coordenadas do contorno do Brasil (centroides dos biomas em data/ids.png, ajustados à mão)
 POS = {"amazonia": (121, 87), "cerrado": (202, 162), "mata-atlantica": (216, 232), "caatinga": (268, 124), "pampa": (165, 296),
-       "pantanal": (138, 196), "costeiro": (322, 222), "brasil": (64, 288)}
+       "pantanal": (138, 196), "costeiro": (322, 222), "brasil": (52, 292)}
 
 
 def _dp(pts, eps):

@@ -852,7 +852,7 @@ const fmtMin = m => m >= 60 ? `${Math.floor(m / 60)} h ${String(m % 60).padStart
 
 function mergulharBtn(id) {
   if (!CONT[id]) return null;
-  const done = hasSeal(id);
+  const done = BiomasUI.carimbado(id);
   const btn = el("a", { class: "mergulhar", href: id === "brasil" ? "/brasil/" : `/biomas/${id}/` });
   const t = el("span"); t.append(document.createTextNode("Mergulhar"));
   if (done) t.appendChild(el("span", { class: "selo" }, "Carimbado"));
@@ -862,8 +862,7 @@ function mergulharBtn(id) {
 }
 function passaporte() {
   const sec = el("div", { class: "rain" });
-  const carim = {}; PASS_IDS.concat("brasil").forEach(i => { if (hasSeal(i)) carim[i] = (getProg(i).quiz.em) || ""; });
-  sec.appendChild(BiomasUI.passaporte(PASSAPORTE, carim));   // texto de progresso ou mensagem de jornada completa, folha e botão de compartilhar
+  sec.appendChild(BiomasUI.passaporte(PASSAPORTE));   // progresso ou mensagem de jornada completa, folha, pergunta sobre carimbos pendentes e compartilhar
   return sec;
 }
 

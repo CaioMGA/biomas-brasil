@@ -153,10 +153,20 @@ html { scroll-behavior: smooth; }
 .chuva .ch-p { font: 400 8.6px var(--body); fill: var(--muted); }
 .folha svg { display: block; width: 100%; height: auto; }
 .selo { margin-left: 8px; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--col, var(--accent)); font-weight: 600; }
-.folha { margin-top: 14px; max-width: 480px; transform: rotate(-.6deg); box-shadow: 0 2px 3px rgba(0,0,0,.45), 0 10px 18px rgba(0,0,0,.45), 0 26px 46px rgba(0,0,0,.5); }
+.folha { position: relative; margin-top: 14px; max-width: 480px; transform: rotate(-.6deg); box-shadow: 0 2px 3px rgba(0,0,0,.45), 0 10px 18px rgba(0,0,0,.45), 0 26px 46px rgba(0,0,0,.5); }
 .pass-fim { margin-top: 10px; padding: 10px 14px; border-left: 4px solid #c8352b; background: rgba(200, 53, 43, .1); }
 .pass-fim strong { display: block; font: 400 26px/1.1 var(--display); color: var(--ink); }
 .pass-fim span { display: block; margin-top: 4px; font-size: 15px; line-height: 1.45; color: var(--ink); }
 .pass-btn { margin-top: 14px; padding: 8px 16px; font-size: 14px; cursor: pointer; color: var(--ink); background: transparent; border: 1px solid var(--rule); }
 .pass-btn:hover:not(:disabled) { background: rgba(255,255,255,.1); }
 .pass-btn:disabled { opacity: .6; cursor: progress; }
+.folha-aviso { position: absolute; inset: 0; z-index: 2; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 16px; padding: 20px; text-align: center; background: rgba(8, 12, 9, .8); backdrop-filter: blur(1.5px); }
+.folha-aviso p { margin: 0; max-width: 34ch; font: 400 22px/1.25 var(--display); color: var(--ink); }
+.folha-aviso-bt { display: flex; gap: 10px; }
+.folha-aviso-bt button { padding: 8px 20px; font-size: 15px; cursor: pointer; color: var(--ink); background: transparent; border: 1px solid var(--rule); }
+.folha-aviso-bt button:hover { background: rgba(255,255,255,.12); }
+.folha-aviso-bt .sim { color: #11160f; background: var(--ink); border-color: var(--ink); font-weight: 600; }
+.folha-aviso-bt .sim:hover { background: var(--ink); filter: brightness(1.1); }
+.folha svg .marca.novo { transform-box: fill-box; transform-origin: center; animation: bater .55s cubic-bezier(.2, .9, .3, 1.15) both; }
+@keyframes bater { from { transform: scale(1.7); opacity: 0; } 55% { opacity: .9; } to { transform: scale(1); } }
+@media (prefers-reduced-motion: reduce) { .folha svg .marca.novo { animation: none; } }

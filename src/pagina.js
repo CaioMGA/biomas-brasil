@@ -14,15 +14,13 @@
   };
   const getProg = id => store.get("prog", {})[id] || { lidas: [], quiz: null };
   const setProg = (id, fn) => { const all = store.get("prog", {}); const p = all[id] || { lidas: [], quiz: null }; fn(p); all[id] = p; store.set("prog", all); };
-  const hasSeal = id => { const q = getProg(id).quiz; return !!q && q.ok / q.n >= .6; };
   const fmt = n => n.toLocaleString("pt-BR");
   const regioes = D ? D.regioes : [];
   const lida = r => getProg(r.id).lidas.length >= r.secoes;
 
-  const passou = id => { const q = getProg(id).quiz; return !!q && q.ok / q.n >= .6; };
   function estado(r) {
     const pr = getProg(r.id);
-    if (hasSeal(r.id)) return "Carimbado";
+    const cs = BiomasUI.carimbos(); if (cs[r.id]) return cs[r.id].aceito ? "Carimbado" : "Carimbo a receber";
     if (lida(r)) return "Lido";
     return pr.lidas.length ? `${pr.lidas.length} de ${r.secoes} seções` : "";
   }
@@ -33,19 +31,20 @@
     a.appendChild(meta); li.appendChild(a); return li;
   }
 
-  // ---- passaporte: folha com um carimbo por bioma completado (quiz com nota mínima) ----
-  function carimbados() { const o = {}; regioes.forEach(r => { if (passou(r.id)) o[r.id] = getProg(r.id).quiz.em || ""; }); return o; }
-  function passaporte(box) { box.appendChild(BiomasUI.passaporte(D.passaporte, carimbados())); }
+  // ---- passaporte: folha com um carimbo por bioma completado, aceito pelo visitante ----
+  function passaporte(box) { box.appendChild(BiomasUI.passaporte(D.passaporte)); }
 
-  // ---- rodapé: biomas ainda sem carimbo e já carimbados, em grupos separados ----
+  // ---- rodapé: biomas ainda sem carimbo e já carimbados, em grupos separados (atualiza quando um carimbo é aceito) ----
   function proximos(box) {
-    const c = carimbados(), outros = regioes.filter(r => r.id !== D.id), completo = BiomasUI.todosCarimbados(D.passaporte, c);
-    const faltam = [...outros.filter(r => !(r.id in c) && !lida(r)), ...outros.filter(r => !(r.id in c) && lida(r))], feitos = outros.filter(r => r.id in c);
-    box.appendChild(el("h2", {}, completo ? "Revisite seus biomas" : "Continue explorando"));
-    const pb = el("div", { class: "pass-bloco" }); passaporte(pb); box.appendChild(pb);
-    const grupo = (titulo, lista) => { if (!lista.length) return; box.appendChild(el("h3", { class: "grupo-titulo" }, titulo)); const ul = el("ul", { class: "cards" }); lista.forEach(r => ul.appendChild(cartao(r))); box.appendChild(ul); };
-    grupo("Ainda sem carimbo", faltam);
-    grupo("Já carimbados", feitos);
+    const topo = el("div"), pb = el("div", { class: "pass-bloco" }), gr = el("div"); passaporte(pb); box.append(topo, pb, gr);
+    const draw = () => {
+      const cs = BiomasUI.carimbos(), feito = id => !!(cs[id] && cs[id].aceito), completo = BiomasUI.todosCarimbados(D.passaporte), outros = regioes.filter(r => r.id !== D.id);
+      const faltam = [...outros.filter(r => !feito(r.id) && !lida(r)), ...outros.filter(r => !feito(r.id) && lida(r))], feitos = outros.filter(r => feito(r.id));
+      topo.replaceChildren(el("h2", {}, completo ? "Revisite seus biomas" : "Continue explorando")); gr.replaceChildren();
+      const grupo = (titulo, lista) => { if (!lista.length) return; gr.appendChild(el("h3", { class: "grupo-titulo" }, titulo)); const ul = el("ul", { class: "cards" }); lista.forEach(r => ul.appendChild(cartao(r))); gr.appendChild(ul); };
+      grupo("Ainda sem carimbo", faltam); grupo("Já carimbados", feitos);
+    };
+    draw(); addEventListener("biomas:carimbos", draw);
   }
 
   // ---- gráficos de chuva (eixo comum a todos os biomas) ----
@@ -97,9 +96,9 @@
           if (done === D.quiz.length) {
             const sel0 = ok / D.quiz.length >= .6;
             setProg(id, p => { const antes = p.quiz; if (antes && antes.ok / antes.n >= .6 && !sel0) return; p.quiz = { ok, n: D.quiz.length }; if (sel0) p.quiz.em = (antes && antes.em) || new Date().toLocaleDateString("sv-SE"); });
-            const sel = ok / D.quiz.length >= .6;
+            const sel = sel0; if (sel0) BiomasUI.registrarGanho(id);   // guarda o carimbo ganho e o dia em que o quiz foi vencido
             res.hidden = false;
-            res.replaceChildren(document.createTextNode(`Você acertou ${ok} de ${D.quiz.length}. ${sel ? (id === "brasil" ? "Carimbo do Brasil conquistado!" : "Carimbo conquistado!") : "Releia as seções e tente de novo para ganhar o carimbo."}`));
+            res.replaceChildren(document.createTextNode(`Você acertou ${ok} de ${D.quiz.length}. ${sel ? "Carimbo conquistado! Ele espera por você no passaporte, no fim da página." : "Releia as seções e tente de novo para ganhar o carimbo."}`));
             const again = el("button", { type: "button" }, "Refazer o quiz"); again.addEventListener("click", () => location.reload()); res.appendChild(again);
           }
         });
@@ -135,11 +134,12 @@
   if (!D) return;
   if (D.id === "hub") {
     passaporte(document.getElementById("passaporte"));
-    document.querySelectorAll("a.card").forEach(a => {
+    const decorar = () => document.querySelectorAll("a.card").forEach(a => {
       const r = regioes.find(x => x.id === a.dataset.id); if (!r) return;
-      if (lida(r)) a.classList.add("lido");
-      const est = estado(r); if (est) a.querySelector(".estado").replaceChildren(el("span", { class: "selo", style: "margin-left:0" }, est));
+      a.classList.toggle("lido", lida(r));
+      const est = estado(r), slot = a.querySelector(".estado"); slot.replaceChildren(); if (est) slot.appendChild(el("span", { class: "selo", style: "margin-left:0" }, est));
     });
+    decorar(); addEventListener("biomas:carimbos", decorar);
   } else {
     leitura(); videos(); quiz(); comparador(); chuvas();
     proximos(document.getElementById("proximos"));
