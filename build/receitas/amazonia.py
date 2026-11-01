@@ -184,7 +184,7 @@ def receita(raw):
         paises_rio = sorted(onde(ls, m_pais), key=lambda n: (n != "Brasil", n)); estados_rio = sorted(onde(ls, m_uf))
         quem = "canal principal do sistema (Marañón/Ucayali → Solimões → Amazonas)" if principal else f"afluente da margem {grupo} ({'norte' if grupo == 'esquerda' else 'sul'}), ou subafluente de um afluente"
         texto = f"{nome} — {quem}. Passa por: {lista(paises_rio) if paises_rio else 'não identificado'}." + (f" Estados do Brasil: {lista(estados_rio)}." if estados_rio else "")
-        rios.append({"nome": nome, "km": round(km(ls)), "linhas": [r3(l) for l in ls], "texto": texto,
+        rios.append({"nome": nome, "km": round(km(ls)), "linhas": [r3(l) for l in ls], "texto": texto, "paises": paises_rio, "estados": estados_rio,
                      "attrs": {"margem": grupo, "paises": "|".join(paises_rio), "estados": "|".join(estados_rio)}})
     rios.sort(key=lambda r_: -r_["km"])
     principais_l = [r_ for r_ in rios if r_["attrs"]["margem"] == "principal"]; afluentes = [r_ for r_ in rios if r_["attrs"]["margem"] != "principal"]
@@ -195,7 +195,7 @@ def receita(raw):
     camadas.append({"id": "amazonas", "titulo": "Rio Amazonas (canal principal)", "tipo": "linha", "fonte": "bc250", "ligada": True, "fixa": True, "por_rio": True, "fixos": ["principal"],
                     "nota": "Sempre aparece, sem caixa de seleção nem filtro: Marañón e Ucayali (que formam o Amazonas no Peru) → Amazonas do Peru → Solimões → Amazonas → Canal do Norte, a principal saída para o Atlântico, ao longo de Macapá. Toque no rio para ver por onde ele passa.",
                     "itens": principais_l})
-    camadas.append({"id": "rios", "titulo": "Afluentes", "tipo": "linha", "fonte": "bc250", "ligada": True, "por_rio": True,
+    camadas.append({"id": "rios", "titulo": "Afluentes", "tipo": "linha", "fonte": "bc250", "ligada": True, "por_rio": True, "lista": True,
                     "nota": "Afluentes principais e alguns subafluentes (Branco, Acre, Guaporé…). O filtro \"Afluentes\" separa os brasileiros (trechos dentro do Brasil, da drenagem do IBGE) dos estrangeiros (trechos fora do Brasil, do Natural Earth): um rio que cruza a fronteira, como o Japurá/Caquetá, aparece nos dois, cada um com o seu trecho. A margem (esquerda = norte) é calculada pela posição da foz em relação ao canal. Toque num rio para ver por quais países e estados ele passa (a partir dos limites do Natural Earth, aproximados). O Tocantins e o Araguaia não entram: desaguam no estuário do Pará, não no Amazonas.",
                     "itens": afluentes})
 
