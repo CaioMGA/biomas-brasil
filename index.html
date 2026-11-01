@@ -70,14 +70,13 @@ html.nav-in .sitenav { animation: bin .4s cubic-bezier(.2,.8,.3,1) backwards; }
 
 .dock { position: absolute; left: 24px; bottom: 20px; right: 24px; display: flex; flex-direction: column; gap: 10px; align-items: flex-start; pointer-events: none; }
 .hint { max-width: min(480px, calc(100vw - var(--panel-w) - 340px)); line-height: 1.45; }
-.tools { display: flex; gap: 8px; pointer-events: auto; }
+.tools { display: flex; gap: 8px; align-self: flex-end; flex: none; pointer-events: auto; }   /* primeiro item da coluna de controles, sempre visível */
 .tools button { display: flex; align-items: center; gap: 7px; padding: 7px 12px; font-size: 13px; cursor: pointer; color: var(--ink); background: var(--glass); border: 1px solid var(--rule); backdrop-filter: blur(8px); }
 .tools button:hover { background: rgba(255,255,255,.12); }
 .tools button:disabled { opacity: .6; cursor: progress; }
 .tools svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linejoin: round; stroke-linecap: round; }
 .tools .slash { display: none; } .tools button[aria-pressed="true"] .slash { display: block; }
-html.sem-controles .nav { display: none; }
-html.nav-off .tools, html.nav-off .hint { opacity: 0; pointer-events: none; }
+html.sem-controles .nav > :not(.tools) { display: none; }   /* ocultar controles: sobra só a barra de ferramentas, que continua no alto */
 .sitenav button { padding: 3px 10px; font: inherit; font-size: 12px; line-height: 1.2; color: var(--muted); background: none; border: 0; border-bottom: 2px solid transparent; cursor: pointer; }
 .sitenav button:hover { color: var(--ink); }
 /* Tutorial: o overlay cobre tudo e o mapa e o painel ficam inertes enquanto ele está aberto */
@@ -307,7 +306,8 @@ html.cena-aberta, html.cena-aberta body { overflow: hidden; }
   .pill button { width: 40px; height: 40px; }
   .dock { left: 16px; right: 16px; bottom: 10px; }
   .hint { max-width: none; }
-  .tools button span { display: none; } .tools button { padding: 9px; }   /* no celular, só os ícones: a coluna de controles ocupa a direita */
+  #shotBtn span { display: none; } #shotBtn { padding: 9px; }   /* no celular: screenshot só com o ícone, e o toggle de filtros é um texto, sem ícone */
+  #ctlBtn svg { display: none; }
   .layers { gap: 3px; margin-top: 6px; }
   .exag { left: 16px; top: 130px; width: 190px; padding: 8px 10px 6px; }
     .sw { padding: 3px 10px 3px 5px; font-size: 12px; }
@@ -351,8 +351,8 @@ html.boot, html.boot body { overflow: hidden; }
 .panel { border-top-color: transparent; background: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent) 70%, #000)) 0 0 / 100% 8px no-repeat border-box border-box, var(--glass); }
 html.nobiome .panel { border-top-color: transparent; background: linear-gradient(90deg, #009c3b, #ffdf00, #002776, #fff) 0 0 / 100% 8px no-repeat border-box border-box, var(--glass); }
 html.boot .panel { translate: calc(100% + 60px) 0; transition: none; }
-html.navhide .navstack .pill, html.navhide .compass, html.navhide .pill.zm, html.navhide .chips > *, html.navhide .layers > *, html.navhide .exag { opacity: 0; }
-html.nav-in .navstack .pill, html.nav-in .compass, html.nav-in .pill.zm, html.nav-in .chips > *, html.nav-in .layers > *, html.nav-in .exag { animation: bin .4s cubic-bezier(.2,.8,.3,1) backwards; animation-delay: calc(var(--i, 0) * .015s); }
+html.navhide .tools, html.navhide .navstack .pill, html.navhide .compass, html.navhide .pill.zm, html.navhide .chips > *, html.navhide .layers > *, html.navhide .exag { opacity: 0; }
+html.nav-in .tools, html.nav-in .navstack .pill, html.nav-in .compass, html.nav-in .pill.zm, html.nav-in .chips > *, html.nav-in .layers > *, html.nav-in .exag { animation: bin .4s cubic-bezier(.2,.8,.3,1) backwards; animation-delay: calc(var(--i, 0) * .015s); }
 @keyframes bin { from { opacity: 0; translate: 14px 0; } to { opacity: 1; translate: 0 0; } }
 @media (prefers-reduced-motion: reduce) { #loader { transition-duration: .3s; } html.boot .panel { translate: 0 0; } }
 /*LAB:CSS*/
@@ -440,10 +440,11 @@ body.lab-rios .rl:not(.gl) { pointer-events: auto; cursor: pointer; }
   <div class="msg">Carregando</div>
   <div class="brfoot"><span>Site criado por Caio Amaral</span><img class="brchad" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAAAPCAYAAABzyUiPAAAAAXNSR0IB2cksfwAAAARnQU1BAACxjwv8YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB+oBBBcZIQcJIBAAAAD1SURBVFjD7VjLDcMgDH1EXaAL9NY9Og1M0VOnYJvu0VsW6AZND5Eli9qEXyUOficwlgUvz8bEee83GJpxAoAYozHRgBDCTiAALLf71Jv9PB+4vM7T7Ge9vnfeTEd9MAJH1EApXaTU1ux8LfWnOR/n/FtKCqUTgJ80pzVur/WvJpAfID24ZM8RpX2gmvhHSMmhuTYu8e9SYKqGI6VJxJfGGV3USwnQ/GvjLDkFSiSVqKs0zqibn5RTQ57mT3ae5l0K1A7PU4zmI9qh1jhSXeNEaEor9dfgvPdbjNH6wAbVhxCsjbE+cJY+cPSt+M/n00xw9jemD1/UN6jxLsjtWgAAAABJRU5ErkJggg==" width="80" height="15" alt="brchad 2026"></div>
 </div>
-<noscript><style>#loader { display: none; } html.boot .panel { translate: 0 0; } html.navhide .navstack .pill, html.navhide .compass, html.navhide .pill.zm, html.navhide .chips > *, html.navhide .layers > *, html.navhide .exag { opacity: 1; }</style></noscript>
+<noscript><style>#loader { display: none; } html.boot .panel { translate: 0 0; } html.navhide .tools, html.navhide .navstack .pill, html.navhide .compass, html.navhide .pill.zm, html.navhide .chips > *, html.navhide .layers > *, html.navhide .exag { opacity: 1; }</style></noscript>
 <script>
 /* Loader: só usa o que está neste HTML (SVG, CSS e este script), então desenha antes de qualquer outra coisa carregar. */
 (function () {
+  if (matchMedia("(max-width: 860px)").matches) document.documentElement.classList.add("sem-controles");   // celular: os filtros (controles) começam escondidos
   // Vindo de outra página do próprio site (menu, "Ver no mapa"), não há loading com tempo mínimo nem abertura: isso fica só para quem abre a home direto.
   const interno = (() => { try { return !!document.referrer && new URL(document.referrer).origin === location.origin; } catch (e) { return false; } })();
   if (interno || ["skipintro", "lab", "labs"].some(k => new URLSearchParams(location.search).has(k))) {   // ?skipintro (e todo lab): sem loading nem animações de abertura
@@ -521,6 +522,10 @@ body.lab-rios .rl:not(.gl) { pointer-events: auto; cursor: pointer; }
     <canvas id="gl" aria-label="Mapa 3D do relevo do Brasil. Clique em um bioma para destacá-lo."></canvas>
     <div class="labels" id="labels"></div>
     <div class="nav" id="nav" role="group" aria-label="Navegação do mapa">
+      <div class="tools" id="tools" role="group" aria-label="Ferramentas do mapa">
+        <button type="button" id="ctlBtn" aria-pressed="false" aria-label="Ocultar controles" title="Ocultar controles"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/><path class="slash" d="M4 4l16 16"/></svg><span>Ocultar controles</span></button>
+        <button type="button" id="shotBtn" aria-label="Gerar screenshot do mapa" title="Gerar screenshot do mapa"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Screenshot</span></button>
+      </div>
       <div class="navrow">
       <div class="navstack">
         <div class="pill"><button type="button" class="t" id="tiltBtn" data-a="tilt3d" aria-label="Alternar entre vista 2D e 3D" title="Alternar 2D / 3D">3D</button></div>
@@ -549,10 +554,6 @@ body.lab-rios .rl:not(.gl) { pointer-events: auto; cursor: pointer; }
       <h1>Biomas<br><em>do <span class="bra">Brasil</span></em></h1>
     </div>
     <div class="dock">
-      <div class="tools" id="tools" role="group" aria-label="Ferramentas do mapa">
-        <button type="button" id="ctlBtn" aria-pressed="false" aria-label="Ocultar controles" title="Ocultar controles"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/><path class="slash" d="M4 4l16 16"/></svg><span>Ocultar controles</span></button>
-        <button type="button" id="shotBtn" aria-label="Gerar screenshot do mapa" title="Gerar screenshot do mapa"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Screenshot</span></button>
-      </div>
       <p class="hint">Arraste para mover o mapa. Arraste a bússola (ou use o botão direito) para girar e inclinar, Shift + arrastar só inclina e a roda do mouse dá zoom. Clique em um bioma para destacá-lo e use a mira ao lado dele para enquadrá-lo inteiro.</p>
     </div>
     <p class="nogl" id="nogl">Este navegador não conseguiu abrir o mapa 3D. As informações de cada bioma continuam disponíveis nos botões acima.</p>
@@ -2686,12 +2687,16 @@ function drawFx(dt) {
 
   // Ocultar controles: some a coluna de navegação, seleção de biomas, camadas e escala; o título, o painel e as ferramentas ficam.
   const ctlBtn = $("ctlBtn");
+  const mobile = matchMedia("(max-width: 860px)");
+  const rotulo = hide => mobile.matches ? (hide ? "Mostrar filtros" : "Ocultar filtros") : (hide ? "Mostrar controles" : "Ocultar controles");   // no celular os controles são os "filtros"
   function setControles(hide) {
     root.classList.toggle("sem-controles", hide);
     ctlBtn.setAttribute("aria-pressed", String(hide));
-    ctlBtn.querySelector("span").textContent = hide ? "Mostrar controles" : "Ocultar controles";
-    ctlBtn.setAttribute("aria-label", hide ? "Mostrar controles" : "Ocultar controles"); ctlBtn.title = hide ? "Mostrar controles" : "Ocultar controles";
+    ctlBtn.querySelector("span").textContent = rotulo(hide);
+    ctlBtn.setAttribute("aria-label", rotulo(hide)); ctlBtn.title = rotulo(hide);
   }
+  setControles(root.classList.contains("sem-controles"));   // sincroniza o botão com o estado inicial (escondido no celular)
+  mobile.addEventListener("change", () => setControles(root.classList.contains("sem-controles")));
   ctlBtn.addEventListener("click", () => setControles(!root.classList.contains("sem-controles")));
 
   // Screenshot: só o mapa (com os textos dele), o título, a tagline e, embaixo à esquerda, a marca da brchad com o endereço do site.
@@ -2846,7 +2851,7 @@ function revealSite() {
       panelEl.addEventListener("transitionend", e => { if (e.propertyName === "translate") end(); });
       setTimeout(end, 1300); });
     // 4) controles de cima para baixo, 0,015 s entre eles
-    const items = [...document.querySelectorAll(".navstack .pill, .compass, .pill.zm, .chips > *, .layers > *, .exag")];
+    const items = [...document.querySelectorAll(".tools, .navstack .pill, .compass, .pill.zm, .chips > *, .layers > *, .exag")];
     items.forEach((el, i) => el.style.setProperty("--i", i));
     root.classList.remove("navhide"); root.classList.add("nav-in");   // os controles ficam escondidos até aqui
     setTimeout(() => { root.classList.remove("nav-in"); items.forEach(el => el.style.removeProperty("--i")); ld.remove(); maybeTutorial(); }, 400 + items.length * 15 + 100);

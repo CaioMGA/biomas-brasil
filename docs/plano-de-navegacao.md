@@ -42,7 +42,7 @@ Eixo em mm por mês (comum a todos os biomas), valor em mm sobre cada barra e % 
 
 ## Ferramentas do mapa
 
-- **Ocultar controles:** botão embaixo à esquerda esconde a coluna de navegação, seleção de biomas, camadas e escala (o título e o painel ficam).
+- **Ocultar controles:** botão no alto da coluna de controles, antes do conteúdo que ele esconde (bússola, biomas, camadas e escala; o título, o painel e os botões de ferramenta ficam). No celular os controles começam escondidos e o botão é um texto: "Mostrar filtros" / "Ocultar filtros".
 - **Screenshot:** gera um JPEG (no máximo 500 KB) só com o mapa (e os textos dele), o título e a tagline; embaixo à esquerda, a marca da brchad com o endereço do site. Controles, painel e o texto de ajuda não entram. Usa `html-to-image` (carregado sob demanda do cdnjs).
 - **Tutorial:** botão no menu de navegação (`/?tutorial` nas outras páginas) abre um overlay que destaca cada recurso, com Anterior e Próximo; mapa e painel ficam inertes enquanto ele está aberto.
 - Visualização padrão: rios e siglas dos estados desligados; o texto de ajuda do mapa quebra em linhas.
