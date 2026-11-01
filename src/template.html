@@ -1464,22 +1464,8 @@ async function init3d() {
       float wOf(float b) { float r = 0.0; for (int i = 1; i < 8; i++) { if (abs(b - float(i)) < 0.5) r = uW[i]; } return r; }
       float baseOf(float id) { return id > 10.5 ? id - 10.0 : id; }
       bool vis(float id) { return id < 0.5 ? false : (id > 10.5 ? wOf(id - 10.0) > 0.3 : true); }
-      void main() {
-        vec2 t = vec2(vUv.x, 1.0 - vUv.y);
-        float id = idAt(t);
-        if (id < 0.5) discard;
-        float foreign = step(10.5, id);
-        float bid = id - foreign * 10.0;
-        float w = wOf(bid);
-        if (foreign > 0.5 && w < 0.01) { bid = 8.0; foreign = 0.0; w = 0.0; }   // extensão de bioma não selecionado vira terra neutra (id 8)
-        float hC = texture2D(uH, t).r;
-        float hx = texture2D(uH, t + vec2(uTexel.x, 0.0)).r - texture2D(uH, t - vec2(uTexel.x, 0.0)).r;
-        float hyS = texture2D(uH, t + vec2(0.0, uTexel.y)).r - texture2D(uH, t - vec2(0.0, uTexel.y)).r;
-        float k = uEx * uShade * uElev / (2.0 * uTexW);
-        vec3 n = normalize(vec3(-hx * k, hyS * k, 1.0));
-        vec3 L = normalize(vec3(-0.55, 0.55, 0.62));
-        float lam = clamp(dot(n, L), 0.0, 1.0);
-        float shade = mix(0.82, 0.34 + 0.95 * lam, uElev);
+      // cor-base do terreno para um bioma (ou terra neutra, id 8) com peso de seleção w; foreign: extensão fora do Brasil
+      vec3 landColor(float bid, float w, float foreign, float hC) {
         vec3 bc = vec3(0.0);
         for (int i = 1; i < 8; i++) { if (abs(bid - float(i)) < 0.5) bc = uCol[i]; }
         if (bid > 7.5) bc = vec3(0.35, 0.38, 0.37);   // outros países da América do Sul
@@ -1488,7 +1474,26 @@ async function init3d() {
         vec3 c = mix(muted, bc, max(w, 1.0 - uDim));
         c = mix(c, vec3(g) * 0.9 + c * 0.35, foreign * 0.4);   // extensão fora do Brasil, mais pálida
         float isSea = step(6.5, bid) * (1.0 - step(7.5, bid));
-        c = mix(c, c * mix(0.32, 1.2, smoothstep(-4.0, -0.05, hC)), isSea);
+        return mix(c, c * mix(0.32, 1.2, smoothstep(-4.0, -0.05, hC)), isSea);
+      }
+      void main() {
+        vec2 t = vec2(vUv.x, 1.0 - vUv.y);
+        float id = idAt(t);
+        if (id < 0.5) discard;
+        float foreign = step(10.5, id);
+        float bid = id - foreign * 10.0;
+        float w = wOf(bid);
+        float hC = texture2D(uH, t).r;
+        float hx = texture2D(uH, t + vec2(uTexel.x, 0.0)).r - texture2D(uH, t - vec2(uTexel.x, 0.0)).r;
+        float hyS = texture2D(uH, t + vec2(0.0, uTexel.y)).r - texture2D(uH, t - vec2(0.0, uTexel.y)).r;
+        float k = uEx * uShade * uElev / (2.0 * uTexW);
+        vec3 n = normalize(vec3(-hx * k, hyS * k, 1.0));
+        vec3 L = normalize(vec3(-0.55, 0.55, 0.62));
+        float lam = clamp(dot(n, L), 0.0, 1.0);
+        float shade = mix(0.82, 0.34 + 0.95 * lam, uElev);
+        vec3 c = landColor(bid, w, foreign, hC);
+        // extensão fora do Brasil: a cor do bioma some em degradê até a cor neutra do continente, sem recorte
+        if (foreign > 0.5) c = mix(landColor(8.0, 0.0, 0.0, hC), c, clamp(w, 0.0, 1.0));
         c *= 1.0 + smoothstep(0.1, 1.2, hC) * 0.35 * uElev;
         c *= shade;
         // hover: o bioma sob o mouse acende um pouco, os demais perdem saturação
@@ -1504,7 +1509,7 @@ async function init3d() {
         float sel = w * uDim;
         c += sel * 0.05 * (0.6 + 0.4 * sin(uTime * 2.0)) * (1.0 - foreign);
         c = mix(vec3(dot(c, vec3(0.299, 0.587, 0.114))), c, uSat);   // uSat < 1: terreno dessaturado (lab de rios)
-        gl_FragColor = vec4(c, mix(1.0, 0.84 * min(1.0, w), foreign));
+        gl_FragColor = vec4(c, 1.0 - 0.16 * min(1.0, w) * foreign);
       }`
   });
   mat.extensions = { derivatives: false };
