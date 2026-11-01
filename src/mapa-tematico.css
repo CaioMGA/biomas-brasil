@@ -59,6 +59,7 @@
 .mt-escala { stroke: #222; stroke-width: 3px; stroke-linecap: butt; }
 .mt-norte { fill: #222; }
 
+.mt-fonte-curta { display: block; margin-top: 4px; font-size: 12px; }
 .mt-leg { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 10px; font-size: 13px; color: var(--muted); }
 .mt-li { display: inline-flex; align-items: center; gap: 6px; }
 .mt-li[hidden] { display: none; }
