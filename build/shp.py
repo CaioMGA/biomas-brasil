@@ -56,3 +56,38 @@ def read(base, bbox=None):
     geoms = _shp(base, bbox)
     attrs = _dbf(base, [i for i, g in enumerate(geoms) if g])   # só decodifica os atributos de quem passou no filtro
     return [(attrs[i], g) for i, g in enumerate(geoms) if g]
+
+
+def read_por_nome(base, campo, nomes):
+    """Lê só as feições cujo atributo `campo` está em `nomes` (conjunto), usando o índice .shx para decodificar apenas elas.
+    Serve para bases enormes (ex.: drenagem do IBGE, ~2,5 milhões de trechos), onde ler tudo estouraria a memória.
+    Devolve [(atributos, geometria)] com a mesma geometria de `read` (linhas: lista de partes)."""
+    enc = "utf-8"
+    if os.path.exists(base + ".cpg"):
+        enc = open(base + ".cpg").read().strip().lower() or enc
+        enc = {"utf8": "utf-8", "latin1": "latin-1", "1252": "cp1252"}.get(enc, enc)
+    d = open(base + ".dbf", "rb").read()
+    n, hl, rl = struct.unpack("<IHH", d[4:12])
+    campos, o, off = [], 32, 1
+    while d[o] != 0x0D:
+        campos.append((d[o:o + 11].split(b"\0")[0].decode("ascii", "replace"), d[o + 16], off)); off += d[o + 16]; o += 32
+    ini, ln = next((c[2], c[1]) for c in campos if c[0] == campo)
+    alvo = {s.encode(enc) for s in nomes}
+    idx = [i for i in range(n) if d[hl + i * rl + ini: hl + i * rl + ini + ln].replace(b"\x00", b"").strip() in alvo]
+    atrs = {}
+    for i in idx:
+        r = d[hl + i * rl + 1: hl + (i + 1) * rl]; a = {}; p = 0
+        for nome, tam, _ in campos: a[nome] = r[p:p + tam].decode(enc, "replace").replace("\x00", "").strip(); p += tam
+        atrs[i] = a
+    del d
+    shx = open(base + ".shx", "rb").read(); shp_ = open(base + ".shp", "rb").read(); out = []
+    for i in idx:
+        off_ = struct.unpack(">i", shx[100 + 8 * i: 104 + 8 * i])[0] * 2 + 8   # pula o cabeçalho do registro (8 bytes)
+        st = struct.unpack("<i", shp_[off_:off_ + 4])[0]
+        if st not in (3, 5): continue
+        np_, npt = struct.unpack("<ii", shp_[off_ + 36:off_ + 44])
+        partes = list(struct.unpack("<%di" % np_, shp_[off_ + 44:off_ + 44 + 4 * np_])) + [npt]
+        pp = off_ + 44 + 4 * np_
+        pts = struct.unpack("<%dd" % (2 * npt), shp_[pp:pp + 16 * npt]); pts = [(pts[2 * k], pts[2 * k + 1]) for k in range(npt)]
+        out.append((atrs[i], [pts[partes[k]:partes[k + 1]] for k in range(np_)]))
+    return out
