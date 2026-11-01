@@ -33,9 +33,9 @@
     const rotulo = (txt, cls, at = {}) => sv("text", { class: `mt-rot ${cls}`, x: 0, y: 0, ...at }, txt);
 
     // ---- fundo: terra, países (preenchimento), grade
-    svg.append(sv("rect", { width: d.w, height: d.h, class: "mt-terra" }));
+    svg.append(sv("rect", { width: d.w, height: d.h, class: d.oceano ? "mt-terra mt-oceano" : "mt-terra" }));   // oceano azul quando o bioma toca o litoral
     const cp = por("paises");
-    if (cp) { const g = sv("g", { class: "mt-cam-paises" }); cp.itens.forEach((p, i) => g.append(sv("path", { d: p.d, class: `mt-pais mt-pais-${i % 6}` }))); svg.append(g); add("paises", g); }
+    if (cp) { const g = sv("g", { class: "mt-cam-paises" }); cp.itens.forEach((p, i) => g.append(sv("path", { d: p.d, class: `mt-pais mt-pais-${i % 6}` }))); svg.append(g); }   // as cores dos países ficam sempre; sem a camada "fronteiras" viram uma cor neutra
     const cef = por("estados");   // estados pintados em cores diferentes; o bioma vem por cima, sempre de uma cor só
     if (cef && cef.fills && cef.fills.length) { const g = sv("g", { class: "mt-cam-ufcor" }); cef.fills.forEach(f => g.append(sv("path", { d: f.d, class: `mt-ufc mt-ufc-${f.i % 6}` }))); svg.append(g); add("estados", g); }
     const gg = sv("g", { class: "mt-cam-grade" }); gg.append(sv("path", { d: d.grade.d, class: "mt-grade" })); svg.append(gg); add("grade", gg);
@@ -123,7 +123,7 @@
     const legenda = () => L.forEach(e => { e.hidden = !e._ok(); });
 
     // ---- camadas (checkbox) e filtros (radios); cada um usa a sua própria máscara
-    const liga = (k, on) => (camadas[k] || []).forEach(e => e.classList.toggle("mt-oc", !on));
+    const liga = (k, on) => { (camadas[k] || []).forEach(e => e.classList.toggle("mt-oc", !on)); if (k === "paises") svg.classList.toggle("mt-sem-paises", !on); };
     fig.querySelectorAll("input[data-camada]").forEach(cb => { liga(cb.dataset.camada, cb.checked); cb.addEventListener("change", () => { liga(cb.dataset.camada, cb.checked); legenda(); organizar(); }); });
     const filtros = [...fig.querySelectorAll("fieldset[data-filtro]")];
     const valor = f => (f.querySelector("input:checked") || {}).value || "";

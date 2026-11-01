@@ -95,7 +95,7 @@ def dados_cliente(d):
         cam.append(o)
     return {"w": P.w, "h": P.h, "upk": round(P.u_por_km, 3), "limite": caminho(P, aneis(d["limite"]), True),
             "contorno": caminho(P, d.get("limite_contorno", []), False),   # contorno externo do bioma (linhas abertas), quando o limite vem de várias peças
-            "limite_oficial": caminho(P, aneis(d.get("limite_oficial", [])), True), "limite_nome": d.get("limite_nome", "Limite do bioma"),
+            "limite_oficial": caminho(P, aneis(d.get("limite_oficial", [])), True), "oceano": bool(d.get("oceano")), "limite_nome": d.get("limite_nome", "Limite do bioma"),
             "limite_oficial_nome": d.get("limite_oficial_nome", ""), "grade": grade(P), "camadas": cam, "filtros": d["filtros"]}
 
 

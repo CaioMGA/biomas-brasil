@@ -25,6 +25,8 @@
 
 /* ---- paleta do mapa ---- */
 .mt-terra { fill: #f1eedf; }
+.mt-oceano { fill: #bcd9ec; }
+.mt-sem-paises .mt-pais { fill: #f1eedf; }
 .mt-pais-0 { fill: #f4eed2; } .mt-pais-1 { fill: #ecdfc8; } .mt-pais-2 { fill: #efd9d2; }
 .mt-pais-3 { fill: #e2e6d3; } .mt-pais-4 { fill: #e8dfe6; } .mt-pais-5 { fill: #dfe6e8; }
 /* estados do Brasil: cores diferentes (sem verde nem azul, que são do bioma e da água) */
