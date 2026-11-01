@@ -1,0 +1,15 @@
+/* Compartilhado pelo painel do mapa e pelas páginas: gráfico de chuva e folha do passaporte. */
+.chuva { margin-top: 14px; }
+.chuva svg { display: block; width: 100%; height: auto; overflow: visible; }
+.chuva .ch-ax { font: 400 10px var(--body); fill: var(--muted); }
+.chuva .ch-gr { stroke: var(--rule); stroke-width: 1; }
+.chuva .ch-ax0 { stroke: var(--muted); stroke-width: 1; }
+.chuva .ch-b { fill: var(--accent); opacity: .55; }
+.chuva .ch-b.ch-pk { opacity: 1; }
+.chuva .ch-v { font: 600 9.5px var(--body); fill: var(--muted); }
+.chuva .ch-v.ch-pk { fill: var(--ink); }
+.chuva .ch-m { font: 500 10px var(--body); fill: var(--ink); }
+.chuva .ch-p { font: 400 8.6px var(--body); fill: var(--muted); }
+.folha { margin-top: 12px; max-width: 480px; box-shadow: 0 12px 32px rgba(0,0,0,.5), 0 0 0 1px rgba(0,0,0,.25); }
+.folha svg { display: block; width: 100%; height: auto; }
+.selo { margin-left: 8px; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--col, var(--accent)); font-weight: 600; }

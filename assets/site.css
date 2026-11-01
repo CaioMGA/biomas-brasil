@@ -37,12 +37,6 @@ a { color: inherit; }
 .mergulhar { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; margin: 20px 0 0; padding: 12px 16px; cursor: pointer; text-align: left; color: #11160f; background: var(--accent); border: 0; font-weight: 600; }
 .mergulhar small { display: block; font-weight: 400; font-size: 12px; opacity: .8; }
 .mergulhar:hover { filter: brightness(1.08); }
-.selo { display: inline-block; margin-left: 8px; padding: 1px 8px; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; border: 1px solid currentColor; border-radius: 0; }
-.pass { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 6px; margin: 12px 0 0; padding: 0; list-style: none; }
-.pass li { padding: 8px 10px; border: 1px solid var(--rule); border-left: 4px solid var(--col); font-size: 13px; background: rgba(255,255,255,.04); }
-.pass li b { display: block; font-weight: 600; }
-.pass li span { color: var(--muted); font-size: 11px; }
-.pass li.ok { background: color-mix(in srgb, var(--col) 22%, transparent); }
 .rd-main h1 { margin: 0; font: 400 clamp(52px, 7vw, 96px)/.95 var(--display); }
 .rd-main .intro { margin: 12px 0 0; font: italic 400 26px/1.25 var(--display); color: var(--muted); }
 .rd-main section { margin-top: 56px; scroll-margin-top: 80px; }
@@ -138,3 +132,23 @@ blockquote.lit cite { display: block; margin-top: 8px; font: 400 14px var(--body
 }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 html { scroll-behavior: smooth; }
+
+.hub-topo { display: grid; grid-template-columns: minmax(0, 1fr) minmax(300px, 460px); gap: 40px; align-items: start; }
+.hub-topo .pass-bloco { margin-top: 0; }
+@media (max-width: 860px) { .hub-topo { grid-template-columns: minmax(0, 1fr); gap: 24px; } }
+
+/* Compartilhado pelo painel do mapa e pelas páginas: gráfico de chuva e folha do passaporte. */
+.chuva { margin-top: 14px; }
+.chuva svg { display: block; width: 100%; height: auto; overflow: visible; }
+.chuva .ch-ax { font: 400 10px var(--body); fill: var(--muted); }
+.chuva .ch-gr { stroke: var(--rule); stroke-width: 1; }
+.chuva .ch-ax0 { stroke: var(--muted); stroke-width: 1; }
+.chuva .ch-b { fill: var(--accent); opacity: .55; }
+.chuva .ch-b.ch-pk { opacity: 1; }
+.chuva .ch-v { font: 600 9.5px var(--body); fill: var(--muted); }
+.chuva .ch-v.ch-pk { fill: var(--ink); }
+.chuva .ch-m { font: 500 10px var(--body); fill: var(--ink); }
+.chuva .ch-p { font: 400 8.6px var(--body); fill: var(--muted); }
+.folha { margin-top: 12px; max-width: 480px; box-shadow: 0 12px 32px rgba(0,0,0,.5), 0 0 0 1px rgba(0,0,0,.25); }
+.folha svg { display: block; width: 100%; height: auto; }
+.selo { margin-left: 8px; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--col, var(--accent)); font-weight: 600; }

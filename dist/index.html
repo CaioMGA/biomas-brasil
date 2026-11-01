@@ -209,16 +209,26 @@ dd { margin: 0; }
 .src { margin: 22px 0 0; padding-top: 14px; border-top: 1px solid var(--rule); font-size: 12px; color: var(--muted); }
 .src p { margin: 0 0 6px; }
 /* ---------- Modo leitura ---------- */
+/* Compartilhado pelo painel do mapa e pelas páginas: gráfico de chuva e folha do passaporte. */
+.chuva { margin-top: 14px; }
+.chuva svg { display: block; width: 100%; height: auto; overflow: visible; }
+.chuva .ch-ax { font: 400 10px var(--body); fill: var(--muted); }
+.chuva .ch-gr { stroke: var(--rule); stroke-width: 1; }
+.chuva .ch-ax0 { stroke: var(--muted); stroke-width: 1; }
+.chuva .ch-b { fill: var(--accent); opacity: .55; }
+.chuva .ch-b.ch-pk { opacity: 1; }
+.chuva .ch-v { font: 600 9.5px var(--body); fill: var(--muted); }
+.chuva .ch-v.ch-pk { fill: var(--ink); }
+.chuva .ch-m { font: 500 10px var(--body); fill: var(--ink); }
+.chuva .ch-p { font: 400 8.6px var(--body); fill: var(--muted); }
+.folha { margin-top: 12px; max-width: 480px; box-shadow: 0 12px 32px rgba(0,0,0,.5), 0 0 0 1px rgba(0,0,0,.25); }
+.folha svg { display: block; width: 100%; height: auto; }
+.selo { margin-left: 8px; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--col, var(--accent)); font-weight: 600; }
+
 .mergulhar { text-decoration: none; display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; margin: 20px 0 0; padding: 12px 16px; cursor: pointer; text-align: left; color: #11160f; background: var(--accent); border: 0; font-weight: 600; }
 .mergulhar small { display: block; font-weight: 400; font-size: 12px; opacity: .8; }
 .mergulhar:hover { filter: brightness(1.08); }
 .credlink { display: inline-block; margin-top: 8px; color: var(--ink); font-size: 13px; text-underline-offset: 3px; }
-.selo { display: inline-block; margin-left: 8px; padding: 1px 8px; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; border: 1px solid currentColor; border-radius: 999px; }
-.pass { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 6px; margin: 12px 0 0; padding: 0; list-style: none; }
-.pass li { padding: 8px 10px; border: 1px solid var(--rule); border-left: 4px solid var(--col); font-size: 13px; background: rgba(255,255,255,.04); }
-.pass li b { display: block; font-weight: 600; }
-.pass li span { color: var(--muted); font-size: 11px; }
-.pass li.ok { background: color-mix(in srgb, var(--col) 22%, transparent); }
 .nogl { display: none; position: absolute; left: 24px; top: 50%; max-width: 40ch; color: var(--muted); }
 
 @media (max-width: 860px) {
@@ -298,7 +308,9 @@ html.nav-in .navstack .pill, html.nav-in .compass, html.nav-in .pill.zm, html.na
 <script>
 /* Loader: só usa o que está neste HTML (SVG, CSS e este script), então desenha antes de qualquer outra coisa carregar. */
 (function () {
-  if (["skipintro", "lab", "labs"].some(k => new URLSearchParams(location.search).has(k))) {   // ?skipintro (e todo lab): sem loading nem animações de abertura
+  // Vindo de outra página do próprio site (menu, "Ver no mapa"), não há loading com tempo mínimo nem abertura: isso fica só para quem abre a home direto.
+  const interno = (() => { try { return !!document.referrer && new URL(document.referrer).origin === location.origin; } catch (e) { return false; } })();
+  if (interno || ["skipintro", "lab", "labs"].some(k => new URLSearchParams(location.search).has(k))) {   // ?skipintro (e todo lab): sem loading nem animações de abertura
     window.__skipIntro = true; const r = document.documentElement; r.classList.remove("boot", "navhide");
     const l = document.getElementById("loader"); if (l) l.remove(); return;
   }
@@ -432,6 +444,107 @@ const BIOME_UFS = [null,
   new Set(["RS"]),
   new Set("MS MT".split(" ")),
   new Set("AP PA MA PI CE RN PB PE AL SE BA ES RJ SP PR SC RS".split(" "))];   // [x, y, zoom] da câmera para cada bioma (com a extensão fora do Brasil) e para o Brasil
+
+/* Código compartilhado pelo painel do mapa e pelas páginas: gráfico de chuva com escala e folha do passaporte (carimbos).
+   Inlinado no template do mapa (__COMUM__) e no início de assets/site.js. Não declara nada além de BiomasUI. */
+const BiomasUI = (() => {
+  const NS = "http://www.w3.org/2000/svg";
+  const MESES = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
+  const n1 = v => v.toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  const hash = s => { let h = 2166136261; for (const c of s) h = Math.imul(h ^ c.charCodeAt(0), 16777619); return h >>> 0; };
+  const rnd = (s, k) => { const x = Math.sin(hash(s) % 9973 + k * 12.9898) * 43758.5453; return x - Math.floor(x); };   // [0,1) estável por bioma
+  const wrap = (cls, html) => { const d = document.createElement("div"); d.className = cls; d.innerHTML = html; return d; };
+
+  /* ---------- Gráfico de chuva: eixo em mm por mês, valor sobre cada barra e % do ano embaixo ---------- */
+  function graficoChuva(r, topo, nome) {
+    const max = Math.ceil(topo / 100) * 100;                  // mesmo eixo para todos os biomas, para comparar
+    const W = 430, H = 200, L = 38, T = 24, Bt = 44, ph = H - T - Bt, base = T + ph;
+    const y = v => T + ph * (1 - v / max);
+    const total = r.mm.reduce((a, b) => a + b, 0);
+    const col = (W - L) / 12, bw = col * .66;
+    let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${nome ? "Chuva média mensal no bioma " + nome + ", em mm e em % do total anual: " : ""}${r.mm.map((v, k) => `${MESES[k]} ${v} mm (${n1(v / total * 100)}%)`).join("; ")}">`;
+    s += `<text x="0" y="${T - 10}" class="ch-ax">mm/mês</text>`;
+    for (let t = 0; t <= max; t += 100) s += `<line x1="${L}" x2="${W}" y1="${y(t)}" y2="${y(t)}" class="${t === 0 ? "ch-ax0" : "ch-gr"}"/><text x="${L - 6}" y="${y(t) + 3.5}" text-anchor="end" class="ch-ax">${t}</text>`;
+    r.mm.forEach((v, k) => {
+      const x = L + k * col + (col - bw) / 2, pk = k === r.pico;
+      s += `<rect x="${x.toFixed(1)}" y="${y(v).toFixed(1)}" width="${bw.toFixed(1)}" height="${(base - y(v)).toFixed(1)}" class="ch-b${pk ? " ch-pk" : ""}"><title>${MESES[k]}: ${v} mm (${n1(v / total * 100)}% do ano)</title></rect>`;
+      s += `<text x="${(x + bw / 2).toFixed(1)}" y="${(y(v) - 4).toFixed(1)}" text-anchor="middle" class="ch-v${pk ? " ch-pk" : ""}">${v}</text>`;
+      s += `<text x="${(x + bw / 2).toFixed(1)}" y="${base + 13}" text-anchor="middle" class="ch-m">${"JFMAMJJASOND"[k]}</text>`;
+      s += `<text x="${(x + bw / 2).toFixed(1)}" y="${base + 27}" text-anchor="middle" class="ch-p">${n1(v / total * 100)}%</text>`;
+    });
+    s += `<text x="${L - 6}" y="${base + 27}" text-anchor="end" class="ch-ax">% ano</text></svg>`;
+    const d = wrap("chuva", s); d.setAttribute("data-nocount", "");   // o painel do mapa anima números; aqui eles ficam fixos
+    const cap = document.createElement("p"); cap.className = "cap";
+    cap.textContent = `Chuva média mensal (WorldClim 2.1, 1970–2000). Eixo e valores sobre as barras: milímetros por mês. Linha de baixo: parte da chuva do ano, que soma ${total.toLocaleString("pt-BR")} mm.`;
+    d.appendChild(cap);
+    return d;
+  }
+
+  /* ---------- Folha do passaporte ---------- */
+  const MES3 = ["JAN", "FEV", "MAR", "ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ"];
+  const fmtData = iso => { const m = /^(\d{4})-(\d\d)-(\d\d)/.exec(iso || ""); return m ? `${+m[3]} ${MES3[+m[2] - 1]} ${m[1]}` : ""; };
+  const fit = (txt, w, max) => Math.min(max, w / (txt.length * .66));
+  const FORMAS = ["circulo", "retangulo", "circulo2", "octogono", "elipse", "corte", "elipse2"];
+
+  function carimbo(reg, idx, pos, r, em) {
+    const id = reg.id, cor = id === "brasil" ? "#1b2f8a" : `var(--c-${id})`, nome = reg.nome.toUpperCase(), data = fmtData(em);
+    const rot = ((rnd(id, 1) - .5) * 34).toFixed(1), dx = ((rnd(id, 2) - .5) * 10).toFixed(1), dy = ((rnd(id, 3) - .5) * 10).toFixed(1), sc = (.95 + rnd(id, 4) * .1).toFixed(3);
+    const seed = 1 + hash(id) % 90, forma = id === "brasil" ? "brasil" : FORMAS[idx % FORMAS.length];
+    const TX = `fill="${cor}" stroke="none"`;
+    const txt = (t, y, fs, extra = "") => `<text x="0" y="${y}" text-anchor="middle" font-size="${fs.toFixed(1)}" ${extra}>${t}</text>`;
+    const dupla = (draw) => draw(1, 2.6) + draw(0, 1);   // contorno grosso + fio interno
+    let g = "";
+    if (forma === "circulo" || forma === "circulo2" || forma === "brasil") {
+      const R = forma === "brasil" ? r * 1.12 : r, a = R - 12.5, b = R - 8.5;
+      g += `<circle r="${R}" stroke-width="${forma === "brasil" ? 3.2 : 2.6}"/><circle r="${R - 5}" stroke-width="1" ${forma === "circulo2" ? 'stroke-dasharray="1.3 2.6"' : ""}/>`;
+      g += `<path id="at-${id}" d="M ${-a},0 A ${a} ${a} 0 0 1 ${a},0" fill="none" stroke="none"/><path id="ab-${id}" d="M ${-b},0 A ${b} ${b} 0 0 0 ${b},0" fill="none" stroke="none"/>`;
+      g += `<text font-size="7.2" font-weight="700" letter-spacing="1.5" ${TX}><textPath href="#at-${id}" startOffset="50%" text-anchor="middle">BIOMAS DO BRASIL</textPath></text>`;
+      g += `<text font-size="6.8" font-weight="700" letter-spacing="1.8" ${TX}><textPath href="#ab-${id}" startOffset="50%" text-anchor="middle">★ CARIMBADO ★</textPath></text>`;
+      g += `<line x1="${-(R - 9)}" x2="${R - 9}" y1="-9" y2="-9" stroke-width="1"/><line x1="${-(R - 9)}" x2="${R - 9}" y1="9" y2="9" stroke-width="1"/>`;
+      g += txt(nome, 4.5, fit(nome, 2 * R - 20, 13), `font-weight="800" ${TX}`);
+      if (data) g += txt(data, 18.5, 7.6, `font-weight="700" letter-spacing=".6" ${TX}`);
+    } else if (forma === "retangulo" || forma === "corte") {
+      const w = r * 2.25, h = r * 1.5;
+      if (forma === "retangulo") g += `<rect x="${-w / 2}" y="${-h / 2}" width="${w}" height="${h}" rx="5" stroke-width="2.6"/><rect x="${-w / 2 + 4.5}" y="${-h / 2 + 4.5}" width="${w - 9}" height="${h - 9}" rx="2.5" stroke-width="1"/>`;
+      else { const c = 11, p = (k) => `${-w / 2 + k},${-h / 2} ${w / 2 - k},${-h / 2} ${w / 2},${-h / 2 + k} ${w / 2},${h / 2 - k} ${w / 2 - k},${h / 2} ${-w / 2 + k},${h / 2} ${-w / 2},${h / 2 - k} ${-w / 2},${-h / 2 + k}`; g += `<polygon points="${p(c)}" stroke-width="2.6"/><polygon points="${p(c - 3.5).replace(/,/g, ",")}" transform="scale(.93)" stroke-width="1"/>`; }
+      g += txt("BIOMAS DO BRASIL", -h / 2 + 15, 7.2, `font-weight="700" letter-spacing="1.6" ${TX}`);
+      g += `<line x1="${-w / 2 + 9}" x2="${w / 2 - 9}" y1="${-h / 2 + 20}" y2="${-h / 2 + 20}" stroke-width="1"/>`;
+      g += txt(nome, 6, fit(nome, w - 24, 15), `font-weight="800" ${TX}`);
+      g += `<line x1="${-w / 2 + 9}" x2="${w / 2 - 9}" y1="${h / 2 - 22}" y2="${h / 2 - 22}" stroke-width="1"/>`;
+      g += txt(data || "★ ★ ★", h / 2 - 11, 7.8, `font-weight="700" letter-spacing=".6" ${TX}`);
+    } else if (forma === "octogono") {
+      const pts = k => Array.from({ length: 8 }, (_, i) => { const a = Math.PI / 8 + i * Math.PI / 4; return `${(Math.cos(a) * (r - k)).toFixed(1)},${(Math.sin(a) * (r - k)).toFixed(1)}`; }).join(" ");
+      g += `<polygon points="${pts(-2)}" stroke-width="2.6"/><polygon points="${pts(4)}" stroke-width="1"/>`;
+      g += txt("BIOMAS DO BRASIL", -r * .5, 6.8, `font-weight="700" letter-spacing="1.3" ${TX}`);
+      g += txt(nome, 5, fit(nome, 2 * r - 22, 13.5), `font-weight="800" ${TX}`);
+      g += txt(data || "★ ★ ★", r * .55, 7.6, `font-weight="700" letter-spacing=".6" ${TX}`);
+    } else {   // elipse, elipse2
+      const rx = r * 1.22, ry = r * .8;
+      g += `<ellipse rx="${rx}" ry="${ry}" stroke-width="2.6"/><ellipse rx="${rx - 5}" ry="${ry - 5}" stroke-width="1" ${forma === "elipse2" ? 'stroke-dasharray="1.3 2.6"' : ""}/>`;
+      g += txt("BIOMAS DO BRASIL", -ry * .42, 6.8, `font-weight="700" letter-spacing="1.4" ${TX}`);
+      g += txt(nome, 5, fit(nome, 2 * rx - 30, 14), `font-weight="800" ${TX}`);
+      g += txt(data || "★ ★ ★", ry * .62, 7.6, `font-weight="700" letter-spacing=".6" ${TX}`);
+    }
+    const defs = `<filter id="tt-${id}" x="-15%" y="-15%" width="130%" height="130%"><feTurbulence type="fractalNoise" baseFrequency="0.38" numOctaves="3" seed="${seed}" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  2.6 0 0 0 -0.42" result="m"/><feComposite in="SourceGraphic" in2="m" operator="in" result="g"/><feTurbulence type="turbulence" baseFrequency="0.035" numOctaves="2" seed="${seed + 5}" result="w"/><feDisplacementMap in="g" in2="w" scale="2.6" xChannelSelector="R" yChannelSelector="G"/></filter>`;
+    return { defs, g: `<g style="mix-blend-mode:multiply" filter="url(#tt-${id})" opacity=".9"><g transform="translate(${(pos[0] + +dx).toFixed(1)} ${(pos[1] + +dy).toFixed(1)}) rotate(${rot}) scale(${sc})" fill="none" stroke="${cor}" stroke-linecap="round" stroke-linejoin="round" style="color:${cor}" font-family="'Instrument Sans',system-ui,sans-serif">${g}</g></g>` };
+  }
+
+  /* P = {vb, d, r, regs: [{id, nome, pos}]}; carimbados = {id: "AAAA-MM-DD" | ""} (só os biomas que passaram no quiz) */
+  function folha(P, carimbados) {
+    const [vx, vy, vw, vh] = P.vb;
+    let defs = `<filter id="falha" x="-2%" y="-2%" width="104%" height="104%"><feTurbulence type="fractalNoise" baseFrequency="0.55" numOctaves="2" seed="11" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  4 0 0 0 -1.15" result="m"/><feComposite in="SourceGraphic" in2="m" operator="in" result="g"/><feTurbulence type="turbulence" baseFrequency="0.06" numOctaves="1" seed="4" result="w"/><feDisplacementMap in="g" in2="w" scale="1.6" xChannelSelector="R" yChannelSelector="G"/></filter>`;
+    let marks = "";
+    P.regs.forEach((rg, i) => { if (carimbados[rg.id] == null) return; const c = carimbo(rg, i, rg.pos, P.r, carimbados[rg.id]); defs += c.defs; marks += c.g; });
+    const svg = `<svg viewBox="${vx} ${vy} ${vw} ${vh}" role="img" aria-label="Folha do passaporte: contorno do Brasil e os carimbos dos biomas já completados" style="isolation:isolate"><defs>${defs}</defs>
+<rect x="${vx}" y="${vy}" width="${vw}" height="${vh}" fill="#f6f1e4"/>
+<path d="${P.d}" fill="none" stroke="#161616" stroke-width=".85" stroke-linejoin="round" stroke-dasharray="13 1.6 7 2.4 19 1.2 5 2 10 1.4 25 2.8 8 1.8" filter="url(#falha)"/>${marks}</svg>`;
+    return wrap("folha", svg);
+  }
+
+  return { graficoChuva, folha };
+})();
+
+const PASSAPORTE = {"vb":[-24,-26,455,387],"d":"M109,1L113,1L112,6L115,7L117,11L113,20L115,28L123,35L127,31L129,32L135,28L146,29L147,28L145,25L146,24L154,23L160,27L164,25L171,26L182,10L182,7L185,10L185,16L188,25L191,26L195,30L195,36L193,38L196,42L198,41L200,45L205,47L206,46L210,50L212,49L219,50L221,52L222,51L224,53L225,52L228,53L231,56L232,55L233,57L234,56L236,58L237,57L241,65L244,65L246,63L255,67L261,67L263,69L276,68L287,75L299,86L300,85L302,87L311,87L314,91L317,102L317,111L313,121L305,131L299,135L292,148L283,155L284,156L283,159L284,160L283,162L284,178L281,187L282,192L279,194L277,198L278,205L277,207L274,210L272,216L267,221L267,227L262,229L259,232L260,234L259,235L248,235L247,236L243,235L242,237L238,236L237,237L238,238L236,238L231,242L226,242L225,244L220,245L214,250L205,261L206,262L205,271L207,275L205,277L204,282L195,290L190,301L175,314L173,320L169,324L167,325L166,321L170,317L165,314L165,312L158,306L152,304L150,301L146,303L146,301L139,294L134,296L149,279L165,269L165,262L163,257L161,256L158,257L161,247L157,242L153,244L151,243L149,236L150,233L147,229L130,228L132,219L129,212L131,211L130,207L133,202L132,201L133,198L135,196L132,190L131,189L130,190L127,187L126,185L127,181L123,179L113,179L112,173L110,171L112,169L112,166L109,158L105,156L102,157L98,156L96,153L93,153L88,149L83,147L79,148L75,144L73,144L71,140L72,135L70,132L71,131L70,124L61,126L51,133L49,132L45,136L42,135L30,136L28,135L29,125L27,123L23,127L16,127L14,123L8,122L9,119L1,107L3,105L3,101L8,98L7,94L9,92L10,87L18,82L25,81L27,79L30,79L33,81L34,80L38,53L36,48L33,46L33,40L40,38L39,35L35,34L34,35L34,30L46,30L47,28L49,29L54,26L57,35L58,34L62,38L65,38L67,36L71,37L72,35L79,32L81,28L87,26L86,23L81,23L82,22L80,18L81,16L75,9L80,10L82,12L86,11L90,14L93,10L98,10L105,7L109,3Z","r":44,"regs":[{"id":"amazonia","nome":"Amazônia","pos":[121,87]},{"id":"cerrado","nome":"Cerrado","pos":[202,162]},{"id":"mata-atlantica","nome":"Mata Atlântica","pos":[216,232]},{"id":"caatinga","nome":"Caatinga","pos":[268,124]},{"id":"pampa","nome":"Pampa","pos":[165,296]},{"id":"pantanal","nome":"Pantanal","pos":[138,196]},{"id":"costeiro","nome":"Costeiro-marinho","pos":[322,222]},{"id":"brasil","nome":"Brasil","pos":[64,288]}]};   // contorno do Brasil e posição dos carimbos (build/paginas.py)
 
 /* ---------- Dados ---------- */
 const B = [
@@ -617,19 +730,12 @@ function renderPanel() {
       });
       sec.appendChild(rn);
       const top = Math.max(...Object.values(RAIN).map(x => Math.max(...x.mm)));
-      const bars = el("div", { class: "rainbars", role: "img", "aria-label": `Chuva média mensal no bioma ${b.name}` });
-      r.mm.forEach((v, k) => {
-        const c = el("div", { title: `${MES_LONGO[k]}: ${v} mm`, class: k === r.pico ? "pk" : "" });
-        c.appendChild(el("i", { style: `--h:${(v / top * 100).toFixed(1)}%` })); bars.appendChild(c);
-      });
-      sec.appendChild(bars);
-      const mo = el("div", { class: "rainmo", "aria-hidden": "true" }); [...MES_INICIAL].forEach(ch => mo.appendChild(el("span", {}, ch))); sec.appendChild(mo);
+      sec.appendChild(BiomasUI.graficoChuva(r, top, b.name));
       const sec2 = r.mm.indexOf(Math.min(...r.mm));
       const frase = r.chuvoso.pct < 30
         ? `A chuva é bem distribuída ao longo do ano: nenhum trimestre concentra mais de ${r.chuvoso.pct}%. O mês mais chuvoso é ${MES_LONGO[r.pico]}, com ${r.mm[r.pico]} mm.`
         : `A estação chuvosa vai de ${MES_LONGO[ini]} a ${MES_LONGO[fim]}, quando cai ${r.chuvoso.pct}% da chuva do ano. O pico é em ${MES_LONGO[r.pico]}, com ${r.mm[r.pico]} mm, e o mês mais seco é ${MES_LONGO[sec2]}, com ${r.mm[sec2]} mm.`;
       sec.appendChild(el("p", { class: "lead" }, frase));
-      sec.appendChild(el("p", { class: "cap", "data-nocount": "" }, "Chuva média mensal em mm, 1970–2000 (WorldClim 2.1), no território brasileiro do bioma."));
       wrap.appendChild(sec);
     }
     const q = el("p", { class: "curio" }, b.curio);
@@ -736,25 +842,18 @@ function mergulharBtn(id) {
   const done = hasSeal(id);
   const btn = el("a", { class: "mergulhar", href: id === "brasil" ? "/brasil/" : `/biomas/${id}/` });
   const t = el("span"); t.append(document.createTextNode("Mergulhar"));
-  if (done) t.appendChild(el("span", { class: "selo" }, "Selo ✓"));
-  t.appendChild(el("small", {}, `Página de leitura · ${fmtMin(totalMin(id))} de textos, espécies, vídeos e quiz`));
+  if (done) t.appendChild(el("span", { class: "selo" }, "Carimbado"));
+  t.appendChild(el("small", {}, "Página de leitura: textos, espécies, vídeos e quiz"));
   btn.append(t, el("span", { "aria-hidden": "true" }, "→"));
   return btn;
 }
 function passaporte() {
   const sec = el("div", { class: "rain" });
   sec.appendChild(el("p", { class: "kicker" }, "Passaporte"));
-  const ids = PASS_IDS.filter(i => CONT[i]);
-  const n = ids.filter(hasSeal).length;
-  sec.appendChild(el("p", { class: "lead" }, `${n} de ${PASS_IDS.length} selos. Leia um bioma e acerte o quiz para ganhar o selo dele.`));
-  const ul = el("ul", { class: "pass" });
-  B.forEach(b => {
-    const li = el("li", { style: `--col:${col(b)}` }); if (hasSeal(b.id)) li.classList.add("ok");
-    const pr = getProg(b.id), pl = (readerPlan(b.id) || []).filter(x => x.kind !== "quiz");   // o quiz não conta como seção lida
-    li.append(el("b", {}, b.name), el("span", {}, pl ? (hasSeal(b.id) ? "Selo conquistado" : `${pr.lidas.length} de ${pl.length} seções`) : "Em breve"));
-    ul.appendChild(li);
-  });
-  sec.appendChild(ul);
+  const carim = {}; PASS_IDS.concat("brasil").forEach(i => { if (hasSeal(i)) carim[i] = (getProg(i).quiz.em) || ""; });
+  const n = PASS_IDS.filter(i => i in carim).length;
+  sec.appendChild(el("p", { class: "lead" }, `${n} de ${PASS_IDS.length} biomas carimbados. Leia um bioma e acerte o quiz para carimbá-lo na folha.`));
+  sec.appendChild(BiomasUI.folha(PASSAPORTE, carim));
   return sec;
 }
 
@@ -810,7 +909,7 @@ const EFFECTS = {
         if (r.y > 1.05) { r.y = -.05; r.x = rnd(0, 1.2); }
         const x = r.x * w, y = r.y * h;
         c.strokeStyle = rgba([154, 234, 171], .12 + .3 * r.z);
-        c.beginPath(); c.moveTo(x, y); c.lineTo(x + r.l * .18 * FD, y + r.l * FD); c.stroke();
+        c.beginPath(); c.moveTo(x, y); c.lineTo(x - r.l * .18 * FD, y + r.l * FD); c.stroke();   // inclinada para a esquerda, no sentido em que a chuva deriva (r.x diminui)
       });
     };
   },

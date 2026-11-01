@@ -15,38 +15,31 @@
   const getProg = id => store.get("prog", {})[id] || { lidas: [], quiz: null };
   const setProg = (id, fn) => { const all = store.get("prog", {}); const p = all[id] || { lidas: [], quiz: null }; fn(p); all[id] = p; store.set("prog", all); };
   const hasSeal = id => { const q = getProg(id).quiz; return !!q && q.ok / q.n >= .6; };
-  const fmtMin = m => m >= 60 ? `${Math.floor(m / 60)} h ${String(m % 60).padStart(2, "0")} min` : `${m} min`;
   const fmt = n => n.toLocaleString("pt-BR");
   const regioes = D ? D.regioes : [];
   const lida = r => getProg(r.id).lidas.length >= r.secoes;
 
+  const passou = id => { const q = getProg(id).quiz; return !!q && q.ok / q.n >= .6; };
   function estado(r) {
     const pr = getProg(r.id);
-    if (hasSeal(r.id)) return "Selo ✓";
+    if (hasSeal(r.id)) return "Carimbado";
     if (lida(r)) return "Lido";
     return pr.lidas.length ? `${pr.lidas.length} de ${r.secoes} seções` : "";
   }
-  function cartao(r, comSilhueta) {
+  function cartao(r) {
     const li = el("li"); const a = el("a", { class: "card" + (lida(r) ? " lido" : ""), href: r.url, style: `--col:${r.cor}` });
     a.append(el("h3", {}, r.nome), el("p", {}, r.intro));
-    const meta = el("span", { class: "meta" }, `${fmtMin(r.min)} de leitura`);
-    const est = estado(r); if (est) meta.appendChild(el("span", { class: "selo" }, est));
+    const meta = el("span", { class: "meta" }); const est = estado(r); if (est) meta.appendChild(el("span", { class: "selo", style: "margin-left:0" }, est));
     a.appendChild(meta); li.appendChild(a); return li;
   }
 
-  // ---- passaporte (hub) ----
+  // ---- passaporte: folha com um carimbo por bioma completado (quiz com nota mínima) ----
+  function carimbados() { const o = {}; regioes.forEach(r => { if (passou(r.id)) o[r.id] = getProg(r.id).quiz.em || ""; }); return o; }
   function passaporte(box) {
-    const reg = regioes.filter(r => r.id !== "brasil");
-    const n = reg.filter(r => hasSeal(r.id)).length, lidos = reg.filter(lida).length;
+    const reg = regioes.filter(r => r.id !== "brasil"); const c = carimbados(); const n = reg.filter(r => r.id in c).length;
     box.appendChild(el("p", { class: "kicker" }, "Passaporte"));
-    box.appendChild(el("p", { class: "lead" }, `${lidos} de ${reg.length} biomas lidos · ${n} ${n === 1 ? "selo" : "selos"}. Leia um bioma e acerte o quiz para ganhar o selo dele.`));
-    const ul = el("ul", { class: "pass" });
-    reg.forEach(r => {
-      const li = el("li", { style: `--col:${r.cor}` }); if (hasSeal(r.id)) li.classList.add("ok");
-      li.append(el("b", {}, r.nome), el("span", {}, hasSeal(r.id) ? "Selo conquistado" : `${getProg(r.id).lidas.length} de ${r.secoes} seções`));
-      ul.appendChild(li);
-    });
-    box.appendChild(ul);
+    box.appendChild(el("p", { class: "lead" }, `${n} de ${reg.length} biomas carimbados. Acerte o quiz de um bioma para carimbá-lo na folha.`));
+    box.appendChild(BiomasUI.folha(D.passaporte, c));
   }
 
   // ---- sugestões no rodapé: não lidos primeiro ----
@@ -58,6 +51,12 @@
     const ul = el("ul", { class: "cards" });
     ordem.forEach(r => ul.appendChild(cartao(r)));
     box.appendChild(ul);
+  }
+
+  // ---- gráficos de chuva (eixo comum a todos os biomas) ----
+  function chuvas() {
+    const topo = Math.max(...Object.values(D.chuva).map(x => Math.max(...x.mm)));
+    document.querySelectorAll(".chuva-bioma").forEach(box => { const r = D.chuva[box.dataset.bioma]; if (r) box.replaceWith(BiomasUI.graficoChuva(r, topo, (D.regioes.find(x => x.id === box.dataset.bioma) || {}).nome)); });
   }
 
   // ---- progresso de leitura ----
@@ -101,10 +100,11 @@
           if (oi === q.c) ok++; else b.classList.add("errada");
           exp.hidden = false; done++;
           if (done === D.quiz.length) {
-            setProg(id, p => { p.quiz = { ok, n: D.quiz.length }; });
+            const sel0 = ok / D.quiz.length >= .6;
+            setProg(id, p => { const antes = p.quiz; if (antes && antes.ok / antes.n >= .6 && !sel0) return; p.quiz = { ok, n: D.quiz.length }; if (sel0) p.quiz.em = (antes && antes.em) || new Date().toLocaleDateString("sv-SE"); });
             const sel = ok / D.quiz.length >= .6;
             res.hidden = false;
-            res.replaceChildren(document.createTextNode(`Você acertou ${ok} de ${D.quiz.length}. ${sel ? (id === "brasil" ? "Selo do Brasil conquistado!" : "Selo conquistado!") : "Releia as seções e tente de novo para ganhar o selo."}`));
+            res.replaceChildren(document.createTextNode(`Você acertou ${ok} de ${D.quiz.length}. ${sel ? (id === "brasil" ? "Carimbo do Brasil conquistado!" : "Carimbo conquistado!") : "Releia as seções e tente de novo para ganhar o carimbo."}`));
             const again = el("button", { type: "button" }, "Refazer o quiz"); again.addEventListener("click", () => location.reload()); res.appendChild(again);
           }
         });
@@ -143,10 +143,10 @@
     document.querySelectorAll("a.card").forEach(a => {
       const r = regioes.find(x => x.id === a.dataset.id); if (!r) return;
       if (lida(r)) a.classList.add("lido");
-      const est = estado(r); if (est) a.querySelector(".estado").replaceChildren(el("span", { class: "selo" }, est));
+      const est = estado(r); if (est) a.querySelector(".estado").replaceChildren(el("span", { class: "selo", style: "margin-left:0" }, est));
     });
   } else {
-    leitura(); videos(); quiz(); comparador();
+    leitura(); videos(); quiz(); comparador(); chuvas();
     proximos(document.getElementById("proximos"));
   }
 })();

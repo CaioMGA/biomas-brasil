@@ -2,7 +2,7 @@
 import os
 from PIL import Image
 
-def brasil_path(root, F=6, eps=0.9, ids=range(1, 7)):
+def brasil_path(root, F=6, eps=0.9, ids=range(1, 7), with_offset=False):
     im = Image.open(os.path.join(root, "data/ids.png"))
     sm = Image.frombytes('L',im.size,bytes(255 if v in ids else 0 for v in im.tobytes())).resize((im.width//F,im.height//F),Image.NEAREST)
     W,H=sm.size; d=sm.load()
@@ -45,4 +45,4 @@ def brasil_path(root, F=6, eps=0.9, ids=range(1, 7)):
     xs=[p[0] for p in s]; ys=[p[1] for p in s]
     x0,y0=min(xs)-1,min(ys)-1; w=max(xs)-x0+2; h=max(ys)-y0+2
     d = "M" + "L".join(f"{p[0]-x0},{p[1]-y0}" for p in s) + "Z"
-    return d, w, h
+    return (d, w, h, x0, y0) if with_offset else (d, w, h)

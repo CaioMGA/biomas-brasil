@@ -12,6 +12,19 @@ ORDEM = ["amazonia", "cerrado", "mata-atlantica", "caatinga", "pampa", "pantanal
 CONTATO = {"email": "caiomga@gmail.com", "pessoal": "https://caiomga.com", "projetos": "https://brchad.com"}
 
 
+# Centro de cada carimbo no sistema de coordenadas do contorno do Brasil (centroides dos biomas em data/ids.png, ajustados à mão)
+POS = {"amazonia": (121, 87), "cerrado": (202, 162), "mata-atlantica": (216, 232), "caatinga": (268, 124), "pampa": (165, 296),
+       "pantanal": (138, 196), "costeiro": (322, 222), "brasil": (64, 288)}
+
+
+def passaporte(root, br_path):
+    """Dados da folha do passaporte (contorno do Brasil e posição dos carimbos), para o mapa e para as páginas."""
+    d, w, h = br_path
+    nomes = {b["id"]: b["name"] for b in biomas_do_template(root)}
+    regs = [{"id": i, "nome": "Brasil" if i == "brasil" else nomes[i], "pos": list(POS[i])} for i in ORDEM + ["brasil"]]
+    return {"vb": [-24, -26, w + 136, h + 60], "d": d, "r": 44, "regs": regs}
+
+
 def rmin(x):
     return max(1, int(x + 0.5))
 
@@ -73,6 +86,7 @@ class Site:
         self.plan = {i: plano(i, self.C[i]) for i in self.C}
         self.total = {i: sum(s["min"] for s in p) for i, p in self.plan.items()}
         self.regioes = [self.regiao(i) for i in ["brasil"] + ORDEM if i in self.C]
+        self.P = passaporte(root, br_path)
 
     # ---- dados de cada região ----
     def nome(self, id):
@@ -136,18 +150,6 @@ class Site:
         return (f'<div class="brfoot"><span>Site criado por Caio Amaral</span>'
                 f'<img class="brchad" src="{self.brchad}" width="80" height="15" alt="brchad 2026"></div>')
 
-    def chuva(self, id):
-        r = self.rain.get(id)
-        if not r:
-            return ""
-        topo = max(max(x["mm"]) for x in self.rain.values())
-        barras = "".join(f'<div title="{MES_LONGO[k]}: {v} mm" class="{"pk" if k == r["pico"] else ""}"><i style="--h:{v / topo * 100:.1f}%"></i></div>' for k, v in enumerate(r["mm"]))
-        meses = "".join(f"<span>{ch}</span>" for ch in "JFMAMJJASOND")
-        legenda = (f'Chuva média mensal em mm (WorldClim 2.1, 1970–2000). Total: {fmt_n(r["ano"])} mm por ano; '
-                   f'o mês mais chuvoso é {MES_LONGO[r["pico"]]}, com {r["mm"][r["pico"]]} mm.')
-        return (f'<div><div class="rainbars" role="img" aria-label="Chuva média mensal no bioma {E(self.nome(id))}">{barras}</div>'
-                f'<div class="rainmo" aria-hidden="true">{meses}</div><p class="cap">{E(legenda)}</p></div>')
-
     def creditos(self):
         c = self.C["brasil"]
         out = []
@@ -168,11 +170,11 @@ class Site:
 
     def secao(self, id, i, n, s):
         c = self.C[id]
-        h = (f'<h2><small>{i + 1} de {n} · {s["min"]} min</small>{E(s["titulo"])}</h2>')
+        h = (f'<h2><small>{i + 1} de {n}</small>{E(s["titulo"])}</h2>')
         k, corpo = s["kind"], ""
         if k == "texto":
             if s["s"].get("chuva") and id != "brasil":
-                corpo += self.chuva(id)
+                corpo += f'<div class="chuva-bioma" data-bioma="{id}"></div>'
             corpo += "".join(f"<p>{E(t)}</p>" for t in s["s"]["p"])
         elif k == "especies":
             corpo += '<div class="sp-grid">' + "".join(
@@ -205,7 +207,7 @@ class Site:
         c, p = self.C[id], self.plan[id]
         nome = self.nome(id)
         kicker = "País" if id == "brasil" else ("Sistema" if self.byId[id].get("marine") else "Bioma")
-        toc = "".join(f'<a href="#sec-{s["id"]}" data-sec="{s["id"]}">{E(s["titulo"])}<small>{s["min"]} min</small></a>' for s in p)
+        toc = "".join(f'<a href="#sec-{s["id"]}" data-sec="{s["id"]}">{E(s["titulo"])}</a>' for s in p)
         secs = "".join(self.secao(id, i, len(p), s) for i, s in enumerate(p))
         fontes = f'<p class="rd-src">{E(c["fontes"])}</p>' if c.get("fontes") else ""
         corpo = f"""<div class="rd-bar"><i></i></div>
@@ -216,34 +218,37 @@ class Site:
 <h1>{E(nome)}</h1>
 <p class="intro">{E(c.get("intro", ""))}</p>
 <p><span class="tm" style="color:var(--muted);font-size:14px">{fmt_min(self.total[id])} de leitura</span></p>
-<a class="voltar" href="/?skipintro#{"" if id == "brasil" else id}">← Ver no mapa</a>
+<a class="voltar" href="/#{"" if id == "brasil" else id}">← Ver no mapa</a>
 {secs}{fontes}
 </main>
 </div>
 <section class="prox" id="proximos" aria-label="Continue explorando"></section>
 <div class="rodape">{self.foot()}</div>"""
-        dados = {"id": id, "regioes": self.regioes, "plano": [{"id": s["id"], "kind": s["kind"]} for s in p], "quiz": c.get("quiz", [])}
+        dados = {"id": id, "regioes": self.regioes, "passaporte": self.P, "chuva": {k: {"mm": v["mm"], "ano": v["ano"], "seco": v["seco"], "pico": v["pico"]} for k, v in self.rain.items()}, "plano": [{"id": s["id"], "kind": s["kind"]} for s in p], "quiz": c.get("quiz", [])}
         if id == "brasil":
             dados["bio"] = [{k: b.get(k) for k in ("id", "name", "km", "pct", "sp", "climate", "veg", "states", "spp")} for b in self.B]
-            dados["chuva"] = {k: {"ano": v["ano"], "seco": v["seco"]} for k, v in self.rain.items()}
         desc = c.get("intro", "") or f"{nome}: conteúdo do site Biomas do Brasil."
         return self.casca(f"{nome} — Biomas do Brasil", desc, corpo, "biomas" if id != "brasil" else "biomas", self.cor(id), dados)
 
     def cartao(self, r):
         return (f'<li><a class="card" href="{r["url"]}" data-id="{r["id"]}" style="--col:{r["cor"]}">{self.silhueta(r["id"])}'
                 f'<h3>{E(r["nome"])}</h3><p>{E(r["intro"])}</p>'
-                f'<span class="meta"><span class="min">{fmt_min(r["min"])} de leitura</span><span class="estado"></span></span></a></li>')
+                f'<span class="meta"><span class="estado"></span></span></a></li>')
 
     def hub(self):
         corpo = f"""<div class="hub">
+<div class="hub-topo">
+<div>
 <p class="kicker">Conteúdo</p>
 <h1>Biomas do Brasil</h1>
 <p class="intro">Seis biomas continentais e o sistema costeiro-marinho, em textos, espécies, vídeos e quizzes. Comece por onde tiver mais curiosidade.</p>
+</div>
 <div class="pass-bloco" id="passaporte"></div>
+</div>
 <ul class="cards">{"".join(self.cartao(r) for r in self.regioes)}</ul>
 </div>
 <div class="rodape">{self.foot()}</div>"""
-        return self.casca("Biomas — Biomas do Brasil", "Todos os biomas do Brasil e o sistema costeiro-marinho: textos, espécies, vídeos e quizzes.", corpo, "biomas", "var(--ink)", {"id": "hub", "regioes": self.regioes})
+        return self.casca("Biomas — Biomas do Brasil", "Todos os biomas do Brasil e o sistema costeiro-marinho: textos, espécies, vídeos e quizzes.", corpo, "biomas", "var(--ink)", {"id": "hub", "regioes": self.regioes, "passaporte": self.P})
 
     def sobre(self):
         c = self.C["brasil"]
@@ -284,7 +289,10 @@ class Site:
         w("biomas/index.html", self.hub())
         w("sobre/index.html", self.sobre())
         os.makedirs(os.path.join(self.dest, "assets"), exist_ok=True)
-        for src, dst in (("src/pagina.css", "assets/site.css"), ("src/pagina.js", "assets/site.js"), ("data/icon.svg", "assets/icon.svg"), ("brchad-2026.png", "assets/brchad.png")):
+        rd = lambda f: open(os.path.join(self.root, f), encoding="utf-8").read()
+        open(os.path.join(self.dest, "assets/site.css"), "w", encoding="utf-8").write(rd("src/pagina.css") + "\n" + rd("src/comum.css"))
+        open(os.path.join(self.dest, "assets/site.js"), "w", encoding="utf-8").write(rd("src/comum.js") + "\n" + rd("src/pagina.js"))
+        for src, dst in (("data/icon.svg", "assets/icon.svg"), ("brchad-2026.png", "assets/brchad.png")):
             shutil.copy(os.path.join(self.root, src), os.path.join(self.dest, dst))
 
 

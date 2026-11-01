@@ -17,14 +17,26 @@ Páginas estáticas geradas por `build/build.py` (leves, sem three.js, boas no c
 ## Navegação
 
 - Barra fixa em todas as páginas: **Mapa · Biomas · Sobre**. No mapa ela só aparece depois do loading e da abertura.
-- No mapa, **Mergulhar** navega para `/biomas/<id>/`. Lá, **Voltar ao mapa** leva a `/?skipintro#<id>`, com o bioma enquadrado e sem repetir a abertura.
+- No mapa, **Mergulhar** navega para `/biomas/<id>/`. Lá, **Ver no mapa** leva a `/#<id>`, com o bioma enquadrado. Vindo de outra página do site (referrer do mesmo domínio), o mapa não mostra o loading com tempo mínimo nem a abertura: isso fica só para quem abre a home direto.
 - Páginas de conteúdo: layout do modo leitura atual no desktop (índice lateral, barra de progresso, minutos por seção, seções lidas marcadas).
 - Rodapé de cada página de conteúdo: passaporte e sugestões dos outros biomas, **primeiro os não lidos**, com tempo de leitura e selo, e por último os já lidos.
 - Passaporte também no topo do hub.
+- Sem tempos de leitura em cartões, índices e seções; o tempo total aparece só abaixo do tagline das páginas de bioma e do Brasil.
+
+## Passaporte e carimbos
+
+- A folha de progresso começa em branco, só com o contorno do Brasil em traço preto, fino e falho.
+- Cada bioma completado (quiz com 60% ou mais) vira um carimbo de viagem na folha, na cor do bioma no mapa, com data. Os carimbos têm formas diferentes, ficam levemente tortos e deslocados, e as tintas se mesclam onde se sobrepõem (multiplicação de cor). O quiz do Brasil rende um carimbo azul à parte.
+- Mesmo armazenamento de antes (`localStorage`, chave `biomas:prog`); o quiz agora guarda também a data do carimbo (`quiz.em`).
+- Código compartilhado entre o painel do mapa e as páginas: `src/comum.js` e `src/comum.css`.
+
+## Gráfico de chuva
+
+Eixo em mm por mês (comum a todos os biomas), valor em mm sobre cada barra e % da chuva do ano embaixo.
 
 ## Mantido como está
 
-- Quiz, selos (acerto mínimo de 60%) e passaporte, com o mesmo armazenamento (`localStorage`, chave `biomas:prog`).
+- Quiz e passaporte, com o mesmo armazenamento (`localStorage`, chave `biomas:prog`).
 - Créditos e fontes na página do Brasil, repetidos no Sobre.
 
 ## Sobre: conteúdo
