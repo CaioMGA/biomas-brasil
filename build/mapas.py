@@ -125,6 +125,7 @@ def secao_html(d, nome_bioma):
     cidades = por_id["cidades"]["itens"] if "cidades" in por_id else []
     povos = por_id["povos"]["itens"] if "povos" in por_id else []
     tis = por_id["tis"]["itens"] if "tis" in por_id else []
+    afl = por_id["rios"]["itens"] if "rios" in por_id and por_id["rios"].get("lista") else []   # lista dos afluentes (camada com "lista": True)
     ligados = "".join(
         f'<label class="mt-chk"><input type="checkbox" data-camada="{E(c["id"])}"{" checked" if c["ligada"] else ""}> {E(c["titulo"])}</label>'
         for c in d["camadas"] if not c.get("fixa")) + '<label class="mt-chk"><input type="checkbox" data-camada="grade"> Grade de coordenadas</label>'   # camadas "fixas" não têm caixa de seleção: sempre aparecem
@@ -145,6 +146,7 @@ def secao_html(d, nome_bioma):
         f'<tr data-tipo="{E(i["tipo"])}"><th scope="row">{E(i["nome"])}</th><td>{"Indígena" if i["tipo"] == "indigena" else "Quilombola"}</td><td>{E(i["uf"])}</td></tr>'
         for i in sorted(povos, key=lambda i: i["nome"])))
     listas = ""
+    if afl: listas += '<details class="mt-det" open><summary>Afluentes (%d) em lista</summary><p class="cap">A lista segue os filtros do mapa. Países e estados vêm dos limites do Natural Earth (aproximados).</p>%s</details>\n' % (len(afl), t_afl)
     if ucs:
         nota = por_id["ucs"].get("nota_lista", "")
         listas += '<details class="mt-det"><summary>Unidades de conservação (%d) em lista</summary>%s%s</details>\n' % (len(ucs), ('<p class="cap">' + E(nota) + "</p>") if nota else "", t_uc)
@@ -153,6 +155,12 @@ def secao_html(d, nome_bioma):
     if povos: listas += '<details class="mt-det"><summary>Localidades indígenas e quilombolas (%d) em lista</summary>%s</details>\n' % (len(povos), t_pov)
     t_ti = tabela("tis", ["Terra Indígena", "Povo", "Situação"], "".join(
         f'<tr data-situacao="{E(i["situacao"])}"><th scope="row">{E(i["nome"])}</th><td>{E(i["povo"])}</td><td>{E(i["fase"])}</td></tr>' for i in sorted(tis, key=lambda i: i["nome"]))) if tis else ""
+    if afl:
+        MARGEM = {"esquerda": "esquerda (norte)", "direita": "direita (sul)"}; TRECHO = {"brasileiro": "dentro do Brasil (IBGE)", "estrangeiro": "fora do Brasil (Natural Earth)"}
+        t_afl = tabela("rios", ["Afluente", "Margem", "Trecho no mapa", "Países", "Estados do Brasil"], "".join(
+            f'<tr data-margem="{E(i["attrs"]["margem"])}" data-origem="{E(i["attrs"]["origem"])}"><th scope="row">{E(i["nome"])}</th><td>{E(MARGEM.get(i["attrs"]["margem"], ""))}</td>'
+            f'<td>{E(TRECHO.get(i["attrs"]["origem"], ""))}</td><td>{E(", ".join(i.get("paises", [])))}</td><td>{E(", ".join(i.get("estados", [])))}</td></tr>'
+            for i in sorted(afl, key=lambda i: i["nome"])))
     fontes = "".join(
         f'<li><a href="{E(f["url"])}" target="_blank" rel="noopener">{E(f["titulo"])}</a> — dados de {E(f["data"])}; {E(f["licenca"])}.</li>' for f in d["fontes"].values())
     notas = "".join(f'<li><b>{E(c["titulo"])}:</b> {E(c["nota"])}</li>' for c in d["camadas"])
