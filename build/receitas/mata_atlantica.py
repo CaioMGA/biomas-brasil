@@ -28,11 +28,12 @@ FONTES = {
     "ne": {"titulo": "Natural Earth 1:10 milhões: países, fronteiras, estados e departamentos, cidades e rios principais",
            "url": "https://www.naturalearthdata.com/downloads/10m-cultural-vectors/", "data": "2022", "licenca": "domínio público"},
 }
-# (arquivo, nome em português: tradução livre do nome RESOLVE)
+# (arquivo, nome descritivo em português). Os nomes originais da RESOLVE ("Pernambuco ..." e "Bahia ...") são regiões biogeográficas, não estados:
+# por isso os nomes abaixo são descrições escritas a partir dos estados que cada polígono realmente cobre (conferido nos dados).
 ECOS = [("Alto_Paran_Atlantic_forests.json", "Florestas do Alto Paraná"), ("Araucaria_moist_forests.json", "Florestas de araucária"),
         ("Serra_do_Mar_coastal_forests.json", "Serra do Mar"), ("Atlantic_Coast_restingas.json", "Restingas da costa atlântica"),
-        ("Bahia_coastal_forests.json", "Florestas costeiras da Bahia"), ("Bahia_interior_forests.json", "Florestas do interior da Bahia"),
-        ("Pernambuco_coastal_forests.json", "Florestas costeiras de Pernambuco"), ("Pernambuco_interior_forests.json", "Florestas do interior de Pernambuco")]
+        ("Bahia_coastal_forests.json", "Florestas costeiras do Leste (BA a ES)"), ("Bahia_interior_forests.json", "Florestas do interior do Leste (MG, BA e ES)"),
+        ("Pernambuco_coastal_forests.json", "Florestas costeiras do Nordeste (PB a AL)"), ("Pernambuco_interior_forests.json", "Florestas do interior do Nordeste (RN a SE)")]
 PAISES = {"BRA", "PRY", "ARG", "URY", "BOL"}
 LIMITE_HA = 1000   # UCs menores que isso entram nas contagens, mas não no desenho (invisíveis nesta escala)
 # nomes dos rios do Natural Earth em português (a base escreve "Paraiba" para o Paraíba do Sul, confirmado pela posição, e "Uruguay")
@@ -131,7 +132,7 @@ def receita(raw):
         eco_linhas += [r3(q + [q[0]]) for q in rr]
         eco_itens.append({"nome": nome, "rotulo": centro(rr, bbox)})
     camadas.append({"id": "ecorregioes", "titulo": "Ecorregiões (contornos)", "tipo": "contexto", "fonte": "resolve", "ligada": False,
-                    "nota": "As 8 ecorregiões da Mata Atlântica na classificação RESOLVE 2017 (nomes em português: tradução livre). São só contornos; o bioma continua de uma cor só.",
+                    "nota": "As 8 ecorregiões da Mata Atlântica na classificação RESOLVE 2017. São só contornos; o bioma continua de uma cor só. Os nomes são descrições nossas, a partir dos estados que cada área cobre: os nomes originais da RESOLVE (\"Pernambuco coastal forests\", \"Pernambuco interior forests\", \"Bahia coastal forests\", \"Bahia interior forests\") se referem a regiões biogeográficas, não aos estados, e as áreas ultrapassam os limites estaduais.",
                     "itens": eco_itens, "fronteiras": eco_linhas})
 
     # ---- rios principais (Natural Earth): trechos com ponto médio dentro do bioma, agrupados por nome; todos sem informação de navegabilidade ("ext")

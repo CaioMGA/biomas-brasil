@@ -6,7 +6,7 @@ Branch `mapa-mata-atlantica` (sobre `mapa-tematico-base`). O HERO MAP da home n�
 
 - **Bioma inteiro** (Brasil, Paraguai e Argentina): as 8 ecorregiões RESOLVE 2017 da Mata Atlântica (CC BY 4.0), com o contorno externo desenhado sem as divisas entre elas, e o limite oficial do IBGE por cima (sem as ilhas oceânicas: Fernando de Noronha, São Pedro e São Paulo).
 - **Contexto:** oceano azul, países com cores e nomes, fronteiras, estados do Brasil em cores diferentes (vizinhos nunca repetem cor), divisas de estados e departamentos, grade (desligada), escala e norte.
-- **Ecorregiões (contornos):** camada desligada por padrão, só linhas com os nomes em português (tradução livre dos nomes RESOLVE); o bioma continua de uma cor só.
+- **Ecorregiões (contornos):** camada desligada por padrão, só linhas com nomes descritivos em português, escritos a partir dos estados que cada área realmente cobre (os nomes RESOLVE "Pernambuco ..." e "Bahia ..." são regiões biogeográficas, não estados: a ecorregião "Pernambuco coastal forests" cobre PE, AL e PB; a "Bahia interior forests" está quase toda em MG); o bioma continua de uma cor só.
 - **Unidades de conservação (só Brasil):** ~1.800 no bioma. Fundidas em 6 categorias (proteção integral/uso sustentável × federal/estadual/municipal), desenhando só as de mais de 1.000 ha; tocar numa mancha mostra quantas unidades ela representa. A lista em texto traz as 294 federais e estaduais de proteção integral. Filtros: proteção e esfera.
 - **Cidades:** capitais estaduais e cidades grandes do Brasil (população estimada acima de ~400 mil no Natural Earth) e cidades com mais de 100 mil no Paraguai e na Argentina.
 - **Rios principais:** Natural Earth, sem nome de navegabilidade (a drenagem do IBGE tem milhões de trechos nesta área).
