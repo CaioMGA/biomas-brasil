@@ -90,11 +90,12 @@ blockquote.lit cite { display: block; margin-top: 8px; font: 400 14px var(--body
 
 /* ---------- Páginas de conteúdo (estáticas) ---------- */
 .topo { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 18px; padding: 10px 24px; background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(10px); border-bottom: 3px solid var(--accent); }
-.topo .marca { font: 400 22px var(--display); text-decoration: none; margin-right: auto; }
+.topo .marca { display: inline-flex; flex-direction: column; gap: 3px; font: 400 22px/1.1 var(--display); text-decoration: none; margin-right: auto; }
+.marca-barra { display: block; width: 100%; height: 4px; overflow: visible; }   /* gradiente da bandeira com a textura de tinta do passaporte, no comprimento do nome */
 .topo a.nav { padding: 6px 12px; font-size: 14px; text-decoration: none; color: var(--muted); border-bottom: 2px solid transparent; }
 .topo a.nav:hover { color: var(--ink); background: rgba(255,255,255,.08); }
 .topo a.nav[aria-current="page"] { color: var(--ink); border-bottom-color: var(--accent); }
-.rd-bar { position: sticky; top: 55px; z-index: 9; height: 3px; background: var(--rule); }
+.rd-bar { position: sticky; top: 59px; z-index: 9; height: 3px; background: var(--rule); }
 .rd-bar i { display: block; height: 100%; width: 0; background: var(--accent); }
 .rd-wrap { display: grid; grid-template-columns: 220px minmax(0, 68ch); gap: 48px; justify-content: center; padding: 40px 24px 60px; }
 .rd-wrap.simples { grid-template-columns: minmax(0, 68ch); }
@@ -124,7 +125,7 @@ blockquote.lit cite { display: block; margin-top: 8px; font: 400 14px var(--body
 .contato { display: grid; gap: 8px; margin: 18px 0 0; padding: 0; list-style: none; font-size: 18px; }
 @media (max-width: 860px) {
   .topo { padding: 8px 14px; gap: 6px; } .topo .marca { font-size: 18px; } .topo a.nav { padding: 5px 9px; }
-  .rd-bar { top: 51px; }
+  .rd-bar { top: 66px; }
   .rd-wrap { grid-template-columns: minmax(0, 1fr); padding: 24px 16px 40px; gap: 12px; }
   .rd-toc { position: static; grid-auto-flow: column; grid-auto-columns: max-content; overflow-x: auto; } .rd-toc a { white-space: nowrap; } .rd-toc a small { display: none; }
   .rd-main p { font-size: 17px; }

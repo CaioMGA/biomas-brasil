@@ -62,6 +62,16 @@ def passaporte(root, br_path):
     return {"vb": [-24, -26, w + 136, h + 60], "d": d, "bio": contornos_biomas(root, x0, y0), "r": 44, "regs": regs}
 
 
+BARRA_MARCA = (
+    '<svg class="marca-barra" viewBox="0 0 124 3.6" preserveAspectRatio="none" aria-hidden="true"><defs>'
+    '<linearGradient id="bandeira-topo" gradientUnits="userSpaceOnUse" x1="0" x2="124" y1="0" y2="0">'
+    '<stop offset="0" stop-color="#009c3b"/><stop offset=".3333" stop-color="#ffdf00"/><stop offset=".6667" stop-color="#002776"/><stop offset="1" stop-color="#fff"/></linearGradient>'
+    '<filter id="tt-barra-topo" filterUnits="userSpaceOnUse" x="-6" y="-5" width="136" height="13.6"><feTurbulence type="fractalNoise" baseFrequency="0.38" numOctaves="3" seed="61" result="n"/>'
+    '<feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  2.6 0 0 0 -0.42" result="m"/><feComposite in="SourceGraphic" in2="m" operator="in" result="g"/>'
+    '<feTurbulence type="turbulence" baseFrequency="0.035" numOctaves="2" seed="66" result="w"/><feDisplacementMap in="g" in2="w" scale="1.4" xChannelSelector="R" yChannelSelector="G"/></filter></defs>'
+    '<g filter="url(#tt-barra-topo)" opacity=".92"><rect width="124" height="3.6" fill="url(#bandeira-topo)"/></g></svg>')
+
+
 def rmin(x):
     return max(1, int(x + 0.5))
 
@@ -177,7 +187,7 @@ class Site:
 <link rel="stylesheet" href="/assets/site.css">
 </head>
 <body style="--accent:{accent}">
-<header class="topo"><a class="marca" href="/">Biomas do Brasil</a>{nav}</header>
+<header class="topo"><a class="marca" href="/">Biomas do Brasil{BARRA_MARCA}</a>{nav}</header>
 {corpo}
 {js}<script src="/assets/site.js"></script>
 </body>
