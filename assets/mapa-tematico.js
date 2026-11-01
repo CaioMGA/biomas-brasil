@@ -33,9 +33,9 @@
     const rotulo = (txt, cls, at = {}) => sv("text", { class: `mt-rot ${cls}`, x: 0, y: 0, ...at }, txt);
 
     // ---- fundo: terra, países (preenchimento), grade
-    svg.append(sv("rect", { width: d.w, height: d.h, class: "mt-terra" }));
+    svg.append(sv("rect", { width: d.w, height: d.h, class: d.oceano ? "mt-terra mt-oceano" : "mt-terra" }));   // oceano azul quando o bioma toca o litoral
     const cp = por("paises");
-    if (cp) { const g = sv("g", { class: "mt-cam-paises" }); cp.itens.forEach((p, i) => g.append(sv("path", { d: p.d, class: `mt-pais mt-pais-${i % 6}` }))); svg.append(g); add("paises", g); }
+    if (cp) { const g = sv("g", { class: "mt-cam-paises" }); cp.itens.forEach((p, i) => g.append(sv("path", { d: p.d, class: `mt-pais mt-pais-${i % 6}` }))); svg.append(g); }   // as cores dos países ficam sempre; sem a camada "fronteiras" viram uma cor neutra
     const cef = por("estados");   // estados pintados em cores diferentes; o bioma vem por cima, sempre de uma cor só
     if (cef && cef.fills && cef.fills.length) { const g = sv("g", { class: "mt-cam-ufcor" }); cef.fills.forEach(f => g.append(sv("path", { d: f.d, class: `mt-ufc mt-ufc-${f.i % 6}` }))); svg.append(g); add("estados", g); }
     const gg = sv("g", { class: "mt-cam-grade" }); gg.append(sv("path", { d: d.grade.d, class: "mt-grade" })); svg.append(gg); add("grade", gg);
@@ -55,9 +55,9 @@
       const g = sv("g", { class: "mt-cam-ucs" }); const ucPorEl = new Map();
       cu.itens.forEach(u => {
         const p = item("ucs", sv("path", { d: u.d, class: `mt-uc mt-uc-${u.grupo}`, "fill-rule": "evenodd", "data-grupo": u.grupo, "data-esfera": u.esfera, "vector-effect": "non-scaling-stroke" }));
-        const t = `${u.nome} — ${u.categoria}, ${u.grupo === "PI" ? "proteção integral" : "uso sustentável"}, ${u.esfera.toLowerCase()} (${titulo(u.uf)}), ${fmt(u.ha)} ha${u.ano ? `, criada em ${u.ano}` : ""}.`;
+        const t = u.texto || `${u.nome} — ${u.categoria}, ${u.grupo === "PI" ? "proteção integral" : "uso sustentável"}, ${u.esfera.toLowerCase()} (${titulo(u.uf)}), ${fmt(u.ha)} ha${u.ano ? `, criada em ${u.ano}` : ""}.`;
         p.addEventListener("pointerenter", () => mostrar(t, p)); p.addEventListener("click", () => mostrar(t, p));
-        ucPorEl.set(u.nome + "|" + u.ha, { p, t }); g.append(p);
+        if (u.nome) ucPorEl.set(u.nome + "|" + u.ha, { p, t }); g.append(p);
       });
       svg.append(g); add("ucs", g); fig._ucs = ucPorEl;
     }
@@ -65,9 +65,11 @@
     // ---- divisas (estados e departamentos) e fronteiras entre países, por cima da água e das UCs
     const ce = por("estados");
     if (ce && ce.front) { const g = sv("g", { class: "mt-cam-estados" }); g.append(sv("path", { d: ce.front, class: "mt-uf", "vector-effect": "non-scaling-stroke" })); svg.append(g); add("estados", g); }
+    const cec = por("ecorregioes");
+    if (cec && cec.front) { const g = sv("g", { class: "mt-cam-eco" }); g.append(sv("path", { d: cec.front, class: "mt-eco", "vector-effect": "non-scaling-stroke" })); svg.append(g); add("ecorregioes", g); }
     if (cp && cp.front) { const g = sv("g", { class: "mt-cam-fronteiras" }); g.append(sv("path", { d: cp.front, class: "mt-front", "vector-effect": "non-scaling-stroke" })); svg.append(g); add("paises", g); }
     if (d.limite_oficial) svg.append(sv("path", { d: d.limite_oficial, class: "mt-oficial", "vector-effect": "non-scaling-stroke" }));
-    svg.append(sv("path", { d: d.limite, class: "mt-regiao-borda", "vector-effect": "non-scaling-stroke" }));
+    svg.append(sv("path", { d: d.contorno || d.limite, class: "mt-regiao-borda", "vector-effect": "non-scaling-stroke" }));
 
     // ---- rótulos e marcadores (px), do mais ao menos prioritário para a colisão
     if (cr) for (const r of cr.rotulos || []) { const p = pino("rios", r.p[0], r.p[1], rotulo(r.nome, "mt-rot-rio", { "text-anchor": "middle" })); p.dataset.navegavel = r.navegavel; item("rios", p); pins.push({ pin: p, rot: p.firstChild, camada: "rios", centro: true }); }
@@ -78,6 +80,7 @@
       pins.push({ pin: p, rot: p.lastChild, camada: "cidades" });
     }
     if (ce) for (const r of ce.rotulos || []) { const p = pino("estados", r.p[0], r.p[1], rotulo(r.nome, "mt-rot-uf", { "text-anchor": "middle" })); pins.push({ pin: p, rot: p.firstChild, camada: "estados", centro: true }); }
+    if (cec) for (const r of cec.rotulos || []) { const p = pino("ecorregioes", r.p[0], r.p[1], rotulo(r.nome, "mt-rot-eco", { "text-anchor": "middle" })); pins.push({ pin: p, rot: p.firstChild, camada: "ecorregioes", centro: true }); }
     const cpov = por("povos");
     if (cpov) for (const it of cpov.itens) {
       const forma = it.tipo === "indigena" ? "M0-6L5.5 4.5h-11z" : "M0-6L5 0 0 6-5 0z";
@@ -114,12 +117,13 @@
       li(mini(sv("path", { d: "M10 1L15.5 11.5h-11z", class: "mt-pt mt-pt-indigena" })), "localidade indígena", () => ativa("povos") && vis("povos", e => e.dataset.tipo === "indigena")),
       li(mini(sv("path", { d: "M10 1L15 7 10 13 5 7z", class: "mt-pt mt-pt-quilombola" })), "localidade quilombola", () => ativa("povos") && vis("povos", e => e.dataset.tipo === "quilombola")),
       li(mini(sv("path", { d: "M1 7h18", class: "mt-front" })), "fronteira entre países", () => ativa("paises")),
-      li(mini(sv("path", { d: "M1 7h18", class: "mt-uf" })), "divisa de estados (estados do Brasil em cores diferentes)", () => ativa("estados")));
+      li(mini(sv("path", { d: "M1 7h18", class: "mt-uf" })), "divisa de estados (estados do Brasil em cores diferentes)", () => ativa("estados")),
+      li(mini(sv("path", { d: "M1 7h18", class: "mt-eco" })), "contorno de ecorregião", () => ativa("ecorregioes")));
     leg.replaceChildren(...L); leg.removeAttribute("aria-hidden");
     const legenda = () => L.forEach(e => { e.hidden = !e._ok(); });
 
     // ---- camadas (checkbox) e filtros (radios); cada um usa a sua própria máscara
-    const liga = (k, on) => (camadas[k] || []).forEach(e => e.classList.toggle("mt-oc", !on));
+    const liga = (k, on) => { (camadas[k] || []).forEach(e => e.classList.toggle("mt-oc", !on)); if (k === "paises") svg.classList.toggle("mt-sem-paises", !on); };
     fig.querySelectorAll("input[data-camada]").forEach(cb => { liga(cb.dataset.camada, cb.checked); cb.addEventListener("change", () => { liga(cb.dataset.camada, cb.checked); legenda(); organizar(); }); });
     const filtros = [...fig.querySelectorAll("fieldset[data-filtro]")];
     const valor = f => (f.querySelector("input:checked") || {}).value || "";
@@ -134,6 +138,7 @@
     // lista de UCs: o nome vira botão que destaca a unidade no mapa
     fig.querySelectorAll('.mt-tab[data-camada="ucs"] tbody tr').forEach(tr => {
       const th = tr.querySelector("th"), nome = th.textContent, ha = Number(tr.children[5].textContent.replace(/\./g, ""));
+      if (!(fig._ucs && fig._ucs.has(nome + "|" + ha))) return;   // UC fundida no desenho: só texto
       const b = document.createElement("button"); b.type = "button"; b.className = "mt-lnk"; b.textContent = nome; th.replaceChildren(b);
       b.addEventListener("click", () => {
         const u = fig._ucs && fig._ucs.get(nome + "|" + ha); if (!u) return;
@@ -145,7 +150,7 @@
     // ---- escala dos marcadores e rótulos em px; nenhum texto fica sobre outro (ordem de prioridade abaixo)
     const oculto = el => el.classList.contains("mt-oc") || el.classList.contains("mt-fil");
     const ctx = document.createElement("canvas").getContext("2d");
-    const PRIO = { paises: 1, rios: 2, cidades: 3, estados: 4, grade: 5 };
+    const PRIO = { paises: 1, rios: 2, cidades: 3, ecorregioes: 4, estados: 5, grade: 6 };
     const ANGULOS = [0, -15, 15, -30, 30, -45, 45, -60, 60, -75, 75, 90];
     const regiao = new Path2D((d.limite_oficial || "") + d.limite);   // o bioma (para os nomes dos países desviarem dele)
     const cache = {};   // encaixe dos nomes de países por escala (u arredondado): evita recalcular a cada redimensionamento mínimo
