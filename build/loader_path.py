@@ -2,9 +2,9 @@
 import os
 from PIL import Image
 
-def brasil_path(root, F=6, eps=0.9):
+def brasil_path(root, F=6, eps=0.9, ids=range(1, 7)):
     im = Image.open(os.path.join(root, "data/ids.png"))
-    sm = Image.frombytes('L',im.size,bytes(255 if 1<=v<=6 else 0 for v in im.tobytes())).resize((im.width//F,im.height//F),Image.NEAREST)
+    sm = Image.frombytes('L',im.size,bytes(255 if v in ids else 0 for v in im.tobytes())).resize((im.width//F,im.height//F),Image.NEAREST)
     W,H=sm.size; d=sm.load()
     g=lambda x,y: 0<=x<W and 0<=y<H and d[x,y]>0
     # maior componente (flood fill iterativo)

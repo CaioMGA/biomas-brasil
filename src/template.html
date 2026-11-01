@@ -43,11 +43,11 @@ main { position: relative; z-index: 1; }
 #gl.hover { cursor: pointer; }
 #gl.drag { cursor: grabbing; }
 
-.sitenav { position: fixed; z-index: 5; top: -1px; right: 24px; display: flex; gap: 2px; padding: 2px 4px; background: var(--glass); border: 1px solid var(--rule); border-top: 0; border-radius: 0 0 12px 12px; backdrop-filter: blur(10px); }
-.sitenav a { padding: 3px 12px; font-size: 12px; line-height: 1.2; text-decoration: none; color: var(--muted); border-radius: 999px; }
-.sitenav a:hover { color: var(--ink); background: rgba(255,255,255,.08); }
-.sitenav a[aria-current="page"] { color: var(--ink); background: rgba(255,255,255,.1); }
-@media (max-width: 860px) { .sitenav { position: relative; right: auto; top: auto; z-index: 6; width: max-content; margin: 8px auto 0; padding: 3px; border: 1px solid var(--rule); border-radius: 999px; } .sitenav a { padding: 5px 14px; font-size: 13px; } }
+.sitenav { position: fixed; z-index: 5; top: -1px; right: 24px; display: flex; gap: 2px; padding: 2px 6px; background: var(--glass); backdrop-filter: blur(10px); }
+.sitenav a { padding: 3px 10px; font-size: 12px; line-height: 1.2; text-decoration: none; color: var(--muted); border-bottom: 2px solid transparent; }
+.sitenav a:hover { color: var(--ink); }
+.sitenav a[aria-current="page"] { color: var(--ink); border-bottom-color: var(--ink); }
+@media (max-width: 860px) { .sitenav { position: relative; right: auto; top: auto; z-index: 6; width: max-content; margin: 8px auto 0; padding: 3px; background: none; } .sitenav a { padding: 5px 14px; font-size: 13px; } }
 html.navhide .sitenav { opacity: 0; pointer-events: none; }
 html.nav-in .sitenav { animation: bin .4s cubic-bezier(.2,.8,.3,1) backwards; }
 .brand { position: absolute; left: 24px; top: 22px; pointer-events: none; isolation: isolate; }

@@ -1,7 +1,9 @@
 """Gera as páginas estáticas de conteúdo (hub, biomas, Brasil e Sobre) ao lado do index.html do mapa.
 Chamado por build.py: gerar(root, dest_dir, br_path, brchad_uri). Plano em docs/plano-de-navegacao.md.
 """
-import html, json, os, re, shutil, subprocess
+import html, json, os, re, shutil, subprocess, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from loader_path import brasil_path
 
 E = html.escape
 WPM, VIDEO_MIN, SPECIES_MIN, QUIZ_MIN = 200, 5, 2.5, 2
@@ -90,6 +92,9 @@ class Site:
         if id == "brasil":
             return f'<svg viewBox="-8 -8 {self.br_w + 14} {self.br_h + 14}" aria-hidden="true"><path d="{self.br_d}"/></svg>'
         n = self.byId[id]["n"]
+        if self.byId[id].get("marine"):   # faixa litorânea: os contornos de outlines.json vêm em 169 pedaços, então traça a máscara
+            d, w, h = brasil_path(self.root, F=4, eps=.8, ids={n})
+            return f'<svg viewBox="0 0 {w} {h}" aria-hidden="true" preserveAspectRatio="xMidYMid meet"><path d="{d}"/></svg>'
         rings = [o for o in self.outl if o["n"] == n]
         if not rings:
             return ""
