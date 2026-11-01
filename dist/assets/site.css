@@ -52,7 +52,7 @@ a { color: inherit; }
 .sp p { margin: 0; font-size: 16px; line-height: 1.55; }
 /* Mapa de localização (América do Sul): oceano azul, continente amarelo (uma cor só, Brasil incluído; só os contornos o destacam), bioma na cor de destaque */
 .loc { margin: 22px 0 0; display: flex; gap: 20px; align-items: center; }
-.loc svg { flex: none; display: block; height: min(380px, 60vh); width: auto; max-width: 48%; border: 1px solid var(--rule); }
+.loc svg { flex: none; display: block; width: min(380px, 60vh); height: auto; aspect-ratio: 1 / 1; max-width: 48%; border: 1px solid var(--rule); }
 .loc-mar { fill: #a9d1ec; }
 .loc-terra { fill: #efe29d; stroke: #8c8c8c; stroke-width: .5px; vector-effect: non-scaling-stroke; stroke-linejoin: round; }
 .loc-br { fill: #efe29d; }
@@ -64,7 +64,7 @@ a { color: inherit; }
 .loc-sw { display: inline-block; width: 14px; height: 14px; margin-right: 6px; vertical-align: -2px; border: 1px solid #8c8c8c; }
 .loc-sw-bioma { background: var(--accent); }
 .loc-sw-br { background: #efe29d; border: 1.5px solid #6f6f6f; }
-@media (max-width: 700px) { .loc { flex-direction: column; align-items: flex-start; } .loc svg { height: 320px; max-width: 100%; } }
+@media (max-width: 700px) { .loc { flex-direction: column; align-items: flex-start; } .loc svg { width: min(100%, 360px); max-width: 100%; } }
 
 /* Vista aérea do bioma no topo da página */
 .vista { margin: 22px 0 0; }

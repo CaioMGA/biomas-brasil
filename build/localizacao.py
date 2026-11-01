@@ -73,8 +73,9 @@ def figura(root, id, nome):
     desc = f"Mapa da América do Sul: o Brasil e seus estados contornados, e o {nome} contornado e pintado na cor de destaque"
     desc += f", ocupando partes de {lista}." if len(paises) > 1 else "."
     cap = f"Localização do {E(nome)} na América do Sul" + (f": o bioma se estende por {E(lista)}." if len(paises) > 1 else ".")
-    return (f'<figure class="loc"><svg viewBox="0 0 {P.w} {P.h}" role="img" aria-label="{E(desc)}" preserveAspectRatio="xMidYMid meet">'
-            f'<rect class="loc-mar" width="{P.w}" height="{P.h}"/><path class="loc-terra" d="{terra}"/><path class="loc-br" d="{brasil}"/>'
+    S = max(P.w, P.h); vx, vy = -(S - P.w) // 2, -(S - P.h) // 2   # moldura quadrada: o continente fica centralizado, com oceano nas sobras
+    return (f'<figure class="loc"><svg viewBox="{vx} {vy} {S} {S}" role="img" aria-label="{E(desc)}" preserveAspectRatio="xMidYMid meet">'
+            f'<rect class="loc-mar" x="{vx}" y="{vy}" width="{S}" height="{S}"/><path class="loc-terra" d="{terra}"/><path class="loc-br" d="{brasil}"/>'
             f'<path class="loc-uf" d="{estados}"/><path class="loc-br-borda" d="{brasil}"/><path class="loc-bioma" d="{biom}"/></svg>'
             f'<figcaption>{cap}<span class="loc-leg"><i class="loc-sw loc-sw-bioma"></i>{E(nome)}<i class="loc-sw loc-sw-br"></i>Brasil e seus estados (contornos)</span></figcaption></figure>')
 
