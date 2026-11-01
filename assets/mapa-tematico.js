@@ -45,9 +45,9 @@
     if (d.limite_oficial) svg.append(sv("path", { d: d.limite_oficial, class: "mt-regiao" }));   // a parte brasileira (IBGE) também é preenchida; as duas bases não coincidem exatamente
     svg.append(sv("path", { d: d.limite, class: "mt-regiao" }));
     const cm = por("massas");
-    if (cm) { const g = sv("g", { class: "mt-cam-massas" }); cm.grupos.forEach(x => g.append(item("massas", sv("path", { d: x.d, class: "mt-agua", "fill-rule": "evenodd", "data-tipo": x.tipo })))); svg.append(g); add("massas", g); }
+    if (cm) { const g = sv("g", { class: "mt-cam-massas" }); cm.grupos.filter(x => x.d).forEach(x => g.append(item("massas", sv("path", { d: x.d, class: "mt-agua", "fill-rule": "evenodd", "data-tipo": x.tipo })))); svg.append(g); add("massas", g); }
     const cr = por("rios");
-    if (cr) { const g = sv("g", { class: "mt-cam-rios" }); cr.grupos.forEach(x => g.append(item("rios", sv("path", { d: x.d, class: "mt-rio", "data-navegavel": x.navegavel, "vector-effect": "non-scaling-stroke" })))); svg.append(g); add("rios", g); }
+    if (cr) { const g = sv("g", { class: "mt-cam-rios" }); cr.grupos.filter(x => x.d).forEach(x => g.append(item("rios", sv("path", { d: x.d, class: "mt-rio", "data-navegavel": x.navegavel, "vector-effect": "non-scaling-stroke" })))); svg.append(g); add("rios", g); }
 
     // ---- unidades de conservação (PI: contorno contínuo; US: tracejado)
     const cu = por("ucs");
@@ -97,29 +97,37 @@
 
     // ---- legenda
     const leg = fig.querySelector(".mt-leg");
-    const li = (ic, txt) => { const s = document.createElement("span"); s.className = "mt-li"; s.append(ic, txt); return s; };
+    const li = (ic, txt, ok = () => true) => { const s = document.createElement("span"); s.className = "mt-li"; s.append(ic, txt); s._ok = ok; return s; };
+    // a legenda só mostra o que está aparecendo: camada ligada e pelo menos um elemento que passe nos filtros
+    const ativa = k => (camadas[k] || []).length > 0 && !camadas[k][0].classList.contains("mt-oc");
+    const vis = (k, pred = () => true) => (itens[k] || []).some(e => !e.classList.contains("mt-fil") && pred(e));
+    const tem = (e, c) => e.classList.contains(c);
     const mini = (...f) => sv("svg", { viewBox: "0 0 20 14", width: 22, height: 15, "aria-hidden": "true" }, ...f);
     const ret = c => sv("rect", { x: 1, y: 1, width: 18, height: 12, class: c });
     const L = [li(mini(ret("mt-regiao mt-leg-reg")), d.limite_nome)];
     if (d.limite_oficial) L.push(li(mini(sv("path", { d: "M1 7h18", class: "mt-oficial" })), d.limite_oficial_nome || "limite oficial"));
-    L.push(li(mini(ret("mt-agua")), "água permanente"), li(mini(sv("path", { d: "M1 11C7 11 8 3 19 3", class: "mt-rio", fill: "none" })), "rio ou córrego"),
-      li(mini(ret("mt-uc mt-uc-PI")), "proteção integral (contorno contínuo)"), li(mini(ret("mt-uc mt-uc-US")), "uso sustentável (tracejado)"),
-      li(mini(sv("circle", { cx: 10, cy: 7, r: 4.5, class: "mt-pt mt-pt-cid" })), "sede municipal"),
-      li(mini(sv("path", { d: "M10 1L15.5 11.5h-11z", class: "mt-pt mt-pt-indigena" })), "localidade indígena"),
-      li(mini(sv("path", { d: "M10 1L15 7 10 13 5 7z", class: "mt-pt mt-pt-quilombola" })), "localidade quilombola"),
-      li(mini(sv("path", { d: "M1 7h18", class: "mt-front" })), "fronteira entre países"), li(mini(sv("path", { d: "M1 7h18", class: "mt-uf" })), "divisa de estados (estados do Brasil em cores diferentes)"));
+    L.push(li(mini(ret("mt-agua")), "água permanente", () => ativa("massas") && vis("massas")),
+      li(mini(sv("path", { d: "M1 11C7 11 8 3 19 3", class: "mt-rio", fill: "none" })), "rio ou córrego", () => ativa("rios") && vis("rios", e => tem(e, "mt-rio"))),
+      li(mini(ret("mt-uc mt-uc-PI")), "proteção integral (contorno contínuo)", () => ativa("ucs") && vis("ucs", e => tem(e, "mt-uc-PI"))),
+      li(mini(ret("mt-uc mt-uc-US")), "uso sustentável (tracejado)", () => ativa("ucs") && vis("ucs", e => tem(e, "mt-uc-US"))),
+      li(mini(sv("circle", { cx: 10, cy: 7, r: 4.5, class: "mt-pt mt-pt-cid" })), "sede municipal", () => ativa("cidades")),
+      li(mini(sv("path", { d: "M10 1L15.5 11.5h-11z", class: "mt-pt mt-pt-indigena" })), "localidade indígena", () => ativa("povos") && vis("povos", e => e.dataset.tipo === "indigena")),
+      li(mini(sv("path", { d: "M10 1L15 7 10 13 5 7z", class: "mt-pt mt-pt-quilombola" })), "localidade quilombola", () => ativa("povos") && vis("povos", e => e.dataset.tipo === "quilombola")),
+      li(mini(sv("path", { d: "M1 7h18", class: "mt-front" })), "fronteira entre países", () => ativa("paises")),
+      li(mini(sv("path", { d: "M1 7h18", class: "mt-uf" })), "divisa de estados (estados do Brasil em cores diferentes)", () => ativa("estados")));
     leg.replaceChildren(...L); leg.removeAttribute("aria-hidden");
+    const legenda = () => L.forEach(e => { e.hidden = !e._ok(); });
 
     // ---- camadas (checkbox) e filtros (radios); cada um usa a sua própria máscara
     const liga = (k, on) => (camadas[k] || []).forEach(e => e.classList.toggle("mt-oc", !on));
-    fig.querySelectorAll("input[data-camada]").forEach(cb => { liga(cb.dataset.camada, cb.checked); cb.addEventListener("change", () => { liga(cb.dataset.camada, cb.checked); organizar(); }); });
+    fig.querySelectorAll("input[data-camada]").forEach(cb => { liga(cb.dataset.camada, cb.checked); cb.addEventListener("change", () => { liga(cb.dataset.camada, cb.checked); legenda(); organizar(); }); });
     const filtros = [...fig.querySelectorAll("fieldset[data-filtro]")];
     const valor = f => (f.querySelector("input:checked") || {}).value || "";
     const passa = (el, fs) => fs.every(f => !valor(f) || (el.dataset[f.dataset.campo] || "") === valor(f));
     function filtrar() {
       for (const k in itens) { const fs = filtros.filter(f => f.dataset.camada === k); itens[k].forEach(el => el.classList.toggle("mt-fil", !passa(el, fs))); }
       fig.querySelectorAll(".mt-tab[data-camada]").forEach(tb => { const fs = filtros.filter(f => f.dataset.camada === tb.dataset.camada); tb.querySelectorAll("tbody tr").forEach(tr => { tr.hidden = !passa(tr, fs); }); });
-      organizar();
+      legenda(); organizar();
     }
     filtros.forEach(f => f.addEventListener("change", filtrar));
 

@@ -61,6 +61,7 @@
 
 .mt-leg { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 10px; font-size: 13px; color: var(--muted); }
 .mt-li { display: inline-flex; align-items: center; gap: 6px; }
+.mt-li[hidden] { display: none; }
 .mt-leg .mt-uc-PI, .mt-leg .mt-uc-US, .mt-leg .mt-agua, .mt-leg .mt-leg-reg, .mt-leg .mt-regiao { vector-effect: none; }
 .mt-leg .mt-front, .mt-leg .mt-uf { stroke-width: 1.8px; }
 .mt-info { min-height: 3.2em; margin: 10px 0 0 !important; padding: 8px 12px; font-size: 15px !important; line-height: 1.45 !important; border-left: 3px solid var(--accent); background: rgba(255, 255, 255, .04); }
