@@ -40,7 +40,7 @@
 .mt-agua { fill: #8cc4e8; stroke: none; }
 .mt-rio { fill: none; stroke: #3f93cf; stroke-width: 1.1px; stroke-linecap: round; stroke-linejoin: round; }
 .mt-rio[data-navegavel="sim"] { stroke-width: 2.2px; }
-/* regime do rio (ex.: Caatinga): contínuo = perene; tracejado = seca em parte do curso; pontilhado claro = seca em quase todo o curso */
+/* regime do rio (ex.: Caatinga): contínuo = sem vazão nula estimada; tracejado = vazão nula em parte do curso; pontilhado claro = vazão nula em quase todo o curso */
 .mt-rio[data-regime="perene"] { stroke: #1f6fb0; stroke-width: 2.4px; }
 .mt-rio[data-regime="parcial"] { stroke: #3f93cf; stroke-width: 1.9px; stroke-dasharray: 8 4; stroke-linecap: butt; }
 .mt-rio[data-regime="seca"] { stroke: #6aaee0; stroke-width: 1.9px; stroke-dasharray: 1.5 4.5; }
