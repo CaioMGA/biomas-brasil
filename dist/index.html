@@ -1444,7 +1444,7 @@ async function init3d() {
 
   const CREAM = [1, .96, .84];
   addLines(LAYERS.states.flatMap(st => st.rings.map(r => ({ p: r }))), { width: .8, color: [.06, .055, .05], opacity: .85, on: uniforms.uSt, order: 2 });   // por baixo das demais linhas
-  addLines(LAYERS.borders, { width: 2.1, color: CREAM, opacity: .95, on: uniforms.uSt, order: 4.5 });   // divisas por cima dos contornos dos biomas (ordem 4)
+  addLines(LAYERS.borders, { width: 2.1, color: CREAM, opacity: .7, on: uniforms.uSt, order: 4.5 });   // divisas por cima dos contornos dos biomas (ordem 4)
   addLines((LAYERS.countries || []).map(c => ({ p: c.p })), { width: 1.1, color: CREAM, opacity: .6, on: uniforms.uSt, order: 4.4 });   // contorno dos países vizinhos (com Divisas e fronteiras)
   addLines(LAYERS.rivers.filter(r => r.r > 4), { width: 1.2, color: [.42, .78, 1], opacity: .85, on: uniforms.uRv, order: 3.1 });
   addLines(LAYERS.rivers.filter(r => r.r <= 4), { width: 2.1, color: [.42, .78, 1], opacity: .95, on: uniforms.uRv, order: 3.2 });
