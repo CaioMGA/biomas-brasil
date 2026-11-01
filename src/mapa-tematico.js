@@ -130,7 +130,10 @@
     if (d.limite_oficial) L.push(li(mini(sv("path", { d: "M1 7h18", class: "mt-oficial" })), d.limite_oficial_nome || "limite oficial"));
     L.push(li(mini(ret("mt-agua")), "água permanente", () => ativa("massas") && vis("massas")),
       li(mini(sv("path", { d: "M1 11C7 11 8 3 19 3", class: "mt-rio", "data-margem": "principal", fill: "none" })), "Rio Amazonas (canal principal)", () => ativa("amazonas")),
-      li(mini(sv("path", { d: "M1 11C7 11 8 3 19 3", class: "mt-rio", fill: "none" })), "rio ou córrego", () => ativa("rios") && vis("rios", e => tem(e, "mt-rio"))),
+      li(mini(sv("path", { d: "M1 11C7 11 8 3 19 3", class: "mt-rio", fill: "none" })), "rio ou córrego", () => ativa("rios") && vis("rios", e => tem(e, "mt-rio") && !e.dataset.regime)),
+      li(mini(sv("path", { d: "M1 11C7 11 8 3 19 3", class: "mt-rio", "data-regime": "perene", fill: "none" })), "rio perene", () => ativa("rios") && vis("rios", e => e.dataset.regime === "perene")),
+      li(mini(sv("path", { d: "M1 11C7 11 8 3 19 3", class: "mt-rio", "data-regime": "parcial", fill: "none" })), "seca em parte do curso", () => ativa("rios") && vis("rios", e => e.dataset.regime === "parcial")),
+      li(mini(sv("path", { d: "M1 11C7 11 8 3 19 3", class: "mt-rio", "data-regime": "seca", fill: "none" })), "seca em quase todo o curso", () => ativa("rios") && vis("rios", e => e.dataset.regime === "seca")),
       li(mini(ret("mt-ti")), "Terra Indígena", () => ativa("tis")),
       li(mini(ret("mt-uc mt-uc-PI")), "proteção integral (contorno contínuo)", () => ativa("ucs") && vis("ucs", e => tem(e, "mt-uc-PI"))),
       li(mini(ret("mt-uc mt-uc-US")), "uso sustentável (tracejado)", () => ativa("ucs") && vis("ucs", e => tem(e, "mt-uc-US"))),
