@@ -519,6 +519,22 @@ const BiomasUI = (() => {
     box.append(sel, tbl);
   }
 
+  // Carrossel de fichas de espécies: rolagem com snap; aqui entram botões, contador "i de n" e setas do teclado
+  function carrosseis() {
+    const reduz = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    document.querySelectorAll(".car").forEach(car => {
+      const tr = car.querySelector(".car-track"), n = tr.children.length, ctl = car.querySelector(".car-ctl");
+      const cnt = car.querySelector(".car-n"), pv = car.querySelector(".car-prev"), nx = car.querySelector(".car-next"); let raf = 0;
+      const idx = () => Math.round(tr.scrollLeft / Math.max(1, tr.clientWidth));
+      const ir = i => tr.scrollTo({ left: Math.max(0, Math.min(n - 1, i)) * tr.clientWidth, behavior: reduz ? "auto" : "smooth" });
+      const atual = () => { const i = idx(); cnt.textContent = `${i + 1} de ${n}`; pv.disabled = i <= 0; nx.disabled = i >= n - 1; };
+      tr.addEventListener("scroll", () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(atual); }, { passive: true });
+      pv.addEventListener("click", () => ir(idx() - 1)); nx.addEventListener("click", () => ir(idx() + 1));
+      tr.addEventListener("keydown", e => { if (e.key === "ArrowRight") { e.preventDefault(); ir(idx() + 1); } else if (e.key === "ArrowLeft") { e.preventDefault(); ir(idx() - 1); } });
+      addEventListener("resize", atual); ctl.hidden = false; atual();
+    });
+  }
+
   if (!D) return;
   // Créditos e fontes começam fechados; abrem quando o endereço ou o link do índice apontam para eles
   const abrirCreditos = () => { if (location.hash === "#sec-creditos") { const d = document.querySelector("#sec-creditos details"); if (d) d.open = true; } };
@@ -534,7 +550,7 @@ const BiomasUI = (() => {
     });
     decorar(); addEventListener("biomas:carimbos", decorar);
   } else {
-    leitura(); videos(); quiz(); comparador(); chuvas();
+    leitura(); videos(); quiz(); comparador(); chuvas(); carrosseis();
     proximos(document.getElementById("proximos"));
   }
 })();
