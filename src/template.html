@@ -308,8 +308,11 @@ html.boot, html.boot body { overflow: hidden; }
 #loader .glow { fill: none; stroke: #f3e3a3; stroke-width: 7; stroke-linejoin: round; opacity: .35; filter: blur(5px); }
 #loader .line { fill: none; stroke: #f6ecc8; stroke-width: 2.4; stroke-linejoin: round; stroke-linecap: round; }
 #loader .head { fill: #fff; filter: drop-shadow(0 0 4px #fff3b8) drop-shadow(0 0 10px #ffd966) drop-shadow(0 0 22px #ffb83d); }
-.brchad { display: block; width: 80px; height: 15px; margin: 22px auto 4px; }
-#loader .brchad { margin: 0; opacity: .9; }
+.brfoot { display: flex; flex-direction: column; align-items: center; gap: 6px; margin: 22px auto 4px; text-align: center; }
+.brfoot span { font-size: 13px; color: var(--muted); }
+.brchad { display: block; width: 80px; height: 15px; }
+#loader .brfoot { margin: 0; }
+#loader .brfoot span { font: 500 12px/1 system-ui, -apple-system, "Segoe UI", sans-serif; letter-spacing: .12em; color: #cfd3bf; }
 #loader .msg { font: 500 13px/1 system-ui, -apple-system, "Segoe UI", sans-serif; letter-spacing: .28em; text-transform: uppercase; color: #cfd3bf; transition: opacity .3s ease; }
 #loader.filled .fill { fill-opacity: .75; }
 #loader.pop svg { animation: ldpop .38s cubic-bezier(.2,.7,.3,1) forwards; }
@@ -401,7 +404,7 @@ body.lab-rios .rl:not(.gl) { pointer-events: auto; cursor: pointer; }
     <circle class="head" id="ldHead" r="3.6" cx="0" cy="0" opacity="0"/>
   </svg>
   <div class="msg">Carregando</div>
-  <img class="brchad" src="__BRCHAD__" width="80" height="15" alt="brchad 2026">
+  <div class="brfoot"><span>Site criado por Caio Amaral</span><img class="brchad" src="__BRCHAD__" width="80" height="15" alt="brchad 2026"></div>
 </div>
 <noscript><style>#loader { display: none; } html.boot .panel { translate: 0 0; } html.navhide .navstack .pill, html.navhide .compass, html.navhide .pill.zm, html.navhide .chips > *, html.navhide .layers > *, html.navhide .exag { opacity: 1; }</style></noscript>
 <script>
@@ -670,7 +673,7 @@ function growBars(root) {
 
 /* ---------- Painel ---------- */
 const panel = document.getElementById("panel");
-const brchadFoot = () => el("img", { class: "brchad", src: "__BRCHAD__", width: "80", height: "15", alt: "brchad 2026" });
+const brchadFoot = () => { const f = el("div", { class: "brfoot" }); f.append(el("span", {}, "Site criado por Caio Amaral"), el("img", { class: "brchad", src: "__BRCHAD__", width: "80", height: "15", alt: "brchad 2026" })); return f; };
 const maxRain = Math.max(...LAND.map(b => RAIN[b.id].ano));
 function sources() {
   const s = el("div", { class: "src" });
@@ -1759,7 +1762,7 @@ async function init3d() {
   })();
 
   // Estado da câmera
-  const cam = { yaw: 0, pitch: 56 * Math.PI / 180, tx: 0, tz: 0, ttx: 0, ttz: 0, fit: 20, fitT: 20, fit0: 20, user: 1, userT: 1, yawT: null, pitchT: null };   // fit: distância que enquadra a região; user: multiplicador do zoom manual
+  const cam = { yaw: 0, pitch: 1.5, tx: 0, tz: 0, ttx: 0, ttz: 0, fit: 20, fitT: 20, fit0: 20, user: 1, userT: 1, yawT: null, pitchT: null };   // fit: distância que enquadra a região; user: multiplicador do zoom manual
   let panelPx = 0, W = 1, Hh = 1;
   function resize() {
     W = stage.clientWidth; Hh = stage.clientHeight;
@@ -1878,7 +1881,7 @@ async function init3d() {
     cam.yaw -= Math.round(cam.yaw / TAU) * TAU;
     cam.yawT = yaw; cam.pitchT = pitch; touched = false; focusOn(framed);
   }
-  const home = () => { framed = 0; goTo(0, PITCH0); cam.userT = 1; };
+  const home = () => { framed = 0; goTo(0, PITCH_TOP); cam.userT = 1; };   // vista padrão: Brasil inteiro, sem bioma, em 2D
   // Bússola como controle: arrastar gira (horizontal) e inclina (vertical); um clique sem arrastar coloca o norte para cima.
   let cd = null;
   compassEl.addEventListener("pointerdown", e => {
