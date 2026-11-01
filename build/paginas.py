@@ -164,6 +164,14 @@ class Site:
                 f'<span class="car-n" aria-live="polite">1 de {n}</span><button type="button" class="car-next" aria-label="Próxima espécie">→</button></div>'
                 f'<ul class="car-track" tabindex="0" aria-label="Espécies, use as setas do teclado ou deslize">{"".join(slides)}</ul></div>')
 
+    def vista_aerea(self, id):
+        """Foto grande de vista aérea do bioma, no topo da página (opcional: chave "_vista_aerea" em data/fotos/<id>.json)."""
+        f = (self.fotos.get(id) or {}).get("_vista_aerea")
+        if not f: return ""
+        cred = f'Foto: {E(f["autor"])} · <a href="{E(f["licenca_url"])}" target="_blank" rel="noopener">{E(f["licenca"])}</a> · <a href="{E(f["fonte_url"])}" target="_blank" rel="noopener">Wikimedia Commons</a>'
+        return (f'<figure class="vista"><img src="/assets/fotos/{id}/{E(f["arquivo"])}" width="{f["w"]}" height="{f["h"]}" alt="{E(f["alt"])}" decoding="async">'
+                f'<figcaption>{E(f["legenda"])} {cred}</figcaption></figure>')
+
     def nome(self, id):
         return "Brasil" if id == "brasil" else self.byId[id]["name"]
 
@@ -261,7 +269,7 @@ class Site:
             if s["s"].get("chuva") and id != "brasil":
                 corpo += f'<div class="chuva-bioma" data-bioma="{id}"></div>'
             corpo += "".join(f"<p>{E(t)}</p>" for t in s["s"]["p"])
-        elif k == "especies" and id in self.fotos:
+        elif k == "especies" and id in self.fotos and any(e["c"] in self.fotos[id] for e in c["especies"]):
             corpo += self.carrossel(id, c["especies"], self.fotos[id])
             corpo += '<p class="cap">Fotos de espécimes com licença livre, do Wikimedia Commons; autor e licença aparecem em cada ficha.</p>'
         elif k == "especies":
@@ -310,6 +318,7 @@ class Site:
 <p class="intro">{E(c.get("intro", ""))}</p>
 <p><span class="tm" style="color:var(--muted);font-size:14px">{fmt_min(self.total[id])} de leitura</span></p>
 <a class="voltar" href="/#{"" if id == "brasil" else id}">← Ver no mapa</a>
+{self.vista_aerea(id)}
 {secs}
 </main>
 </div>
