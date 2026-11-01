@@ -43,8 +43,11 @@
 .mt-uc { stroke-width: 1.2px; }
 .mt-uc-PI { stroke: #1b5e20; stroke-width: 1.8px; fill: rgba(46, 125, 50, .45); }
 .mt-uc-US { stroke: #2e7d32; fill: rgba(139, 195, 74, .38); stroke-dasharray: 5 3; }
+.mt-ti { fill: rgba(190, 96, 52, .38); stroke: #8c3f1c; stroke-width: 1.1px; }
+.mt-ti.mt-sel { stroke-width: 3px; stroke: #000; }
+.mt-rio[data-margem="principal"] { stroke-width: 3.4px; }
 .mt-uc.mt-sel { stroke-width: 3.2px; stroke: #000; }
-.mt-uc, .mt-pin { cursor: pointer; }
+.mt-uc, .mt-ti, .mt-pin { cursor: pointer; }
 .mt-front { fill: none; stroke: #6a3d6e; stroke-width: 1.8px; stroke-dasharray: 8 3 2 3; }
 .mt-eco { fill: none; stroke: #7a5a2a; stroke-width: 1px; stroke-dasharray: 1 3; stroke-linecap: round; }
 .mt-uf { fill: none; stroke: #9c8f6c; stroke-width: .9px; stroke-dasharray: 2 3; }

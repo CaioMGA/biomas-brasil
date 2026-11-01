@@ -83,6 +83,14 @@ def dados_cliente(d):
             g = {}
             for m in it: g.setdefault(m["tipo"], []).append(m["rings"])
             o["grupos"] = [{"tipo": t, "d": caminho(P, [r for rs in v for r in rs], True)} for t, v in g.items()]
+        elif c["id"] == "rios" and c.get("campo_grupo"):
+            # rios agrupados por um campo próprio (ex.: margem do Amazonas); os valores em `fixos` (ex.: o rio principal) ignoram os filtros
+            campo, fixos = c["campo_grupo"], c.get("fixos", [])
+            vals = []
+            for r in it:
+                if r["g"] not in vals: vals.append(r["g"])
+            o["grupos"] = [{"campo": campo, "v": v, "fixo": v in fixos, "d": caminho(P, [l for r in it if r["g"] == v for l in r["linhas"]], False)} for v in vals]
+            o["rotulos"] = [{"nome": r["nome"], "p": list(P(*r["rotulo"])), "campo": campo, "v": r["g"], "fixo": r["g"] in fixos} for r in it if r.get("rotulo")]
         elif c["id"] == "rios":
             # navegável / não navegável (Brasil, por trecho) / "ext": rios de fora do Brasil, sem informação de navegabilidade
             o["grupos"] = [{"navegavel": v, "d": caminho(P, [l for r in it for l in r.get(k, [])], False)} for k, v in (("nav", "sim"), ("nao", "nao"), ("ext", "ext"))]
@@ -111,6 +119,7 @@ def secao_html(d, nome_bioma):
     ucs = por_id["ucs"].get("lista", por_id["ucs"]["itens"]) if "ucs" in por_id else []
     cidades = por_id["cidades"]["itens"] if "cidades" in por_id else []
     povos = por_id["povos"]["itens"] if "povos" in por_id else []
+    tis = por_id["tis"]["itens"] if "tis" in por_id else []
     ligados = "".join(
         f'<label class="mt-chk"><input type="checkbox" data-camada="{E(c["id"])}"{" checked" if c["ligada"] else ""}> {E(c["titulo"])}</label>'
         for c in d["camadas"]) + '<label class="mt-chk"><input type="checkbox" data-camada="grade"> Grade de coordenadas</label>'
@@ -134,8 +143,11 @@ def secao_html(d, nome_bioma):
     if ucs:
         nota = por_id["ucs"].get("nota_lista", "")
         listas += '<details class="mt-det"><summary>Unidades de conservação (%d) em lista</summary>%s%s</details>\n' % (len(ucs), ('<p class="cap">' + E(nota) + "</p>") if nota else "", t_uc)
+    if tis: listas += '<details class="mt-det"><summary>Terras Indígenas (%d) em lista</summary>%s</details>\n' % (len(tis), t_ti)
     if cidades: listas += '<details class="mt-det"><summary>Cidades (%d) em lista</summary>%s</details>\n' % (len(cidades), t_cid)
     if povos: listas += '<details class="mt-det"><summary>Localidades indígenas e quilombolas (%d) em lista</summary>%s</details>\n' % (len(povos), t_pov)
+    t_ti = tabela("tis", ["Terra Indígena", "Povo", "Situação"], "".join(
+        f'<tr data-situacao="{E(i["situacao"])}"><th scope="row">{E(i["nome"])}</th><td>{E(i["povo"])}</td><td>{E(i["fase"])}</td></tr>' for i in sorted(tis, key=lambda i: i["nome"]))) if tis else ""
     fontes = "".join(
         f'<li><a href="{E(f["url"])}" target="_blank" rel="noopener">{E(f["titulo"])}</a> — dados de {E(f["data"])}; {E(f["licenca"])}.</li>' for f in d["fontes"].values())
     notas = "".join(f'<li><b>{E(c["titulo"])}:</b> {E(c["nota"])}</li>' for c in d["camadas"])
