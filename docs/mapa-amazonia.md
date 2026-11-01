@@ -4,9 +4,9 @@ Branch `mapa-amazonia` (sobre `mapa-tematico-base`). O HERO MAP da home não é 
 
 ## O que o mapa mostra
 
-- **O canal principal**, sempre visível: Marañón e Ucayali (que formam o Amazonas no Peru) → Amazonas do Peru → Solimões → Amazonas → Canal do Norte (a principal saída para o Atlântico, ao longo de Macapá).
-- **37 rios** no total: ~30 afluentes diretos e principais subafluentes (Branco, Acre, Guaporé, Mamoré, Beni, Madre de Dios, Iriri, Juruena, Teles Pires…). O Tocantins e o Araguaia ficam de fora: desaguam no estuário do Pará, não no Amazonas.
-- **Filtros** (todos sobre os rios; o canal principal ignora os filtros): **margem** (esquerda = norte, direita = sul), **país** e **estado do Brasil** que o rio atravessa. Tocar num rio mostra por onde ele passa.
+- **O Rio Amazonas (canal principal), sempre visível:** é uma camada fixa, sem caixa de seleção nem filtro: Marañón e Ucayali (que formam o Amazonas no Peru) → Amazonas do Peru → Solimões → Amazonas → Canal do Norte (a principal saída para o Atlântico, ao longo de Macapá).
+- **Afluentes (31 rios):** diretos e principais subafluentes (Branco, Acre, Guaporé, Mamoré, Beni, Madre de Dios, Iriri, Juruena, Teles Pires…). O Tocantins e o Araguaia ficam de fora: desaguam no estuário do Pará, não no Amazonas. Podem ser desligados na caixa "Afluentes".
+- **Filtros (só dos afluentes):** **Afluentes** (todos / brasileiros / estrangeiros) e **margem** (esquerda = norte, direita = sul). "Brasileiro" = trecho dentro do Brasil (drenagem do IBGE); "estrangeiro" = trecho fora do Brasil (Natural Earth). Um rio que cruza a fronteira aparece nos dois, cada um com o seu trecho (Içá / Putumayo, Japurá / Caquetá, Guaporé / Guaporé-Itenez, Mamoré / Mamoré-Bolívia). Tocar num rio mostra por quais países e estados ele passa. Não há filtros de país nem de estado (foram retirados a pedido).
 - **Contexto:** bioma de uma cor só (24 ecorregiões RESOLVE) com o limite oficial do IBGE por cima no Brasil, oceano azul, países com cores e nomes, fronteiras, estados do Brasil em cores diferentes, grade (desligada), escala e norte.
 
 ## Como foi feito

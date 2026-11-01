@@ -51,7 +51,7 @@ RENOMEAR = {"Canal do Norte": "Canal do Norte (foz do Amazonas)"}
 ESTRANGEIROS = {"Marañón": ("Rio Marañón", True), "Ucayali": ("Rio Ucayali", True), "Amazonas": ("Rio Amazonas (Peru)", True),
                 "Napo": ("Rio Napo", False), "Putumayo": ("Rio Putumayo (Içá)", False), "Caquetá": ("Rio Caquetá (Japurá)", False),
                 "Madre de Dios": ("Rio Madre de Dios", False), "Beni": ("Rio Beni", False), "Guaporé": ("Rio Guaporé (Itenez)", False),
-                "Mamoré": ("Rio Mamoré", False)}
+                "Mamoré": ("Rio Mamoré (Bolívia)", False)}
 
 
 def centro(rings, bbox, n=24):
@@ -129,12 +129,12 @@ def receita(raw):
                     "fronteiras": [r3(dp(l, .03)) for e in estados for l in e["lns"]]})
 
     # ---- rios: o canal principal e os afluentes. Brasil: IBGE pelo nome, dentro da caixa de cada rio. Fora do Brasil: Natural Earth.
-    achados = {}
+    achados, origem = {}, {}   # origem: "brasileiro" (trecho do IBGE, dentro do Brasil) ou "estrangeiro" (trecho do Natural Earth, fora do Brasil)
     for a, gm in shp.read_por_nome(f"{raw}/bc250/hid_trecho_drenagem_l", "nome", set(BR_RIOS)):
         b = BR_RIOS[a["nome"]]
         for l in gm:
             m = l[len(l) // 2]
-            if len(l) > 1 and b[0] <= m[0] <= b[2] and b[1] <= m[1] <= b[3]: achados.setdefault(RENOMEAR.get(a["nome"], a["nome"]), []).append(dp(l, .02))
+            if len(l) > 1 and b[0] <= m[0] <= b[2] and b[1] <= m[1] <= b[3]: (achados.setdefault(RENOMEAR.get(a["nome"], a["nome"]), []).append(dp(l, .02)), origem.__setitem__(RENOMEAR.get(a["nome"], a["nome"]), "brasileiro"))
     for a, gm in shp.read(f"{raw}/ne_rivers/ne_10m_rivers_lake_centerlines", box):
         n = a["name"]
         if n not in ESTRANGEIROS or a["featurecla"] != "River": continue
@@ -143,7 +143,7 @@ def receita(raw):
             for v in l + [None]:
                 if v is not None and mask(*v) and not mask_br(*v): ponta.append(v)
                 else:
-                    if len(ponta) > 1: achados.setdefault(ESTRANGEIROS[n][0], []).append(dp(ponta, .03))
+                    if len(ponta) > 1: achados.setdefault(ESTRANGEIROS[n][0], []).append(dp(ponta, .03)); origem[ESTRANGEIROS[n][0]] = "estrangeiro"
                     ponta = []
     # canal principal (referência para a margem): Marañón/Ucayali → Amazonas (Peru) → Solimões → Amazonas
     principais = [l for n in ("Rio Marañón", "Rio Ucayali", "Rio Amazonas (Peru)") + PRINCIPAL for l in achados.get(n, [])]
@@ -187,18 +187,22 @@ def receita(raw):
         rios.append({"nome": nome, "km": round(km(ls)), "linhas": [r3(l) for l in ls], "texto": texto,
                      "attrs": {"margem": grupo, "paises": "|".join(paises_rio), "estados": "|".join(estados_rio)}})
     rios.sort(key=lambda r_: -r_["km"])
-    for r_ in rios[:16] + [r_ for r_ in rios if r_["attrs"]["margem"] == "principal"]:   # rótulos: os 16 maiores e o canal principal, no meio do maior trecho
+    principais_l = [r_ for r_ in rios if r_["attrs"]["margem"] == "principal"]; afluentes = [r_ for r_ in rios if r_["attrs"]["margem"] != "principal"]
+    for r_ in afluentes: r_["attrs"] = {"margem": r_["attrs"]["margem"], "origem": origem[r_["nome"]]}   # o que entra nos filtros; países e estados ficam só no texto de cada rio
+    for r_ in principais_l: r_["attrs"] = {"margem": "principal"}
+    for r_ in afluentes[:16] + principais_l:   # rótulos: os 16 maiores afluentes e o canal principal, no meio do maior trecho
         ls = max((l for l in [[tuple(p) for p in l] for l in r_["linhas"]]), key=len); m = ls[len(ls) // 2]; r_["rotulo"] = [round(m[0], 3), round(m[1], 3)]
-    camadas.append({"id": "rios", "titulo": "Rio Amazonas e afluentes", "tipo": "linha", "fonte": "bc250", "ligada": True, "por_rio": True, "fixos": ["principal"],
-                    "nota": "O canal principal (Marañón/Ucayali → Solimões → Amazonas) sempre aparece; os afluentes principais e alguns subafluentes (Branco, Acre, Guaporé…) podem ser filtrados pela margem (esquerda = norte), pelo país ou pelo estado do Brasil que atravessam (calculados a partir dos limites do Natural Earth, então rios que correm na fronteira podem aparecer nos dois lados). Toque num rio para ver por onde ele passa. No Brasil: IBGE (nomes); fora do Brasil: Natural Earth. O Tocantins e o Araguaia não entram: desaguam no estuário do Pará, não no Amazonas.",
-                    "itens": rios})
+    camadas.append({"id": "amazonas", "titulo": "Rio Amazonas (canal principal)", "tipo": "linha", "fonte": "bc250", "ligada": True, "fixa": True, "por_rio": True, "fixos": ["principal"],
+                    "nota": "Sempre aparece, sem caixa de seleção nem filtro: Marañón e Ucayali (que formam o Amazonas no Peru) → Amazonas do Peru → Solimões → Amazonas → Canal do Norte, a principal saída para o Atlântico, ao longo de Macapá. Toque no rio para ver por onde ele passa.",
+                    "itens": principais_l})
+    camadas.append({"id": "rios", "titulo": "Afluentes", "tipo": "linha", "fonte": "bc250", "ligada": True, "por_rio": True,
+                    "nota": "Afluentes principais e alguns subafluentes (Branco, Acre, Guaporé…). O filtro \"Afluentes\" separa os brasileiros (trechos dentro do Brasil, da drenagem do IBGE) dos estrangeiros (trechos fora do Brasil, do Natural Earth): um rio que cruza a fronteira, como o Japurá/Caquetá, aparece nos dois, cada um com o seu trecho. A margem (esquerda = norte) é calculada pela posição da foz em relação ao canal. Toque num rio para ver por quais países e estados ele passa (a partir dos limites do Natural Earth, aproximados). O Tocantins e o Araguaia não entram: desaguam no estuário do Pará, não no Amazonas.",
+                    "itens": afluentes})
 
-    todos_paises = sorted({n for r_ in rios for n in r_["attrs"]["paises"].split("|") if n}, key=lambda n: (n != "Brasil", n))
-    todos_estados = sorted({n for r_ in rios for n in r_["attrs"]["estados"].split("|") if n})
-    filtros = [{"id": "margem", "titulo": "Margem do Amazonas", "camada": "rios", "campo": "margem",
-                "opcoes": [["", "Todas"], ["esquerda", "Margem esquerda (norte)"], ["direita", "Margem direita (sul)"]]},
-               {"id": "pais", "titulo": "País", "camada": "rios", "campo": "paises", "opcoes": [["", "Todos"]] + [[n, n] for n in todos_paises]},
-               {"id": "estado", "titulo": "Estado do Brasil", "camada": "rios", "campo": "estados", "opcoes": [["", "Todos"]] + [[n, n] for n in todos_estados]}]
+    filtros = [{"id": "origem", "titulo": "Afluentes", "camada": "rios", "campo": "origem",
+                "opcoes": [["", "Todos os afluentes"], ["brasileiro", "Afluentes brasileiros"], ["estrangeiro", "Afluentes estrangeiros"]]},
+               {"id": "margem", "titulo": "Margem do Amazonas", "camada": "rios", "campo": "margem",
+                "opcoes": [["", "Todas"], ["esquerda", "Margem esquerda (norte)"], ["direita", "Margem direita (sul)"]]}]
     return {"id": "amazonia", "oceano": True, "titulo": "O Rio Amazonas e seus afluentes (bioma amazônico inteiro, em nove países)",
             "aviso_escopo": "Este mapa trata só do Rio Amazonas e dos afluentes principais. O limite do bioma é uma aproximação (ecorregiões RESOLVE) com o limite oficial do IBGE por cima no Brasil; os dois vêm de bases diferentes e não coincidem exatamente.",
             "bbox": [round(v, 3) for v in bbox], "limite": limite, "limite_contorno": contorno, "limite_nome": "Amazônia (ecorregiões, RESOLVE 2017)",
