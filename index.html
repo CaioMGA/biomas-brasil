@@ -212,6 +212,7 @@ dd { margin: 0; }
 .mergulhar { text-decoration: none; display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; margin: 20px 0 0; padding: 12px 16px; cursor: pointer; text-align: left; color: #11160f; background: var(--accent); border: 0; font-weight: 600; }
 .mergulhar small { display: block; font-weight: 400; font-size: 12px; opacity: .8; }
 .mergulhar:hover { filter: brightness(1.08); }
+.credlink { display: inline-block; margin-top: 8px; color: var(--ink); font-size: 13px; text-underline-offset: 3px; }
 .selo { display: inline-block; margin-left: 8px; padding: 1px 8px; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; border: 1px solid currentColor; border-radius: 999px; }
 .pass { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 6px; margin: 12px 0 0; padding: 0; list-style: none; }
 .pass li { padding: 8px 10px; border: 1px solid var(--rule); border-left: 4px solid var(--col); font-size: 13px; background: rgba(255,255,255,.04); }
@@ -842,7 +843,7 @@ function passaporte() {
   const ul = el("ul", { class: "pass" });
   B.forEach(b => {
     const li = el("li", { style: `--col:${col(b)}` }); if (hasSeal(b.id)) li.classList.add("ok");
-    const pr = getProg(b.id), pl = readerPlan(b.id);
+    const pr = getProg(b.id), pl = (readerPlan(b.id) || []).filter(x => x.kind !== "quiz");   // o quiz não conta como seção lida
     li.append(el("b", {}, b.name), el("span", {}, pl ? (hasSeal(b.id) ? "Selo conquistado" : `${pr.lidas.length} de ${pl.length} seções`) : "Em breve"));
     ul.appendChild(li);
   });

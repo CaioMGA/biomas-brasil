@@ -86,7 +86,8 @@ class Site:
 
     def regiao(self, id):
         return {"id": id, "nome": self.nome(id), "intro": self.C[id].get("intro", ""), "min": self.total[id],
-                "secoes": len(self.plan[id]), "url": self.url(id), "cor": self.cor(id)}
+                "secoes": sum(1 for x in self.plan[id] if x["kind"] != "quiz"),   # o quiz não conta como seção lida
+                "url": self.url(id), "cor": self.cor(id)}
 
     def silhueta(self, id):
         if id == "brasil":
