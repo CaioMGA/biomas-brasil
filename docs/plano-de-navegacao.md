@@ -51,6 +51,10 @@ Eixo em mm por mês (comum a todos os biomas), valor em mm sobre cada barra e % 
 
 A linha "Espécies" (3 caixinhas) foi substituída pelo bloco **Mais emblemática** (`emblema` em `data/conteudo/<bioma>.json`), com foto opcional (`emblema.foto = { src, credito }`) e link para as fichas do bioma.
 
+## Lab dos carimbos
+
+`/lab-carimbo/` (só no build de desenvolvimento, `python3 build/build.py`; não vai para o `dist/`) ajusta o timing das animações de carimbo e a intensidade e duração do tremor do passaporte: queda do carimbo, atraso até o tremor, tremor leve e forte, clarão vermelho e as pausas das duas cenas. Testa em uma folha ou roda as cenas reais sem gravar nada. "Aplicar neste navegador" grava em `localStorage` (`biomas:anim`) e as cenas reais passam a usar os valores; "Copiar valores" exporta o JSON para virar o padrão em `ANIM_PADRAO` (`src/comum.js`).
+
 ## Mantido como está
 
 - Quiz e passaporte, com o mesmo armazenamento (`localStorage`, chave `biomas:prog`).

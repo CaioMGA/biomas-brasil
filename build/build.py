@@ -101,5 +101,5 @@ if publish:   # versão final: remove o lab de textos (HTML, CSS e JS entre os m
 else:
     dest = os.path.join(root, "index.html")
 open(dest, "w", encoding="utf-8").write(html)
-import paginas; paginas.gerar(root, os.path.dirname(dest), (BR_D, BR_W, BR_H))   # hub, biomas, Brasil e Sobre ao lado do mapa
+import paginas; paginas.gerar(root, os.path.dirname(dest), (BR_D, BR_W, BR_H), publish=publish)   # hub, biomas, Brasil e Sobre ao lado do mapa
 print(os.path.relpath(dest, root), len(html) // 1024, "KB", "(versão final, sem lab)" if publish else "(desenvolvimento, com lab)")

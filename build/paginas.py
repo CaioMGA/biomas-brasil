@@ -287,6 +287,53 @@ class Site:
 <div class="rodape">{self.foot()}</div>"""
         return self.casca("Biomas — Biomas do Brasil", "Todos os biomas do Brasil e o sistema costeiro-marinho: textos, espécies, vídeos e quizzes.", corpo, "biomas", "var(--ink)", {"id": "hub", "regioes": self.regioes, "passaporte": self.P})
 
+    def lab_carimbo(self):
+        """Lab para ajustar o timing das animações de carimbo e a intensidade e duração do tremor (só no build de desenvolvimento)."""
+        corpo = """<style>
+.lc { display: grid; grid-template-columns: minmax(300px, 380px) minmax(0, 1fr); gap: 36px; max-width: 1180px; margin: 0 auto; padding: 32px 24px 80px; }
+.lc h1 { margin: 0 0 6px; font: 400 44px/1 var(--display); } .lc > div > p.lead { margin: 0 0 18px; }
+.lc-grupo { margin: 0 0 20px; padding: 0 0 14px; border-bottom: 1px solid var(--rule); } .lc-grupo h2 { margin: 0 0 10px; font: 500 12px var(--body); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.lc-campo { margin-top: 10px; } .lc-campo label { display: block; font-size: 14px; } .lc-campo p { margin: 3px 0 0; font-size: 12px; color: var(--muted); }
+.lc-linha { display: flex; align-items: center; gap: 8px; margin-top: 4px; } .lc-linha input[type=range] { flex: 1; accent-color: var(--ink); }
+.lc-linha input[type=number] { width: 74px; padding: 4px 6px; font: inherit; color: var(--ink); background: rgba(255,255,255,.06); border: 1px solid var(--rule); } .lc-linha span { width: 24px; font-size: 12px; color: var(--muted); }
+.lc-btns { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 14px; } .lc-btns button, .lc-fim button { padding: 8px 14px; font-size: 14px; cursor: pointer; color: var(--ink); background: transparent; border: 1px solid var(--rule); } .lc-btns button:hover, .lc-fim button:hover { background: rgba(255,255,255,.1); }
+.lc-btns .p { color: #11160f; background: var(--ink); font-weight: 600; } .lc-btns .p:hover { background: var(--ink); filter: brightness(1.1); }
+.lc-prev { position: sticky; top: 74px; } .lc-prev .folha { width: 100%; max-width: none; margin-top: 0; }
+.lc-fim { margin-top: 18px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; } #msg { margin: 10px 0 0; min-height: 1.4em; font-size: 14px; color: var(--muted); }
+#saida { width: 100%; height: 150px; margin-top: 10px; padding: 8px; font: 12px/1.4 ui-monospace, monospace; color: var(--ink); background: rgba(255,255,255,.05); border: 1px solid var(--rule); resize: vertical; }
+@media (max-width: 860px) { .lc { grid-template-columns: minmax(0, 1fr); } .lc-prev { position: static; } }
+</style>
+<div class="lc">
+<div>
+<h1>Lab dos carimbos</h1>
+<p class="lead">Ajuste o timing das animações de carimbo e a intensidade e a duração do tremor do passaporte. Os botões à direita testam na folha ou rodam as cenas de verdade, sem gravar nada.</p>
+<div id="ctl"></div>
+</div>
+<div class="lc-prev">
+<div class="lc-btns">
+<button type="button" class="p" id="leve">Bater carimbo (tremor leve)</button>
+<button type="button" class="p" id="forte">Bater carimbo de jornada completa (tremor forte)</button>
+<button type="button" id="limpar">Limpar folha</button>
+</div>
+<div id="prev"></div>
+<div class="lc-fim">
+<button type="button" id="cenaBio">Testar cena de biomas</button>
+<button type="button" id="cenaFim">Testar cena da jornada completa</button>
+<label style="font-size:14px;margin-left:6px"><input type="checkbox" id="auto" checked> bater ao mexer nos controles</label>
+</div>
+<div class="lc-fim">
+<button type="button" id="aplicar">Aplicar neste navegador</button>
+<button type="button" id="padrao">Restaurar padrões</button>
+<button type="button" id="copiar">Copiar valores</button>
+</div>
+<p id="msg" role="status"></p>
+<textarea id="saida" readonly spellcheck="false" aria-label="Valores atuais em JSON"></textarea>
+</div>
+</div>
+<script id="lab-dados" type="application/json">""" + json.dumps(self.P, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/") + """</script>"""
+        html_ = self.casca("Lab dos carimbos — Biomas do Brasil", "Ajuste de timing e tremor das animações de carimbo.", corpo, "lab", "var(--ink)")
+        return html_.replace("</body>", '<script src="/assets/lab-carimbo.js"></script>\n</body>')
+
     def sobre(self):
         c = self.C["brasil"]
         tecno = [
@@ -316,7 +363,7 @@ class Site:
 <div class="rodape">{self.foot()}</div>"""
         return self.casca("Sobre — Biomas do Brasil", "Tecnologias, dados, créditos e contato do site Biomas do Brasil.", corpo, "sobre")
 
-    def escrever(self):
+    def escrever(self, publish=False):
         def w(rel, txt):
             p = os.path.join(self.dest, rel)
             os.makedirs(os.path.dirname(p), exist_ok=True)
@@ -325,15 +372,19 @@ class Site:
             w(self.url(id).strip("/") + "/index.html", self.pagina_conteudo(id))
         w("biomas/index.html", self.hub())
         w("sobre/index.html", self.sobre())
+        if not publish:   # o lab não vai para a versão final
+            w("lab-carimbo/index.html", self.lab_carimbo())
         os.makedirs(os.path.join(self.dest, "assets"), exist_ok=True)
         rd = lambda f: open(os.path.join(self.root, f), encoding="utf-8").read()
         open(os.path.join(self.dest, "assets/site.css"), "w", encoding="utf-8").write(rd("src/pagina.css") + "\n" + rd("src/comum.css"))
         open(os.path.join(self.dest, "assets/site.js"), "w", encoding="utf-8").write(rd("src/comum.js") + "\n" + rd("src/pagina.js"))
+        if not publish:
+            shutil.copy(os.path.join(self.root, "src/lab-carimbo.js"), os.path.join(self.dest, "assets/lab-carimbo.js"))
         for src, dst in (("data/icon.svg", "assets/icon.svg"), ("brchad-2026.png", "assets/brchad.png")):
             shutil.copy(os.path.join(self.root, src), os.path.join(self.dest, dst))
 
 
-def gerar(root, dest, br_path):
+def gerar(root, dest, br_path, publish=False):
     s = Site(root, dest, br_path, "/assets/brchad.png")
-    s.escrever()
+    s.escrever(publish)
     print("páginas:", ", ".join(s.url(i) for i in s.C), "/biomas/ /sobre/")

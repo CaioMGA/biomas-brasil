@@ -167,9 +167,6 @@ html { scroll-behavior: smooth; }
 .folha-aviso-bt button:hover { background: rgba(255,255,255,.12); }
 .folha-aviso-bt .sim { color: #11160f; background: var(--ink); border-color: var(--ink); font-weight: 600; }
 .folha-aviso-bt .sim:hover { background: var(--ink); filter: brightness(1.1); }
-.folha svg .marca.novo { transform-box: fill-box; transform-origin: center; animation: bater .55s cubic-bezier(.2, .9, .3, 1.15) both; }
-@keyframes bater { from { transform: scale(1.7); opacity: 0; } 55% { opacity: .9; } to { transform: scale(1); } }
-@media (prefers-reduced-motion: reduce) { .folha svg .marca.novo { animation: none; } }
 .folha svg, .folha svg * { -webkit-user-select: none; user-select: none; }   /* o texto dos carimbos e do papel timbrado não pode ser selecionado */
 
 /* ---------- A cena do carimbo: tela cheia escura, passaporte no centro, tremor a cada batida ---------- */
@@ -177,8 +174,6 @@ html.cena-aberta, html.cena-aberta body { overflow: hidden; }
 .cena { position: fixed; inset: 0; z-index: 300; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px; padding: 20px; background: rgba(2, 4, 3, .975); animation: cena-entra .6s ease both; }
 @keyframes cena-entra { from { opacity: 0; } }
 .cena-flash { position: absolute; inset: 0; pointer-events: none; opacity: 0; background: radial-gradient(ellipse at center, rgba(200, 53, 43, .45), rgba(200, 53, 43, 0) 70%); }
-.cena-flash.vai { animation: cena-flash 1.1s ease-out; }
-@keyframes cena-flash { 0% { opacity: 1; } 100% { opacity: 0; } }
 .cena-papel { position: relative; will-change: transform; }
 .cena .folha { margin: 0; transform: rotate(-.5deg); max-width: none; width: min(780px, 94vw, calc((100vh - 270px) * 1.175)); box-shadow: 0 4px 6px rgba(0,0,0,.5), 0 18px 30px rgba(0,0,0,.55), 0 44px 80px rgba(0,0,0,.6); }
 .cena-msg { position: relative; max-width: 640px; min-height: 130px; text-align: center; opacity: 0; transform: translateY(10px); transition: opacity .7s, transform .7s; }
@@ -192,8 +187,4 @@ html.cena-aberta, html.cena-aberta body { overflow: hidden; }
 .cena-bt .sim { color: #11160f; background: var(--ink); border-color: var(--ink); font-weight: 600; }
 .cena-bt .sim:hover:not(:disabled) { background: var(--ink); filter: brightness(1.1); }
 .cena-pular { position: fixed; right: 22px; bottom: 18px; padding: 6px 0; font-size: 13px; cursor: pointer; color: var(--muted); background: none; border: 0; text-decoration: underline; text-underline-offset: 3px; }
-.tremer { animation: tremer .5s linear; }
-.tremer-forte { animation: tremer-forte 1s linear; }
-@keyframes tremer { 0% { transform: none; } 12% { transform: translate(-5px, 4px) rotate(-.5deg); } 26% { transform: translate(5px, -4px) rotate(.45deg); } 40% { transform: translate(-4px, 3px) rotate(-.3deg); } 56% { transform: translate(3px, -2px) rotate(.2deg); } 76% { transform: translate(-2px, 1px); } 100% { transform: none; } }
-@keyframes tremer-forte { 0% { transform: none; } 8% { transform: translate(-15px, 11px) rotate(-1.7deg); } 18% { transform: translate(16px, -12px) rotate(1.5deg); } 30% { transform: translate(-13px, 10px) rotate(-1.2deg); } 44% { transform: translate(10px, -8px) rotate(.9deg); } 58% { transform: translate(-7px, 5px) rotate(-.6deg); } 72% { transform: translate(4px, -3px) rotate(.3deg); } 86% { transform: translate(-2px, 2px); } 100% { transform: none; } }
-@media (prefers-reduced-motion: reduce) { .tremer, .tremer-forte, .cena-flash.vai { animation: none; } }
+.folha svg .marca.novo { transform-box: fill-box; transform-origin: center; }   /* a queda do carimbo (escala) parte do centro dele */

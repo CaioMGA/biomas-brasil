@@ -199,16 +199,50 @@ const BiomasUI = (() => {
   function marcar(ids) { const c = carimbos(); ids.forEach(id => { if (c[id]) c[id].aceito = true; }); gravar(KC, c); avisar(); }
   function adiar(ids) { gravar(KA, [...new Set([...ler(KA, [], sessionStorage), ...ids])], sessionStorage); avisar(); }   // "Depois": não pergunta de novo nesta sessão
 
+  /* ---------- Parâmetros da animação (ajustáveis no lab-carimbo; o lab grava em localStorage "biomas:anim") ---------- */
+  const ANIM_PADRAO = {
+    suspense: 2000,            // cena de biomas: passaporte sozinho na tela antes do primeiro carimbo (ms)
+    intervalo: 1000,           // cena de biomas: entre um carimbo e o próximo (ms)
+    pausaMsg: 300,             // cena de biomas: do último carimbo até a mensagem (ms)
+    pausaInicioFinal: 1500,    // jornada completa: papel em branco antes do primeiro carimbo (ms)
+    intervaloFinal: 900,       // jornada completa: entre os carimbos de bioma (ms)
+    suspenseVermelho: 2000,    // jornada completa: do último carimbo de bioma até o vermelho (ms)
+    pausaMsgFinal: 1700,       // jornada completa: do vermelho até a mensagem (ms)
+    queda: 200,                // duração da queda do carimbo na folha (ms)
+    escalaQueda: 1.7,          // tamanho com que o carimbo começa a cair (1 = tamanho final)
+    impacto: 200,              // do carimbo começar a cair até o passaporte tremer (ms)
+    leve: { amp: 5, rot: .5, dur: 500 },      // tremor dos carimbos de bioma: deslocamento (px), giro (graus) e duração (ms)
+    forte: { amp: 15, rot: 1.7, dur: 1000 },  // tremor do carimbo de jornada completa
+    clarao: 1100               // duração do clarão vermelho do carimbo de jornada completa (ms)
+  };
+  function animAtual() { const o = ler("biomas:anim", {}); return { ...ANIM_PADRAO, ...o, leve: { ...ANIM_PADRAO.leve, ...(o.leve || {}) }, forte: { ...ANIM_PADRAO.forte, ...(o.forte || {}) } }; }
+  function quedaCarimbo(raiz, A) {     // o carimbo recém-aceito cai sobre a folha
+    const m = raiz.querySelector(".marca.novo"); if (!m || !m.animate) return;
+    m.animate([{ transform: `scale(${A.escalaQueda})`, opacity: 0 }, { opacity: .9, offset: .5 }, { transform: "scale(1)", opacity: .9 }], { duration: Math.max(1, A.queda), easing: "cubic-bezier(.2,.9,.3,1.1)" });
+  }
+  function tremor(el, t) {             // oscilação amortecida do passaporte: amplitude (px), giro (graus) e duração (ms)
+    if (!el || !el.animate || t.dur <= 0 || (t.amp <= 0 && t.rot <= 0) || (matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)) return;
+    const N = Math.max(6, Math.round(t.dur / 55)), kf = [];
+    for (let i = 0; i <= N; i++) { const env = Math.pow(1 - i / N, 1.25), sg = i % 2 ? -1 : 1, z = i === 0 || i === N ? 0 : 1; kf.push({ offset: i / N, transform: `translate(${(sg * t.amp * env * z).toFixed(2)}px, ${(-sg * t.amp * .75 * env * z).toFixed(2)}px) rotate(${(sg * t.rot * env * z).toFixed(3)}deg)` }); }
+    el.animate(kf, { duration: t.dur, easing: "linear" });
+  }
+  // Uma batida isolada (usada pelo lab): refaz a folha com o carimbo novo, deixa-o cair e faz o papel tremer.
+  function demo(papel, fol, P, c, id, forte, A) {
+    novos = new Set([id]); fol.innerHTML = svgFolha(P, c, false); novos = new Set(); quedaCarimbo(fol, A);
+    setTimeout(() => tremor(papel, forte ? A.forte : A.leve), A.impacto);
+  }
+
   /* ---------- A cena do carimbo ----------
      Overlay escuro em tela cheia com o passaporte no centro. Após 2 s de suspense o carimbo aparece e o passaporte treme; vários carimbos entram um após o outro.
      A cena da jornada completa refaz todos os carimbos em sequência e, depois de mais 2 s, bate o carimbo vermelho, com um tremor bem mais forte. */
-  function cena(P, tipo, ids) {
+  function cena(P, tipo, ids, sim) {   // sim: { antes, depois, anim } roda a cena sem tocar no armazenamento (lab)
     const mk = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
     const nomeDe = id => P.regs.find(r => r.id === id).nome, regsBio = P.regs.filter(r => r.id !== "brasil");
     const lista = a => a.length > 1 ? a.slice(0, -1).join(", ") + " e " + a[a.length - 1] : a[0];
-    const antes = aceitos();
-    marcar(ids);                       // aceita já: se a página for fechada no meio da cena, nada se perde
-    const depois = aceitos();
+    const A = sim ? sim.anim : animAtual();
+    let antes, depois;
+    if (sim) { antes = sim.antes; depois = sim.depois; }
+    else { antes = aceitos(); marcar(ids); depois = aceitos(); }   // aceita já: se a página for fechada no meio da cena, nada se perde
     const foco = document.activeElement, root = document.documentElement;
     const ov = mk("div", "cena"), flash = mk("div", "cena-flash"), papel = mk("div", "cena-papel"), fol = wrap("folha", ""), msg = mk("div", "cena-msg"), bt = mk("div", "cena-bt"), pul = mk("button", "cena-pular", "Pular");
     ov.setAttribute("role", "dialog"); ov.setAttribute("aria-modal", "true"); ov.setAttribute("aria-label", tipo === "completa" ? "Carimbo de jornada completa" : "Carimbando o passaporte");
@@ -220,13 +254,14 @@ const BiomasUI = (() => {
     const pintar = (c, novo) => { novos = new Set(novo ? [novo] : []); fol.innerHTML = svgFolha(P, c, false); };
     function batida(forte) {            // o carimbo cai, e o passaporte treme (mais forte no de jornada completa)
       if (pulou) return;
+      quedaCarimbo(fol, A);
       setTimeout(() => {
-        papel.classList.remove("tremer", "tremer-forte"); void papel.offsetWidth; papel.classList.add(forte ? "tremer-forte" : "tremer");
-        if (forte) { flash.classList.remove("vai"); void flash.offsetWidth; flash.classList.add("vai"); }
-      }, 330);
+        tremor(papel, forte ? A.forte : A.leve);
+        if (forte && flash.animate) flash.animate([{ opacity: 1 }, { opacity: 0 }], { duration: Math.max(1, A.clarao), easing: "ease-out" });
+      }, A.impacto);
     }
     const botao = (txt, cls, fn) => { const b = mk("button", cls, txt); b.type = "button"; b.addEventListener("click", fn); bt.appendChild(b); return b; };
-    function fechar() { document.removeEventListener("keydown", tecla, true); ov.remove(); root.classList.remove("cena-aberta"); novos = new Set(); if (foco && foco.isConnected) foco.focus({ preventScroll: true }); avisar(); }
+    function fechar() { document.removeEventListener("keydown", tecla, true); ov.remove(); root.classList.remove("cena-aberta"); novos = new Set(); if (foco && foco.isConnected) foco.focus({ preventScroll: true }); if (!sim) avisar(); }
     function mostrar(titulo, linhas, final) {
       fim = true; pul.remove(); msg.classList.toggle("final", !!final);
       msg.append(mk("strong", "", titulo), ...linhas.map(t => mk("p", "", t)), bt); msg.classList.add("visivel");
@@ -244,15 +279,15 @@ const BiomasUI = (() => {
     }
     async function roteiro() {
       if (tipo === "completa") {
-        const c = {}; pintar(c); await esperar(1500);
-        for (const r of P.regs.filter(r => depois[r.id] != null)) { c[r.id] = depois[r.id]; pintar(c, r.id); batida(false); await esperar(900); }
-        await esperar(2000);            // suspense antes do carimbo de jornada completa
-        c.completa = depois.completa; pintar(c, "completa"); batida(true); await esperar(1700);
+        const c = {}; pintar(c); await esperar(A.pausaInicioFinal);
+        for (const r of P.regs.filter(r => depois[r.id] != null)) { c[r.id] = depois[r.id]; pintar(c, r.id); batida(false); await esperar(A.intervaloFinal); }
+        await esperar(A.suspenseVermelho);            // suspense antes do carimbo de jornada completa
+        c.completa = depois.completa; pintar(c, "completa"); batida(true); await esperar(A.pausaMsgFinal);
         msgFinal(c);
       } else {
-        const c = { ...antes }; pintar(c); await esperar(2000);   // 2 s de suspense com o passaporte sozinho na tela
-        for (const id of ids) { c[id] = depois[id]; pintar(c, id); batida(false); await esperar(1000); }
-        await esperar(300); msgBioma();
+        const c = { ...antes }; pintar(c); await esperar(A.suspense);   // suspense com o passaporte sozinho na tela
+        for (const id of ids) { c[id] = depois[id]; pintar(c, id); batida(false); await esperar(A.intervalo); }
+        await esperar(A.pausaMsg); msgBioma();
       }
     }
     function pular() { pulou = true; [...espera].forEach(f => f()); }
@@ -304,7 +339,15 @@ const BiomasUI = (() => {
     return box;
   }
 
-  return { graficoChuva, folha, passaporte, carimbos, carimbado, registrarGanho, todosCarimbados: P => { const c = aceitos(); return P.regs.filter(r => r.id !== "brasil").every(r => c[r.id] != null); } };
+  /* Dados de teste do lab: roda a cena de verdade, mas sem gravar nada. */
+  function simular(P, tipo, anim) {
+    const A = anim || animAtual(), datas = ["2026-10-12", "2026-10-13", "2026-10-15", "2026-10-20", "2026-10-21", "2026-10-30", "2026-10-31"], bio = P.regs.filter(r => r.id !== "brasil");
+    const todos = {}; bio.forEach((r, i) => { todos[r.id] = datas[i]; }); todos.brasil = "2026-10-31";
+    if (tipo === "completa") { const d = { ...todos, completa: "2026-10-31" }; cena(P, "completa", ["completa"], { antes: todos, depois: d, anim: A }); }
+    else { const antes = {}; bio.slice(0, 2).forEach(r => { antes[r.id] = todos[r.id]; }); const ids = bio.slice(2, 4).map(r => r.id), depois = { ...antes }; ids.forEach(i => { depois[i] = todos[i]; }); cena(P, "bioma", ids, { antes, depois, anim: A }); }
+  }
+
+  return { ANIM_PADRAO, animAtual, demo, simular, graficoChuva, folha, passaporte, carimbos, carimbado, registrarGanho, todosCarimbados: P => { const c = aceitos(); return P.regs.filter(r => r.id !== "brasil").every(r => c[r.id] != null); } };
 })();
 
 /* Interatividade das páginas estáticas: progresso, quiz, vídeos, comparador, passaporte e sugestões. */
