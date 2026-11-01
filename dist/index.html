@@ -306,9 +306,9 @@ html.cena-aberta, html.cena-aberta body { overflow: hidden; }
   .stage { height: 74svh; min-height: 480px; }
   .panel { position: relative; z-index: 2; top: auto; right: auto; bottom: auto; width: auto; margin: 0 16px 32px; overflow: visible; }
   .brand { left: 16px; top: 16px; }
-  .nav { right: 12px; top: 12px; bottom: auto; max-height: calc(100% - 48px); gap: 8px; }
+  .nav { right: 12px; top: 42px; bottom: auto; max-height: calc(100% - 78px); gap: 8px; }   /* abaixo da tagline do título (que ocupa a largura toda no alto) */
   .chips { display: none; }   /* no celular não há seletores de bioma: o bioma se escolhe tocando no mapa */
-  html:not(.sem-controles) .nav { padding: 10px; background: rgba(8, 12, 9, .22); border: 1px solid var(--rule); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }   /* painel de vidro: fundo transparente com blur do que está atrás */
+  html:not(.sem-controles) .nav { max-width: calc(100% - 150px); padding: 8px; background: rgba(8, 12, 9, .22); border: 1px solid var(--rule); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }   /* painel de vidro: fundo transparente com blur do que está atrás */
   .pill button { width: 40px; height: 40px; }
   .dock { left: 16px; right: 16px; bottom: 10px; }
   .hint { max-width: none; }
@@ -1966,7 +1966,8 @@ async function init3d() {
     return { cx: (x0 + x1) / 2, cz: (z0 + z1) / 2, pts: [[x0, z0], [x1, z0], [x0, z1], [x1, z1], [(x0 + x1) / 2, z0], [(x0 + x1) / 2, z1], [x0, (z0 + z1) / 2], [x1, (z0 + z1) / 2]] };
   }
   // Área livre da tela (descontando painel lateral, marca no topo e controles embaixo)
-  const freeArea = () => { const d = innerWidth > 860; return { l: d ? 60 : 16, r: W - panelPx - (d ? 230 : 150), t: d ? 90 : 70, b: Hh - (d ? 70 : 50) }; };
+  // área livre para enquadrar: no desktop descontam-se o painel e a coluna de controles; no celular os filtros ficam por cima do mapa (painel de vidro) e não entram na conta
+  const freeArea = () => { const d = innerWidth > 860; return { l: d ? 60 : 16, r: W - panelPx - (d ? 230 : 16), t: d ? 90 : 70, b: Hh - (d ? 70 : 50) }; };
   function bounds(cx, cz, d, r) {
     tmpCam.position.set(cx + Math.sin((cam.yawT ?? cam.yaw)) * Math.cos((cam.pitchT ?? cam.pitch)) * d, Math.sin((cam.pitchT ?? cam.pitch)) * d, cz + Math.cos((cam.yawT ?? cam.yaw)) * Math.cos((cam.pitchT ?? cam.pitch)) * d);
     tmpCam.lookAt(cx, 0, cz); tmpCam.updateMatrixWorld();
