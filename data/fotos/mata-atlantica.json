@@ -1,0 +1,102 @@
+{
+ "Leontopithecus rosalia": {
+  "arquivo": "leontopithecus-rosalia.jpg",
+  "w": 1200,
+  "h": 800,
+  "alt": "Mico-leão-dourado de pelagem alaranjada, de frente, agarrado a um tronco coberto de musgo.",
+  "autor": "Henrique Bitencourt",
+  "licenca": "CC BY-SA 4.0",
+  "licenca_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "fonte_url": "https://commons.wikimedia.org/wiki/File:Leontopithecus_rosalia_467256293.jpg",
+  "arquivo_commons": "Leontopithecus rosalia 467256293.jpg"
+ },
+ "Brachyteles arachnoides e B. hypoxanthus": {
+  "arquivo": "brachyteles.jpg",
+  "w": 1200,
+  "h": 800,
+  "alt": "Muriqui de pelagem clara e rosto escuro, agarrado a um tronco de árvore.",
+  "autor": "UNA Ecoturismo",
+  "licenca": "CC BY-SA 4.0",
+  "licenca_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "fonte_url": "https://commons.wikimedia.org/wiki/File:Brachyteles_arachnoides_-_UNA_Ecoturismo_-_391279257.jpeg",
+  "arquivo_commons": "Brachyteles arachnoides - UNA Ecoturismo - 391279257.jpeg"
+ },
+ "Turdus rufiventris": {
+  "arquivo": "turdus-rufiventris.jpg",
+  "w": 1200,
+  "h": 800,
+  "alt": "Sabiá-laranjeira, de dorso acinzentado e peito alaranjado, sobre uma pedra com musgo.",
+  "autor": "Dario Sanches from SÃO PAULO, BRASIL",
+  "licenca": "CC BY-SA 2.0",
+  "licenca_url": "https://creativecommons.org/licenses/by-sa/2.0",
+  "fonte_url": "https://commons.wikimedia.org/wiki/File:Flickr_-_Dario_Sanches_-_SABI%C3%81-LARANJEIRA_(Turdus_rufiventris)_(7).jpg",
+  "arquivo_commons": "Flickr - Dario Sanches - SABIÁ-LARANJEIRA (Turdus rufiventris) (7).jpg"
+ },
+ "Ramphastos dicolorus": {
+  "arquivo": "ramphastos-dicolorus.jpg",
+  "w": 1200,
+  "h": 800,
+  "alt": "Tucano-de-bico-verde pousado entre folhas grandes, com o bico verde, o peito amarelo e o abdome vermelho.",
+  "autor": "Calau00",
+  "licenca": "CC BY-SA 4.0",
+  "licenca_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "fonte_url": "https://commons.wikimedia.org/wiki/File:Parque_Estadual_das_Fontes_do_Ipiranga_Bruno_Rodriguez_M%C3%B6ller_(04).jpg",
+  "arquivo_commons": "Parque Estadual das Fontes do Ipiranga Bruno Rodriguez Möller (04).jpg"
+ },
+ "Araucaria angustifolia": {
+  "arquivo": "araucaria-angustifolia.jpg",
+  "w": 1200,
+  "h": 800,
+  "alt": "Araucárias de copa em forma de taça contra o céu azul, com morros cobertos de mata ao fundo.",
+  "autor": "Carlo Brescia",
+  "licenca": "CC BY-SA 4.0",
+  "licenca_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "fonte_url": "https://commons.wikimedia.org/wiki/File:Araucarias_cerca_de_Itajub%C3%A1_03.jpg",
+  "arquivo_commons": "Araucarias cerca de Itajubá 03.jpg"
+ },
+ "Paubrasilia echinata": {
+  "arquivo": "paubrasilia-echinata.jpg",
+  "w": 1200,
+  "h": 800,
+  "alt": "Ramo de pau-brasil com um cacho de flores amarelas de centro vermelho, entre folhas verdes.",
+  "autor": "mauroguanandi",
+  "licenca": "CC BY 2.0",
+  "licenca_url": "https://creativecommons.org/licenses/by/2.0",
+  "fonte_url": "https://commons.wikimedia.org/wiki/File:Caesalpinia_echinata_(1).jpg",
+  "arquivo_commons": "Caesalpinia echinata (1).jpg"
+ },
+ "Cariniana legalis": {
+  "arquivo": "cariniana-legalis.jpg",
+  "w": 1200,
+  "h": 800,
+  "alt": "Base do tronco de um jequitibá-rosa na mata, com um pesquisador agachado ao lado.",
+  "autor": "Alex Popovkin, Bahia, Brazil",
+  "licenca": "CC BY 2.0",
+  "licenca_url": "https://creativecommons.org/licenses/by/2.0",
+  "fonte_url": "https://commons.wikimedia.org/wiki/File:Cariniana_legalis_(Mart.)_Kuntze_(11884911225).jpg",
+  "arquivo_commons": "Cariniana legalis (Mart.) Kuntze (11884911225).jpg"
+ },
+ "Euterpe edulis": {
+  "arquivo": "euterpe-edulis.jpg",
+  "w": 1200,
+  "h": 800,
+  "alt": "Palmito-juçara na floresta, com o tronco fino, a copa de folhas e o cacho de frutos.",
+  "autor": "Alex Popovkin, Bahia, Brazil",
+  "licenca": "CC BY 2.0",
+  "licenca_url": "https://creativecommons.org/licenses/by/2.0",
+  "fonte_url": "https://commons.wikimedia.org/wiki/File:Euterpe_edulis_Mart._(14561156502).jpg",
+  "arquivo_commons": "Euterpe edulis Mart. (14561156502).jpg"
+ },
+ "_vista_aerea": {
+  "arquivo": "vista-aerea.jpg",
+  "w": 1600,
+  "h": 900,
+  "alt": "Vista aérea de morros cobertos de mata fechada, na Mata Atlântica da Bahia, com serras ao fundo e céu azul.",
+  "legenda": "Vista aérea da Mata Atlântica na RPPN Serra Bonita, em Camacan (BA).",
+  "autor": "Renato Augusto Martins",
+  "licenca": "CC BY-SA 4.0",
+  "licenca_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "fonte_url": "https://commons.wikimedia.org/wiki/File:Morro_na_mata_atl%C3%A2ntica_baiana.jpg",
+  "arquivo_commons": "Morro na mata atlântica baiana.jpg"
+ }
+}
