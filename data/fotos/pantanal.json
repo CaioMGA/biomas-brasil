@@ -1,0 +1,90 @@
+{
+ "Panthera onca": {
+  "arquivo": "panthera-onca.jpg",
+  "w": 1200,
+  "h": 800,
+  "alt": "Onça-pintada caminhando em uma margem de areia, em meio ao capim alto, no Pantanal.",
+  "autor": "Charles J. Sharp",
+  "licenca": "CC BY-SA 4.0",
+  "licenca_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "fonte_url": "https://commons.wikimedia.org/wiki/File:Jaguar_(Panthera_onca_palustris)_male_Three_Brothers_River_2.jpg",
+  "arquivo_commons": "Jaguar (Panthera onca palustris) male Three Brothers River 2.jpg"
+ },
+ "Caiman yacare": {
+  "arquivo": "caiman-yacare.jpg",
+  "w": 1200,
+  "h": 800,
+  "alt": "Jacaré-do-pantanal deitado na margem de um rio, entre capim e vegetação aquática.",
+  "autor": "Lucas Rocha Ribeiro",
+  "licenca": "CC BY-SA 4.0",
+  "licenca_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "fonte_url": "https://commons.wikimedia.org/wiki/File:Jacare_do_Pantanal.jpg",
+  "arquivo_commons": "Jacare do Pantanal.jpg"
+ },
+ "Jabiru mycteria": {
+  "arquivo": "jabiru-mycteria.jpg",
+  "w": 1200,
+  "h": 800,
+  "alt": "Tuiuiú em voo, com as asas abertas e o colar vermelho no pescoço preto.",
+  "autor": "Andreas Trepte",
+  "licenca": "CC BY-SA 4.0",
+  "licenca_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "fonte_url": "https://commons.wikimedia.org/wiki/File:Jabiru_Mato_Grosso_Pantanal_Brazil-3.jpg",
+  "arquivo_commons": "Jabiru Mato Grosso Pantanal Brazil-3.jpg"
+ },
+ "Anodorhynchus hyacinthinus": {
+  "arquivo": "anodorhynchus-hyacinthinus.jpg",
+  "w": 1200,
+  "h": 800,
+  "alt": "Retrato de arara-azul-grande, de plumagem azul-cobalto, com anel amarelo ao redor do olho e na base do bico.",
+  "autor": "Leonardo Ramos",
+  "licenca": "CC BY-SA 4.0",
+  "licenca_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "fonte_url": "https://commons.wikimedia.org/wiki/File:Arara_Azul_no_Pantanal.jpg",
+  "arquivo_commons": "Arara Azul no Pantanal.jpg"
+ },
+ "Hydrochoerus hydrochaeris": {
+  "arquivo": "hydrochoerus-hydrochaeris.jpg",
+  "w": 1200,
+  "h": 800,
+  "alt": "Capivara de pelagem avermelhada, de perfil, deitada na grama.",
+  "autor": "Charles J. Sharp",
+  "licenca": "CC BY-SA 4.0",
+  "licenca_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "fonte_url": "https://commons.wikimedia.org/wiki/File:Capybara_(Hydrochoerus_hydrochaeris).jpg",
+  "arquivo_commons": "Capybara (Hydrochoerus hydrochaeris).jpg"
+ },
+ "Pteronura brasiliensis": {
+  "arquivo": "pteronura-brasiliensis.jpg",
+  "w": 1200,
+  "h": 800,
+  "alt": "Ariranha com a cabeça fora da água, comendo um peixe entre plantas aquáticas.",
+  "autor": "Silvaninha2542",
+  "licenca": "CC BY-SA 4.0",
+  "licenca_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "fonte_url": "https://commons.wikimedia.org/wiki/File:Ariranha-PARNA_do_Pantanal_Matogrossense-Silvaninha2542(001).jpg",
+  "arquivo_commons": "Ariranha-PARNA do Pantanal Matogrossense-Silvaninha2542(001).jpg"
+ },
+ "Eichhornia crassipes": {
+  "arquivo": "eichhornia-crassipes.jpg",
+  "w": 1200,
+  "h": 800,
+  "alt": "Aguapés em flor: cachos de flores lilás sobre as folhas verdes.",
+  "autor": "Bernard DUPONT",
+  "licenca": "CC BY-SA 2.0",
+  "licenca_url": "https://creativecommons.org/licenses/by-sa/2.0",
+  "fonte_url": "https://commons.wikimedia.org/wiki/File:Pontederia_crassipes_in_native_habitat,_Transpantaneira,_Pocon%C3%A9,_Mato_Grosso,_Brazil.jpg",
+  "arquivo_commons": "Pontederia crassipes in native habitat, Transpantaneira, Poconé, Mato Grosso, Brazil.jpg"
+ },
+ "Tabebuia aurea": {
+  "arquivo": "tabebuia-aurea.jpg",
+  "w": 1200,
+  "h": 800,
+  "alt": "Copa de paratudo coberta de flores amarelas contra o céu azul.",
+  "autor": "dany13",
+  "licenca": "CC BY 2.0",
+  "licenca_url": "https://creativecommons.org/licenses/by/2.0",
+  "fonte_url": "https://commons.wikimedia.org/wiki/File:Brasil_Mato_Grosso_Do_Sul_Pantanal_Arbre_Ip%C3%A9_Jaune_Tab%C3%A9buia_Aur%C3%A9a_Yellow_tree_full_blossom_time_(15523444790).jpg",
+  "arquivo_commons": "Brasil Mato Grosso Do Sul Pantanal Arbre Ipé Jaune Tabébuia Auréa Yellow tree full blossom time (15523444790).jpg"
+ }
+}
