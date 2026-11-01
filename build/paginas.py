@@ -165,7 +165,7 @@ class Site:
                 f'<ul class="car-track" tabindex="0" aria-label="Espécies, use as setas do teclado ou deslize">{"".join(slides)}</ul></div>')
 
     def vista_aerea(self, id):
-        """Foto grande de vista aérea do bioma, no topo da página (opcional: chave "_vista_aerea" em data/fotos/<id>.json)."""
+        """Foto grande de vista aérea do bioma, que abre a seção "Paisagem e clima" (opcional: chave "_vista_aerea" em data/fotos/<id>.json)."""
         f = (self.fotos.get(id) or {}).get("_vista_aerea")
         if not f: return ""
         cred = f'Foto: {E(f["autor"])} · <a href="{E(f["licenca_url"])}" target="_blank" rel="noopener">{E(f["licenca"])}</a> · <a href="{E(f["fonte_url"])}" target="_blank" rel="noopener">Wikimedia Commons</a>'
