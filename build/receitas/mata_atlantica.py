@@ -38,7 +38,9 @@ PAISES = {"BRA", "PRY", "ARG", "URY", "BOL"}
 LIMITE_HA = 1000   # UCs menores que isso entram nas contagens, mas não no desenho (invisíveis nesta escala)
 # nomes dos rios do Natural Earth em português (a base escreve "Paraiba" para o Paraíba do Sul, confirmado pela posição, e "Uruguay")
 RIOS_PT = {"Paraiba": "Paraíba do Sul", "Uruguay": "Uruguai"}
-SEM_ESTADO = {"Amazonas"}   # só aparece um cantinho do estado no canto do mapa, sem relação com o bioma: fica de fora (pintura, nome e divisas)
+# estados e departamentos que só aparecem como "pontas" nos cantos do mapa, sem relação com o bioma: ficam de fora (pintura, nome e divisas própria).
+# As divisas compartilhadas com os vizinhos continuam desenhadas pelos vizinhos, e as fronteiras entre países pela camada de países.
+SEM_ESTADO = {"Amazonas", "Santa Cruz", "Alto Paraguay", "Entre Ríos", "Salto", "Paysandú"}
 ESFERAS = {"Federal": "federais", "Estadual": "estaduais", "Municipal": "municipais"}
 milhar = lambda n: f"{round(n):,}".replace(",", ".")   # 1234567 → 1.234.567
 
