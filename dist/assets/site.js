@@ -383,7 +383,7 @@ const BiomasUI = (() => {
 
   function estado(r) {
     const pr = getProg(r.id);
-    const cs = BiomasUI.carimbos(); if (cs[r.id]) return cs[r.id].aceito ? "Carimbado" : "Carimbo a receber";
+    const cs = BiomasUI.carimbos(); if (cs[r.id]) return cs[r.id].aceito ? "\u2713 Carimbado" : "Carimbo a receber";   // ✓ só quando o carimbo já foi aceito
     if (lida(r)) return "Lido";
     return pr.lidas.length ? `${pr.lidas.length} de ${r.secoes} seções` : "";
   }
