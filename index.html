@@ -794,9 +794,16 @@ const BiomasUI = (() => {
       x.translate(rx, by); x.scale(TIMBRE.larg * k / natural, 1); x.fillText("Biomas do Brasil", 0, 0);
       x.restore();
     }
-    x.font = '500 30px "Instrument Sans", system-ui, sans-serif'; x.fillStyle = completo ? "#e0675c" : "#b6bba4";
-    x.fillText(completo ? "Jornada pelos Biomas do Brasil completa" : `${n} de ${reg.length} biomas carimbados`, m, top + sh + 70);
-    x.fillStyle = "#ece6d4"; x.textAlign = "right"; x.fillText(location.host, W - m, top + sh + 70);
+    const yRodape = top + sh + 70;
+    x.font = '500 30px "Instrument Sans", system-ui, sans-serif';
+    if (completo) {   // cores da bandeira: a frase em amarelo e "completa" em verde (um peso acima)
+      const frase = "Jornada pelos Biomas do Brasil ";
+      x.fillStyle = "#ffdf00"; x.fillText(frase, m, yRodape);
+      const larg = x.measureText(frase).width;
+      x.font = '600 30px "Instrument Sans", system-ui, sans-serif'; x.fillStyle = "#009c3b"; x.fillText("completa", m + larg, yRodape);
+      x.font = '500 30px "Instrument Sans", system-ui, sans-serif';
+    } else { x.fillStyle = "#b6bba4"; x.fillText(`${n} de ${reg.length} biomas carimbados`, m, yRodape); }
+    x.fillStyle = "#ece6d4"; x.textAlign = "right"; x.fillText(location.host, W - m, yRodape);
     URL.revokeObjectURL(img.src);
     return jpegAte(cv, MAX_IMAGEM);
   }
