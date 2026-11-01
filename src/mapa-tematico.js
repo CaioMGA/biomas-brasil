@@ -21,6 +21,8 @@
   function montar(fig, vp, d) {
     const info = fig.querySelector(".mt-info"), por = k => d.camadas.find(c => c.id === k);
     const svg = sv("svg", { viewBox: `0 0 ${d.w} ${d.h}`, class: "mt-svg", "aria-hidden": "true", focusable: "false" });
+    svg.style.aspectRatio = `${d.w} / ${d.h}`; svg.style.setProperty("--mt-r", d.w / d.h);
+    svg.style.width = "min(100%, calc(var(--mt-vh) * var(--mt-r)))";   // a moldura abraça o mapa: sem faixas laterais quando a altura é limitada
     const camadas = {};   // id da camada -> elementos que ligam/desligam juntos
     const itens = {};     // id da camada -> elementos que os filtros podem esconder (têm data-*)
     const pins = [];      // marcadores e rótulos em px (a escala acompanha o tamanho real do mapa)
