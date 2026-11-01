@@ -48,6 +48,13 @@ def icon_png(n=180, ss=4):
     im2.paste((255, 255, 255, 255), mask=mask)
     import io; buf = io.BytesIO(); im2.resize((n, n), Image.LANCZOS).save(buf, "PNG"); return buf.getvalue()
 _svg = rd("data/icon.svg").decode()
+def dem_chunks(n=300_000):
+    # o relevo (PNG em base64, ~6 MB) vai fatiado em scripts pequenos; cada um avisa o loading, que sobe conforme o download avança
+    d = uri("data/dem.png"); parts = [d[i:i + n] for i in range(0, len(d), n)]
+    out = ["<script>window.__DEMP = [];</script>"]
+    for k, c in enumerate(parts):
+        out.append(f'<script>__DEMP.push("{c}");window.__ld&&__ld.set({0.03 + 0.19 * (k + 1) / len(parts):.3f});</script>')
+    return "\n".join(out)
 rep = {
     "__ICONSVG__": "data:image/svg+xml," + urllib.parse.quote(_svg, safe="/:=,;"),
     "__ICONPNG__": "data:image/png;base64," + base64.b64encode(icon_png()).decode(),
@@ -56,7 +63,7 @@ rep = {
     "__W__": str(m["w"]), "__H__": str(m["h"]),
     "__CENT__": json.dumps(m["centroid"], ensure_ascii=False, separators=(",", ":")),
     "__BRCHAD__": uri("brchad-2026.png"),
-    "__DEM__": uri("data/dem.png"), "__IDS__": uri("data/ids.png"),
+    "__DEMCHUNKS__": dem_chunks(), "__IDS__": uri("data/ids.png"),
     "__CONTEUDO__": json.dumps({os.path.splitext(f)[0]: json.load(open(os.path.join(root, "data/conteudo", f), encoding="utf-8")) for f in sorted(os.listdir(os.path.join(root, "data/conteudo"))) if f.endswith(".json")}, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/"),
     "__LAYERS__": rd("data/layers.json").decode(),
     "__FOCUS__": rd("data/focus.json").decode(),

@@ -310,6 +310,8 @@ html.boot, html.boot body { overflow: hidden; }
 #loader.out { opacity: 0; pointer-events: none; }
 #loader svg { width: min(46vmin, 360px); height: auto; overflow: visible; transform-origin: 50% 50%; }
 #loader .fill { fill: #5ea56e; fill-opacity: 0; transition: fill-opacity .55s ease; }
+#loader .thin { stroke: #f6ecc8; stroke-width: .8; opacity: .3; stroke-linejoin: round; }   /* linha fina fixa sob o traçado */
+#loader #ldTrail use { stroke: #fff; stroke-width: 1.3; stroke-linecap: butt; stroke-linejoin: round; }   /* cauda do cometa */
 #loader .glow { fill: none; stroke: #f3e3a3; stroke-width: 7; stroke-linejoin: round; opacity: .35; filter: blur(5px); }
 #loader .line { fill: none; stroke: #f6ecc8; stroke-width: 2.4; stroke-linejoin: round; stroke-linecap: round; }
 #loader .head { fill: #fff; filter: drop-shadow(0 0 4px #fff3b8) drop-shadow(0 0 10px #ffd966) drop-shadow(0 0 22px #ffb83d); }
@@ -404,10 +406,13 @@ body.lab-rios .rl:not(.gl) { pointer-events: auto; cursor: pointer; }
 <body>
 <div id="loader" role="status" aria-live="polite" aria-label="Carregando o mapa">
   <svg viewBox="__BRVB__" aria-hidden="true">
+    <defs><path id="ldBase" d="__BRD__" pathLength="1" fill="none"/></defs>
     <path class="fill" d="__BRD__"/>
+    <use href="#ldBase" class="thin"/>
+    <g id="ldTrail"></g>
     <path class="glow" d="__BRD__"/>
     <path class="line" id="ldLine" d="__BRD__" pathLength="1"/>
-    <circle class="head" id="ldHead" r="3.6" cx="0" cy="0" opacity="0"/>
+    <circle class="head" id="ldHead" r="2.4" cx="0" cy="0" opacity="0"/>
     <text class="pct" id="ldPct" x="__BRCX__" y="__BRCY__" text-anchor="middle" dominant-baseline="central" font-size="__BRFS__">0%</text>
   </svg>
   <div class="msg">Carregando</div>
@@ -428,18 +433,32 @@ body.lab-rios .rl:not(.gl) { pointer-events: auto; cursor: pointer; }
   let target = 0.03, ms = 0.03, shown = 0, last = performance.now(), waiters = [], done = false;
   const draw = () => { line.style.strokeDashoffset = glow.style.strokeDashoffset = String(1 - shown); };
   draw();
+  // Cometa: uma linha fina com cauda em degradê percorre o contorno a cada 2 s, em loop e a velocidade constante, puxada por um ponto branco.
+  // O traçado do progresso é desenhado por cima. Ao chegar a 100% o cometa para.
+  const LAP = 2000, NSEG = 24, TAIL = .2, SEG = TAIL / NSEG, trail = document.getElementById("ldTrail"), NS = "http://www.w3.org/2000/svg", segs = [];
+  for (let k = 0; k < NSEG; k++) {
+    const u = document.createElementNS(NS, "use"); u.setAttribute("href", "#ldBase");
+    u.style.strokeDasharray = `${SEG} ${1 - SEG}`; u.style.opacity = String(Math.pow(1 - k / NSEG, 1.7) * .9);
+    trail.appendChild(u); segs.push(u);
+  }
+  function comet(now) {
+    if (done) return;
+    const pos = ((now - window.__ld.t0) % LAP) / LAP;   // fração do contorno percorrida: constante no tempo
+    segs.forEach((u, k) => { const st = (((pos - (k + 1) * SEG) % 1) + 1) % 1; u.style.strokeDashoffset = String(-st); });
+    const pt = line.getPointAtLength(pos * total);
+    head.setAttribute("cx", pt.x); head.setAttribute("cy", pt.y); head.setAttribute("opacity", "1");
+  }
   function tick(now) {
     const dt = Math.min(.1, (now - last) / 1000); last = now;
     if (target < Math.min(.95, ms + .07)) target = Math.min(Math.min(.95, ms + .07), target + dt * .012);   // entre um marco e o próximo o traçado nunca fica parado
     if (shown < target) shown = Math.min(target, shown + Math.max((target - shown) * (1 - Math.exp(-dt * 5)), dt * .3));   // sobe suave, sem nunca ficar parado
     draw();
+    comet(now);
     if (shown >= 1) {   // 100%: o número some na hora
       pct.style.display = "none"; head.setAttribute("opacity", "0"); done = true;
       waiters.splice(0).forEach(cb => setTimeout(cb, 30)); return;
     }
     pct.textContent = Math.floor(shown * 100) + "%";
-    const pt = line.getPointAtLength(shown * total);
-    head.setAttribute("cx", pt.x); head.setAttribute("cy", pt.y); head.setAttribute("opacity", shown > 0 ? "1" : "0");
     window.__ldRaf = requestAnimationFrame(tick);
   }
   window.__ldRaf = requestAnimationFrame(tick);
@@ -450,6 +469,7 @@ body.lab-rios .rl:not(.gl) { pointer-events: auto; cursor: pointer; }
   };
 })();
 </script>
+__DEMCHUNKS__
 <canvas id="fx" aria-hidden="true"></canvas>
 
 <main>
@@ -521,12 +541,12 @@ body.lab-rios .rl:not(.gl) { pointer-events: auto; cursor: pointer; }
   <p id="lrMsg" class="labhelp"></p>
 </aside>
 <!--LAB:HTML-END-->
-<script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js" onload="window.__ld&&__ld.set(.08)"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js" onload="window.__ld&&__ld.set(.22)"></script>
 <script>
-if (window.__ld) window.__ld.set(.1);   // three.js carregado e o script principal começou
+if (window.__ld) window.__ld.set(.25);   // three.js carregado e o script principal começou
 const MAPW = __W__, MAPH = __H__;
 const CENT = __CENT__;
-const DEM_URI = "__DEM__";
+const DEM_URI = window.__DEMP.join("");   // o relevo chega fatiado, em scripts antes deste (fatias geradas pelo build), para o loading acompanhar o download
 const IDS_URI = "__IDS__";
 const LAYERS = __LAYERS__;
 const FOCUS = __FOCUS__;
@@ -1387,24 +1407,24 @@ function pixels(img) { const c = document.createElement("canvas"); c.width = img
 async function init3d() {
   if (!window.THREE) throw new Error("three.js indisponível");
   const ldp = f => { if (window.__ld) window.__ld.set(f); }, yieldUI = () => new Promise(r => requestAnimationFrame(() => setTimeout(r, 0)));   // marcos do loading; o yield deixa o traçado repintar
-  ldp(.12); await yieldUI();
+  ldp(.28); await yieldUI();
   const [demImg, idsImg] = await Promise.all([loadImg(DEM_URI), loadImg(IDS_URI)]);
-  ldp(.2); await yieldUI();
+  ldp(.34); await yieldUI();
   const dem = pixels(demImg), ids = pixels(idsImg);
-  ldp(.26); await yieldUI();
+  ldp(.4); await yieldUI();
   const DW = dem.width, DH = dem.height, IW = ids.width, IH = ids.height;
 
   // Elevação (km) em half float, e ids dos biomas (0 = fora do Brasil)
   const half = new Uint16Array(DW * DH);
   for (let i = 0; i < DW * DH; i++) half[i] = THREE.DataUtils.toHalfFloat(((dem.data[i * 4] * 256 + dem.data[i * 4 + 1]) / 6 - 6000) / 1000);
   const hTex = new THREE.DataTexture(half, DW, DH, THREE.RedFormat, THREE.HalfFloatType);
-  ldp(.32); await yieldUI();
+  ldp(.45); await yieldUI();
   hTex.internalFormat = "R16F"; hTex.unpackAlignment = 1; hTex.minFilter = hTex.magFilter = THREE.LinearFilter; hTex.needsUpdate = true;
   const idArr = new Uint8Array(IW * IH);   // 0 fora; 1-7 Brasil e mar; 11-16 extensão do bioma n fora do Brasil
   for (let i = 0; i < IW * IH; i++) idArr[i] = Math.round(ids.data[i * 4] / 15);
   const iTex = new THREE.DataTexture(idArr, IW, IH, THREE.RedFormat, THREE.UnsignedByteType);
   iTex.internalFormat = "R8"; iTex.unpackAlignment = 1; iTex.minFilter = iTex.magFilter = THREE.NearestFilter; iTex.needsUpdate = true;
-  ldp(.4); await yieldUI();
+  ldp(.5); await yieldUI();
 
   // Máscara suave de um bioma (para levantar o terreno sem serrilhado)
   const MW = 548, MH = Math.round(MW * IH / IW), BS = IW / MW;
@@ -1429,9 +1449,9 @@ async function init3d() {
     t.internalFormat = "R8"; t.unpackAlignment = 1; t.minFilter = t.magFilter = THREE.LinearFilter; t.needsUpdate = true; return t;
   }
   const masks = [null];
-  for (let i = 0; i < B.length; i++) { masks.push(maskTex(B[i].n)); ldp(.4 + .4 * (i + 1) / B.length); await yieldUI(); }   // a parte mais pesada: um marco por bioma
+  for (let i = 0; i < B.length; i++) { masks.push(maskTex(B[i].n)); ldp(.5 + .35 * (i + 1) / B.length); await yieldUI(); }   // a parte mais pesada: um marco por bioma
   const emptyMask = maskTex(0);
-  ldp(.85); await yieldUI();
+  ldp(.9); await yieldUI();
 
   // Sombra projetada no "chão": silhueta do país desfocada
   const sil = new Float32Array(MW * MH); for (let y = 0; y < MH; y++) for (let x = 0; x < MW; x++) { const q = idArr[Math.floor(y * BS) * IW + Math.floor(x * BS)]; sil[y * MW + x] = q && q <= 8 ? 1 : 0; }
