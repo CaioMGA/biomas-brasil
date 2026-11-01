@@ -31,7 +31,7 @@ Páginas estáticas geradas por `build/build.py` (leves, sem three.js, boas no c
 - No fim das páginas de conteúdo, os outros biomas aparecem em dois grupos: "Ainda sem carimbo" e "Já carimbados".
 - **Cena do carimbo:** ao aceitar ("Sim"), um overlay escuro cobre a tela e o passaporte aparece no centro. Depois de 2 s de suspense o carimbo cai, o passaporte treme e, com vários carimbos, eles entram um após o outro. Por fim, abaixo do passaporte: quantos carimbos foram recebidos e quantos faltam para completar a jornada. "Pular" ou Esc encurtam a cena.
 - **Jornada completa:** o carimbo vermelho "Jornada pelos Biomas do Brasil COMPLETA" também é aceito pelo visitante e nunca é carimbado junto dos de bioma. Quando os 7 biomas estão carimbados, a folha pergunta "Você coletou os carimbos de todos os biomas! Deseja carimbar sua jornada como COMPLETA agora?" (Sim / Depois). A cena é a mesma, mas com todos os carimbos entrando em sequência e, após 2 s, o vermelho, com um tremor bem mais forte. Em seguida: "Você carimbou todos os biomas! Você completou sua jornada pelos Biomas do Brasil, parabéns!".
-- **Compartilhar passaporte** gera um PNG da folha (Web Share com arquivo quando o navegador permite; senão baixa o arquivo).
+- **Compartilhar passaporte** gera um JPEG da folha, com no máximo 500 KB (Web Share com arquivo quando o navegador permite; senão baixa o arquivo).
 - **Aceite do carimbo:** vencer o quiz dá direito ao carimbo, que fica pendente até o visitante aceitar. Com carimbos pendentes, a folha recebe um overlay: "Você recebeu o(s) carimbo(s) dos biomas X, Y… Deseja carimbar seu passaporte agora?" com **Sim** (os carimbos entram na folha com animação) e **Depois** (não pergunta de novo nesta sessão).
 - **Armazenamento local:** `biomas:carimbos` = `{ <bioma|completa>: { em: "AAAA-MM-DD", aceito: true|false } }`. Nos biomas, `em` é o dia em que o quiz foi vencido (no `completa`, o dia do último carimbo de bioma), e é essa data que aparece no carimbo, não a do aceite. O progresso de leitura continua em `biomas:prog`; quem já tinha vencido quizzes antes entra como pendente, com a data do quiz.
 - Código compartilhado entre o painel do mapa e as páginas: `src/comum.js` e `src/comum.css`.
@@ -43,7 +43,7 @@ Eixo em mm por mês (comum a todos os biomas), valor em mm sobre cada barra e % 
 ## Ferramentas do mapa
 
 - **Ocultar controles:** botão embaixo à esquerda esconde a coluna de navegação, seleção de biomas, camadas e escala (o título e o painel ficam).
-- **Screenshot:** gera um PNG só com o mapa (e os textos dele), o título e a tagline; embaixo à esquerda, a marca da brchad com o endereço do site. Controles, painel e o texto de ajuda não entram. Usa `html-to-image` (carregado sob demanda do cdnjs).
+- **Screenshot:** gera um JPEG (no máximo 500 KB) só com o mapa (e os textos dele), o título e a tagline; embaixo à esquerda, a marca da brchad com o endereço do site. Controles, painel e o texto de ajuda não entram. Usa `html-to-image` (carregado sob demanda do cdnjs).
 - **Tutorial:** botão no menu de navegação (`/?tutorial` nas outras páginas) abre um overlay que destaca cada recurso, com Anterior e Próximo; mapa e painel ficam inertes enquanto ele está aberto.
 - Visualização padrão: rios e siglas dos estados desligados; o texto de ajuda do mapa quebra em linhas.
 

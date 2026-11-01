@@ -2275,8 +2275,8 @@ function drawFx(dt) {
       ctx.font = `600 ${13 * dpr}px "Instrument Sans", system-ui, sans-serif`; ctx.textBaseline = "middle"; ctx.fillStyle = "#fff";
       ctx.shadowColor = "rgba(0,0,0,.9)"; ctx.shadowBlur = 5 * dpr; ctx.fillText(location.host, m + lw + 10 * dpr, by - lh / 2);
       ctx.shadowBlur = 0;
-      const blob = await new Promise(r => out.toBlob(r, "image/png"));
-      const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "biomas-do-brasil.png"; document.body.appendChild(a); a.click(); a.remove();
+      const blob = await BiomasUI.jpegAte(out, BiomasUI.MAX_IMAGEM);   // JPEG com no máximo 500 KB
+      const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "biomas-do-brasil.jpg"; document.body.appendChild(a); a.click(); a.remove();
       setTimeout(() => URL.revokeObjectURL(a.href), 5000);
       shotLbl.textContent = "Screenshot";
     } catch (e) {

@@ -116,7 +116,7 @@ const BiomasUI = (() => {
   const PAPEL = `<filter id="papel" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency="0.012 0.017" numOctaves="4" seed="7" result="n"/><feDiffuseLighting in="n" surfaceScale="2.4" diffuseConstant="1.12" lighting-color="#fcf7e8" result="l"><feDistantLight azimuth="228" elevation="56"/></feDiffuseLighting><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="3" result="g"/><feColorMatrix in="g" type="matrix" values="0 0 0 0 .25  0 0 0 0 .2  0 0 0 0 .12  .16 0 0 0 0" result="gr"/><feBlend in="gr" in2="l" mode="normal"/></filter><radialGradient id="vig" cx="50%" cy="50%" r="75%"><stop offset="60%" stop-color="#7a5c28" stop-opacity="0"/><stop offset="100%" stop-color="#7a5c28" stop-opacity=".2"/></radialGradient>`;
 
   /* Papel timbrado: nome do site em fonte do site, no canto inferior direito. Medidas em unidades do viewBox da folha. */
-  const TIMBRE = { dir: 14, base: 24, fs: 19, larg: 124, barra: 3.6, folga: 5 };
+  const TIMBRE = { dir: 14, base: 24, fs: 22, larg: 124, barra: 3.6, folga: 5 };
   const BANDEIRA = [["#009c3b", 0], ["#ffdf00", .3333], ["#002776", .6667], ["#fff", 1]];   // mesmo degradê da faixa do painel do Brasil na home
   function timbre(P) {   // o nome do site (na imagem de compartilhar ele é desenhado no canvas, que enxerga a fonte do site)
     const [vx, vy, vw, vh] = P.vb, lx = vx + vw - TIMBRE.dir, ly = vy + vh - TIMBRE.base;
@@ -149,6 +149,19 @@ const BiomasUI = (() => {
   /* P = {vb, d, bio, r, regs: [{id, nome, pos}]}; carimbados = {id: "AAAA-MM-DD" | ""} (só os biomas que passaram no quiz) */
   function folha(P, carimbados) { return wrap("folha", svgFolha(P, carimbados, false)); }
 
+  /* JPEG com no máximo `max` bytes: baixa a qualidade aos poucos e, se ainda passar, reduz as dimensões. O canvas precisa estar opaco (JPEG não tem transparência). */
+  const MAX_IMAGEM = 500000;
+  async function jpegAte(cv, max) {
+    const blob = (c, q) => new Promise(r => c.toBlob(r, "image/jpeg", q));
+    let c = cv, esc = 1;
+    for (let t = 0; t < 8; t++) {
+      for (let q = .92; q >= .5; q -= .06) { const b = await blob(c, q); if (b && b.size <= max) return b; }
+      esc *= .85; const n = document.createElement("canvas"); n.width = Math.round(cv.width * esc); n.height = Math.round(cv.height * esc);
+      const x = n.getContext("2d"); x.imageSmoothingQuality = "high"; x.drawImage(cv, 0, 0, n.width, n.height); c = n;
+    }
+    return blob(c, .5);
+  }
+
   /* Imagem do passaporte para compartilhar: a folha (SVG) sobre fundo escuro, com título e endereço do site. */
   async function imagemPassaporte(P, c) {
     const svg = svgFolha(P, c, true), [, , vw, vh] = P.vb;
@@ -163,19 +176,20 @@ const BiomasUI = (() => {
     {   // papel timbrado (o SVG isolado não enxerga as fontes da página, então ele é desenhado aqui)
       const k = sw / vw, rx = m + sw - TIMBRE.dir * k, by = top + sh - TIMBRE.base * k;
       x.save(); x.fillStyle = "#23241f"; x.textAlign = "right"; x.font = `400 ${TIMBRE.fs * k}px "Instrument Serif", Georgia, serif`;
-      x.fillText("Biomas do Brasil", rx, by, TIMBRE.larg * k);
+      const natural = x.measureText("Biomas do Brasil").width;   // o canvas só encolhe com maxWidth: aqui o texto é ajustado ao comprimento exato da barra, como o textLength do SVG
+      x.translate(rx, by); x.scale(TIMBRE.larg * k / natural, 1); x.fillText("Biomas do Brasil", 0, 0);
       x.restore();
     }
     x.font = '500 30px "Instrument Sans", system-ui, sans-serif'; x.fillStyle = completo ? "#e0675c" : "#b6bba4";
     x.fillText(completo ? "Jornada pelos Biomas do Brasil completa" : `${n} de ${reg.length} biomas carimbados`, m, top + sh + 70);
     x.fillStyle = "#ece6d4"; x.textAlign = "right"; x.fillText(location.host, W - m, top + sh + 70);
     URL.revokeObjectURL(img.src);
-    return new Promise(r => cv.toBlob(r, "image/png"));
+    return jpegAte(cv, MAX_IMAGEM);
   }
   async function compartilhar(P, c, btn) {
     const lbl = btn.textContent; btn.disabled = true; btn.textContent = "Gerando imagem…";
     try {
-      const blob = await imagemPassaporte(P, c), file = new File([blob], "passaporte-biomas-do-brasil.png", { type: "image/png" });
+      const blob = await imagemPassaporte(P, c), file = new File([blob], "passaporte-biomas-do-brasil.jpg", { type: "image/jpeg" });
       const completo = c.completa != null;
       const dados = { files: [file], title: "Meu passaporte dos Biomas do Brasil", text: completo ? "Completei minha jornada pelos Biomas do Brasil!" : "Meu passaporte dos Biomas do Brasil" };
       let enviado = false;
@@ -358,7 +372,7 @@ const BiomasUI = (() => {
     else { const antes = {}; bio.slice(0, 2).forEach(r => { antes[r.id] = todos[r.id]; }); const ids = bio.slice(2, 4).map(r => r.id), depois = { ...antes }; ids.forEach(i => { depois[i] = todos[i]; }); cena(P, "bioma", ids, { antes, depois, anim: A }); }
   }
 
-  return { ANIM_PADRAO, animAtual, demo, simular, graficoChuva, folha, passaporte, carimbos, carimbado, registrarGanho, todosCarimbados: P => { const c = aceitos(); return P.regs.filter(r => r.id !== "brasil").every(r => c[r.id] != null); } };
+  return { jpegAte, MAX_IMAGEM, ANIM_PADRAO, animAtual, demo, simular, graficoChuva, folha, passaporte, carimbos, carimbado, registrarGanho, todosCarimbados: P => { const c = aceitos(); return P.regs.filter(r => r.id !== "brasil").every(r => c[r.id] != null); } };
 })();
 
 /* Interatividade das páginas estáticas: progresso, quiz, vídeos, comparador, passaporte e sugestões. */
