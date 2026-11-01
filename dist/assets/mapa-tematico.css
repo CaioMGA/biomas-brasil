@@ -1,0 +1,57 @@
+/* Mapas temáticos das páginas de bioma (planos). Carregado só nas páginas que têm mapa; independente do HERO MAP. */
+.mt { margin: 22px 0 0; }
+.mt-ctl { display: grid; gap: 12px; font-size: 14px; }
+.mt fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
+.mt legend { padding: 0; margin-bottom: 4px; font: 500 12px var(--body); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.mt-camadas, .mt-filtros { display: flex; flex-wrap: wrap; gap: 6px 16px; }
+.mt-filtros { gap: 12px 24px; }
+.mt-filtro { display: flex; flex-wrap: wrap; gap: 2px 12px; align-items: center; }
+.mt-filtro legend { float: left; margin: 0 8px 0 0; padding: 0; line-height: 1.6; }
+.mt label { display: inline-flex; align-items: center; gap: 6px; min-height: 28px; cursor: pointer; }
+.mt input { accent-color: var(--accent); width: 16px; height: 16px; margin: 0; }
+.mt-vp { position: relative; margin-top: 14px; border: 1px solid var(--rule); background: rgba(255, 255, 255, .03); display: flex; justify-content: center; align-items: center; min-height: 180px; }
+.mt-msg { margin: 0; padding: 40px 16px; font-size: 14px !important; color: var(--muted); }
+.mt-svg { display: block; width: 100%; height: auto; max-height: 78vh; touch-action: pan-y; }
+.mt-limite-fundo { fill: rgba(255, 255, 255, .04); }
+.mt-limite { fill: none; stroke: var(--accent); stroke-width: 2px; vector-effect: non-scaling-stroke; }
+.mt-agua, .mt-leg .mt-agua { fill: rgba(37, 163, 186, .55); stroke: none; }
+.mt-rio { fill: none; stroke: #7fd3e6; stroke-width: 1.1px; stroke-linecap: round; stroke-linejoin: round; }
+.mt-rio[data-navegavel="sim"] { stroke-width: 2px; }
+.mt-uc { stroke-width: 1.2px; }
+.mt-uc-PI { stroke: #e3b341; fill: rgba(227, 179, 65, .22); }
+.mt-uc-US { stroke: #e3b341; fill: rgba(227, 179, 65, .10); stroke-dasharray: 5 3; }
+.mt-hach-bg { fill: rgba(227, 179, 65, .10); }
+.mt-hach-ln { stroke: #e3b341; stroke-width: 2.2; }
+.mt-uc.mt-sel { stroke-width: 3px; stroke: #fff; }
+.mt-uc, .mt-pin { cursor: pointer; }
+.mt-pt { stroke: #0b100c; stroke-width: 1.5px; }
+.mt-pt-cid, .mt-pt-cid * { fill: #ece6d4; }
+.mt-pt-indigena { fill: #ef8a62; stroke: #0b100c; stroke-width: 1.2px; }
+.mt-pt-quilombola { fill: #b88be0; stroke: #0b100c; stroke-width: 1.2px; }
+.mt-pin.mt-sel .mt-pt { stroke: #fff; stroke-width: 2.5px; }
+.mt-rot { font: 500 12px var(--body); fill: var(--ink); paint-order: stroke; stroke: #0b100c; stroke-width: 3.5px; stroke-linejoin: round; pointer-events: none; }
+.mt-rot-rio { font-style: italic; fill: #bfeaf4; }
+.mt-leg { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 10px; font-size: 13px; color: var(--muted); }
+.mt-li { display: inline-flex; align-items: center; gap: 6px; }
+.mt-info { min-height: 3.2em; margin: 10px 0 0 !important; padding: 8px 12px; font-size: 15px !important; line-height: 1.45 !important; border-left: 3px solid var(--accent); background: rgba(255, 255, 255, .04); }
+.mt-det { margin-top: 14px; border-top: 1px solid var(--rule); padding-top: 10px; }
+.mt-det summary { cursor: pointer; font-weight: 500; }
+.mt-det h4 { margin: 14px 0 4px; font: 500 12px var(--body); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.mt-fonte { margin: 6px 0 0; padding-left: 18px; font-size: 14px; line-height: 1.5; color: var(--muted); }
+.mt-fonte li { margin-top: 4px; }
+.mt-fonte b { color: var(--ink); font-weight: 500; }
+.mt-tw { overflow-x: auto; margin-top: 8px; }
+.mt-tab { border-collapse: collapse; width: 100%; font-size: 14px; }
+.mt-tab th, .mt-tab td { padding: 6px 10px; border-bottom: 1px solid var(--rule); text-align: left; vertical-align: top; }
+.mt-tab thead th { font: 500 12px var(--body); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+.mt-tab tbody th { font-weight: 500; min-width: 180px; }
+.mt-tab .n { text-align: right; font-variant-numeric: tabular-nums; }
+.mt-lnk { all: unset; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--rule); }
+.mt-lnk:hover { text-decoration-color: var(--accent); }
+.mt-lnk:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+@media (max-width: 860px) {
+  .mt-svg { max-height: 70vh; }
+  .mt label { min-height: 36px; }
+  .mt input { width: 20px; height: 20px; }
+}
+@media (forced-colors: active) { .mt-uc-PI, .mt-uc-US { stroke: CanvasText; } .mt-limite { stroke: CanvasText; } }
