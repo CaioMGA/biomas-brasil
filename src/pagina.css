@@ -58,12 +58,14 @@ a { color: inherit; }
 .car-ctl button:disabled { opacity: .35; cursor: default; }
 .car-track { display: flex; margin: 0; padding: 0; list-style: none; overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; scrollbar-width: thin; }
 .car-slide { flex: 0 0 100%; min-width: 0; scroll-snap-align: start; }
+/* a foto fica DENTRO do cartão da espécie: encostada no topo e na lateral, com o crédito logo abaixo e o texto depois */
+.car-card { padding: 0; overflow: hidden; }
 .car-fig { margin: 0; }
 .car-fig img { display: block; width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: cover; background: rgba(255,255,255,.05); }
-.car-fig figcaption { margin-top: 6px; font-size: 12px; color: var(--muted); }
+.car-fig figcaption { padding: 6px 16px 0; font-size: 12px; line-height: 1.4; color: var(--muted); }
 .car-fig figcaption a { text-decoration: underline; text-underline-offset: 2px; }
-.car-sem div { display: grid; place-items: center; aspect-ratio: 3 / 2; padding: 16px; text-align: center; font-size: 14px; color: var(--muted); border: 1px dashed var(--rule); }
-.car-slide .sp { margin-top: 10px; }
+.car-sem div { display: grid; place-items: center; aspect-ratio: 3 / 2; padding: 16px; text-align: center; font-size: 14px; color: var(--muted); background: rgba(255,255,255,.03); }
+.car-txt { padding: 12px 16px 16px; }
 @media (prefers-reduced-motion: reduce) { .car-track { scroll-behavior: auto; } }
 .vid-grid { display: grid; gap: 18px; margin-top: 18px; }
 .vid { margin: 0; }
