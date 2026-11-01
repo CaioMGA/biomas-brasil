@@ -433,9 +433,9 @@ body.lab-rios .rl:not(.gl) { pointer-events: auto; cursor: pointer; }
   let target = 0.03, ms = 0.03, shown = 0, last = performance.now(), waiters = [], done = false;
   const draw = () => { line.style.strokeDashoffset = glow.style.strokeDashoffset = String(1 - shown); };
   draw();
-  // Cometa: uma linha fina com cauda em degradê percorre o contorno a cada 4 s, em loop e a velocidade constante, puxada por um ponto branco.
+  // Cometa: uma linha fina com cauda em degradê percorre o contorno a cada 8 s, em loop e a velocidade constante, puxada por um ponto branco.
   // O traçado do progresso é desenhado por cima. Ao chegar a 100% o cometa para.
-  const LAP = 4000, NSEG = 24, TAIL = .2, SEG = TAIL / NSEG, trail = document.getElementById("ldTrail"), NS = "http://www.w3.org/2000/svg", segs = [];
+  const LAP = 8000, NSEG = 24, TAIL = .2, SEG = TAIL / NSEG, trail = document.getElementById("ldTrail"), NS = "http://www.w3.org/2000/svg", segs = [];
   for (let k = 0; k < NSEG; k++) {
     const u = document.createElementNS(NS, "use"); u.setAttribute("href", "#ldBase");
     u.style.strokeDasharray = `${SEG} ${1 - SEG}`; u.style.opacity = String(Math.pow(1 - k / NSEG, 1.7) * .9);
