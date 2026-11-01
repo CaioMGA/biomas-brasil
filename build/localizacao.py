@@ -1,4 +1,4 @@
-"""Mapa de localização (América do Sul): oceano, continente, Brasil em destaque com os estados contornados e o bioma contornado.
+"""Mapa de localização (América do Sul): oceano, continente (uma cor só), Brasil e estados contornados e o bioma contornado.
 
 Dois passos, ambos fora do build do site:
   python3 -I build/localizacao.py contexto <pasta com ne_10m_admin_0_countries/ e ne_10m_admin_1_states_provinces/>
@@ -70,13 +70,13 @@ def figura(root, id, nome):
     terra = cam([r for p in resto for r in p["rings"]]); brasil = cam([r for p in br for r in p["rings"]])
     estados = cam(ctx["estados"]); biom = cam(b["rings"])
     paises = b["paises"]; lista = ", ".join(paises[:-1]) + " e " + paises[-1] if len(paises) > 1 else (paises[0] if paises else "")
-    desc = f"Mapa da América do Sul: o território brasileiro em destaque, com os estados contornados, e o {nome} contornado e pintado na cor de destaque"
+    desc = f"Mapa da América do Sul: o Brasil e seus estados contornados, e o {nome} contornado e pintado na cor de destaque"
     desc += f", ocupando partes de {lista}." if len(paises) > 1 else "."
     cap = f"Localização do {E(nome)} na América do Sul" + (f": o bioma se estende por {E(lista)}." if len(paises) > 1 else ".")
     return (f'<figure class="loc"><svg viewBox="0 0 {P.w} {P.h}" role="img" aria-label="{E(desc)}" preserveAspectRatio="xMidYMid meet">'
             f'<rect class="loc-mar" width="{P.w}" height="{P.h}"/><path class="loc-terra" d="{terra}"/><path class="loc-br" d="{brasil}"/>'
             f'<path class="loc-uf" d="{estados}"/><path class="loc-br-borda" d="{brasil}"/><path class="loc-bioma" d="{biom}"/></svg>'
-            f'<figcaption>{cap}<span class="loc-leg"><i class="loc-sw loc-sw-bioma"></i>{E(nome)}<i class="loc-sw loc-sw-br"></i>Brasil (com os estados)</span></figcaption></figure>')
+            f'<figcaption>{cap}<span class="loc-leg"><i class="loc-sw loc-sw-bioma"></i>{E(nome)}<i class="loc-sw loc-sw-br"></i>Brasil e seus estados (contornos)</span></figcaption></figure>')
 
 
 if __name__ == "__main__":

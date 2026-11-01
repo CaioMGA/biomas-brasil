@@ -50,20 +50,20 @@ a { color: inherit; }
 .sp h3 small { margin-left: 8px; font: 500 11px var(--body); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
 .sp em { display: block; margin: 2px 0 6px; font-size: 14px; color: var(--muted); }
 .sp p { margin: 0; font-size: 16px; line-height: 1.55; }
-/* Mapa de localização (América do Sul): oceano azul, continente amarelo (Brasil em amarelo mais forte, com os estados contornados), bioma na cor de destaque */
+/* Mapa de localização (América do Sul): oceano azul, continente amarelo (uma cor só, Brasil incluído; só os contornos o destacam), bioma na cor de destaque */
 .loc { margin: 22px 0 0; display: flex; gap: 20px; align-items: center; }
 .loc svg { flex: none; display: block; height: min(380px, 60vh); width: auto; max-width: 48%; border: 1px solid var(--rule); }
 .loc-mar { fill: #a9d1ec; }
 .loc-terra { fill: #efe29d; stroke: #8c8c8c; stroke-width: .5px; vector-effect: non-scaling-stroke; stroke-linejoin: round; }
-.loc-br { fill: #f6cf3f; }
+.loc-br { fill: #efe29d; }
 .loc-uf { fill: none; stroke: #8c8c8c; stroke-width: .5px; vector-effect: non-scaling-stroke; stroke-linejoin: round; }
-.loc-br-borda { fill: none; stroke: #8c8c8c; stroke-width: .6px; vector-effect: non-scaling-stroke; stroke-linejoin: round; }
+.loc-br-borda { fill: none; stroke: #6f6f6f; stroke-width: .9px; vector-effect: non-scaling-stroke; stroke-linejoin: round; }
 .loc-bioma { fill: var(--accent); stroke: #8c8c8c; stroke-width: .6px; vector-effect: non-scaling-stroke; stroke-linejoin: round; }
 .loc figcaption { display: grid; gap: 12px; font-size: 15px; line-height: 1.5; color: var(--muted); }
 .loc-leg { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; }
 .loc-sw { display: inline-block; width: 14px; height: 14px; margin-right: 6px; vertical-align: -2px; border: 1px solid #8c8c8c; }
 .loc-sw-bioma { background: var(--accent); }
-.loc-sw-br { background: #f6cf3f; }
+.loc-sw-br { background: #efe29d; border: 1.5px solid #6f6f6f; }
 @media (max-width: 700px) { .loc { flex-direction: column; align-items: flex-start; } .loc svg { height: 320px; max-width: 100%; } }
 
 /* Vista aérea do bioma no topo da página */
