@@ -47,17 +47,18 @@ def contexto(raw, root):
 
 
 def bioma(id, root):
-    from mapas_dados import dp_ring, inside
+    from mapas_dados import dp, dp_ring, inside
     ctx = json.load(open(os.path.join(root, "data", "localizacao", "america-do-sul.json"), encoding="utf-8"))
     m = json.load(open(os.path.join(root, "data", "mapas", id + ".json"), encoding="utf-8"))
     aneis = mapas.aneis(m["limite"])
     simp = [q for q in (dp_ring([tuple(p) for p in r], .03) for r in aneis) if q]
+    contorno = [[[round(x, 2), round(y, 2)] for x, y in l] for l in (dp([tuple(p) for p in l], .03) for l in m.get("limite_contorno", [])) if len(l) > 1]   # contorno externo, quando o limite vem de várias peças
     amostra = [p for r in simp for p in r[::max(1, len(r) // 40)]]
     tocados = [p["nome"] for p in ctx["paises"] if any(inside(pt, [tuple(v) for v in r]) for pt in amostra for r in p["rings"])]
     out = os.path.join(root, "data", "localizacao", id + ".json")
     fontes = m.get("fontes", {}); f = fontes.get(m.get("limite_fonte", "resolve")) or next(iter(fontes.values()), {})   # fonte do limite do bioma
     fonte = {"nome": f.get("titulo", "").split(" (")[0].split(", ")[0], "url": f.get("url", ""), "licenca": f.get("licenca", "")}
-    json.dump({"rings": [[[round(x, 2), round(y, 2)] for x, y in r] for r in simp], "paises": sorted(set(tocados)), "fonte": fonte}, open(out, "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"))
+    json.dump({"rings": [[[round(x, 2), round(y, 2)] for x, y in r] for r in simp], "contorno": contorno, "paises": sorted(set(tocados)), "fonte": fonte}, open(out, "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"))
     print(out, os.path.getsize(out) // 1024, "KB; países:", sorted(set(tocados)))
 
 
@@ -71,6 +72,7 @@ def figura(root, id, nome):
     cam = lambda aneis: mapas.caminho(P, aneis, True)
     terra = cam([r for p in resto for r in p["rings"]]); brasil = cam([r for p in br for r in p["rings"]])
     estados = cam(ctx["estados"]); biom = cam(b["rings"])
+    borda = mapas.caminho(P, b["contorno"], False) if b.get("contorno") else biom   # só o contorno externo, sem as divisas internas entre peças do bioma
     paises = b["paises"]; lista = ", ".join(paises[:-1]) + " e " + paises[-1] if len(paises) > 1 else (paises[0] if paises else "")
     desc = f"Mapa da América do Sul: o Brasil e seus estados contornados, e o {nome} contornado e pintado na cor de destaque"
     desc += f", ocupando partes de {lista}." if len(paises) > 1 else "."
@@ -82,7 +84,7 @@ def figura(root, id, nome):
     S = max(P.w, P.h); vx, vy = -(S - P.w) // 2, -(S - P.h) // 2   # moldura quadrada: o continente fica centralizado, com oceano nas sobras
     return (f'<figure class="loc"><div class="loc-mapa"><svg viewBox="{vx} {vy} {S} {S}" role="img" aria-label="{E(desc)}" preserveAspectRatio="xMidYMid meet">'
             f'<rect class="loc-mar" x="{vx}" y="{vy}" width="{S}" height="{S}"/><path class="loc-terra" d="{terra}"/><path class="loc-br" d="{brasil}"/>'
-            f'<path class="loc-uf" d="{estados}"/><path class="loc-br-borda" d="{brasil}"/><path class="loc-bioma" d="{biom}"/></svg>'
+            f'<path class="loc-uf" d="{estados}"/><path class="loc-br-borda" d="{brasil}"/><path class="loc-bioma" d="{biom}"/><path class="loc-bioma-borda" d="{borda}"/></svg>'
             f'<p class="loc-mini">{E(nome)} em destaque na América do Sul</p></div>'
             f'<figcaption>{cap}{fonte}<span class="loc-leg"><i class="loc-sw loc-sw-bioma"></i>{E(nome)}</span></figcaption></figure>')
 

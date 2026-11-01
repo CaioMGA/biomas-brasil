@@ -104,6 +104,46 @@ def toca_caixa(geom, box):
     return not (max(xs) < box[0] or min(xs) > box[2] or max(ys) < box[1] or min(ys) > box[3])
 
 
+class Mascara:
+    """Máscara raster (PIL) de um conjunto de anéis: testes de "dentro" em O(1), para regiões grandes (centenas de milhares de vértices)."""
+    def __init__(self, aneis, bbox, res=0.01):
+        from PIL import Image, ImageDraw
+        self.x0, self.y1, self.res = bbox[0], bbox[3], res
+        self.w, self.h = int((bbox[2] - bbox[0]) / res) + 1, int((bbox[3] - bbox[1]) / res) + 1
+        self.im = Image.new("1", (self.w, self.h), 0); d = ImageDraw.Draw(self.im)
+        for r in aneis: d.polygon([((x - self.x0) / res, (self.y1 - y) / res) for x, y in r], fill=1)
+        self.px = self.im.load()
+
+    def __call__(self, lon, lat):
+        i, j = int((lon - self.x0) / self.res), int((self.y1 - lat) / self.res)
+        return 0 <= i < self.w and 0 <= j < self.h and bool(self.px[i, j])
+
+    def perto(self, lon, lat, r=0.1, n=8):
+        """Dentro ou a até `r` graus de distância (amostra n direções)."""
+        return self(lon, lat) or any(self(lon + r * math.cos(a * 2 * math.pi / n), lat + r * math.sin(a * 2 * math.pi / n)) for a in range(n))
+
+
+def contorno_externo(aneis, mask, folga=0.03, passo=0.05):
+    """Linhas abertas com só as bordas EXTERNAS de peças vizinhas (as divisas internas entre elas são descartadas).
+    Cada aresta é dividida em pedaços de ~`passo` graus; o pedaço é externo se um lado, a `folga` de distância, está fora da máscara."""
+    linhas = []
+    for ring in aneis:
+        atual = []
+        for a, b in zip(ring, ring[1:] + ring[:1]):
+            dx, dy = b[0] - a[0], b[1] - a[1]; L = math.hypot(dx, dy) or 1e-9; n = max(1, int(L / passo))
+            nx, ny = -dy / L, dx / L
+            for k in range(n):
+                p, q = (a[0] + dx * k / n, a[1] + dy * k / n), (a[0] + dx * (k + 1) / n, a[1] + dy * (k + 1) / n)
+                mx, my = (p[0] + q[0]) / 2, (p[1] + q[1]) / 2
+                externo = mask(mx + nx * folga, my + ny * folga) != mask(mx - nx * folga, my - ny * folga)
+                if externo:
+                    if not atual: atual.append(p)
+                    atual.append(q)
+                elif atual: linhas.append(atual); atual = []
+        if atual: linhas.append(atual)
+    return [l for l in linhas if len(l) > 1]
+
+
 if __name__ == "__main__":
     raw, id_ = sys.argv[1], sys.argv[2]
     root = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
