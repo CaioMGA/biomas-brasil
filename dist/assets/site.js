@@ -402,13 +402,14 @@ const BiomasUI = (() => {
   const setProg = (id, fn) => { const all = store.get("prog", {}); const p = all[id] || { lidas: [], quiz: null }; fn(p); all[id] = p; store.set("prog", all); };
   const fmt = n => n.toLocaleString("pt-BR");
   const regioes = D ? D.regioes : [];
-  const lida = r => getProg(r.id).lidas.length >= r.secoes;
+  const nLidas = id => getProg(id).lidas.filter(s => s !== "mapa").length;   // o mapa temático não conta como seção lida
+  const lida = r => nLidas(r.id) >= r.secoes;
 
   function estado(r) {
     const pr = getProg(r.id);
     const cs = BiomasUI.carimbos(); if (cs[r.id]) return cs[r.id].aceito ? "\u2713 Carimbado" : "Carimbo a receber";   // ✓ só quando o carimbo já foi aceito
     if (lida(r)) return "Lido";
-    return pr.lidas.length ? `${pr.lidas.length} de ${r.secoes} seções` : "";
+    return nLidas(r.id) ? `${nLidas(r.id)} de ${r.secoes} seções` : "";
   }
   function cartao(r) {
     const li = el("li"); const a = el("a", { class: "card" + (lida(r) ? " lido" : ""), href: r.url, style: `--col:${r.cor}` });

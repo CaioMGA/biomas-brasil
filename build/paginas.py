@@ -4,6 +4,7 @@ Chamado por build.py: gerar(root, dest_dir, br_path, brchad_uri). Plano em docs/
 import html, json, os, re, shutil, subprocess, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from loader_path import brasil_path
+import mapas
 
 E = html.escape
 WPM, VIDEO_MIN, SPECIES_MIN, QUIZ_MIN = 200, 5, 2.5, 2
@@ -96,9 +97,11 @@ def biomas_do_template(root):
     return json.loads(subprocess.run(["node", "-e", js], capture_output=True, text=True, check=True).stdout)
 
 
-def plano(id, c):
+def plano(id, c, mapa=False):
     """Seções da página, na mesma ordem e com os mesmos minutos do antigo modo leitura."""
     p = [{"id": s["id"], "titulo": s["titulo"], "min": rmin(words(s["p"])), "kind": "texto", "s": s} for s in c.get("secoes", [])]
+    if mapa and p:   # mapa temático (plano, com camadas e filtros) logo depois da primeira seção; só existe se houver data/mapas/<id>.json
+        p.insert(1, {"id": "mapa", "titulo": "Mapa temático", "min": 2, "kind": "mapa"})
     if c.get("especies"):
         p.append({"id": "especies", "titulo": "Fichas de espécies", "kind": "especies",
                   "min": rmin(len(c["especies"]) / 8 * SPECIES_MIN + words([e["d"] for e in c["especies"]]) * .6)})
@@ -131,7 +134,8 @@ class Site:
         for b in self.B:   # textos do painel (estados, clima, vegetação…) vêm dos JSONs
             b.update(self.C.get(b["id"], {}).get("painel", {}))
         self.outl = json.load(open(os.path.join(root, "data/outlines.json")))
-        self.plan = {i: plano(i, self.C[i]) for i in self.C}
+        self.mapas = {i: m for i, m in ((i, mapas.carregar(root, i)) for i in self.C) if m}   # mapas temáticos por bioma (opcional)
+        self.plan = {i: plano(i, self.C[i], i in self.mapas) for i in self.C}
         self.total = {i: sum(s["min"] for s in p) for i, p in self.plan.items()}
         self.regioes = [self.regiao(i) for i in ["brasil"] + ORDEM if i in self.C]
         self.P = passaporte(root, br_path)
@@ -148,7 +152,7 @@ class Site:
 
     def regiao(self, id):
         return {"id": id, "nome": self.nome(id), "intro": self.C[id].get("intro", ""), "min": self.total[id],
-                "secoes": sum(1 for x in self.plan[id] if x["kind"] != "quiz"),   # o quiz não conta como seção lida
+                "secoes": sum(1 for x in self.plan[id] if x["kind"] not in ("quiz", "mapa")),   # o quiz e o mapa não contam como seção lida (quem já leu o bioma continua com "lido")
                 "url": self.url(id), "cor": self.cor(id)}
 
     def silhueta(self, id):
@@ -169,7 +173,7 @@ class Site:
         return f'<svg viewBox="{x0 - pad:.0f} {y0 - pad:.0f} {x1 - x0 + 2 * pad:.0f} {y1 - y0 + 2 * pad:.0f}" aria-hidden="true" preserveAspectRatio="xMidYMid meet"><path d="{d}"/></svg>'
 
     # ---- peças de HTML ----
-    def casca(self, titulo, descricao, corpo, ativo, accent="var(--ink)", dados=None, extra_body=""):
+    def casca(self, titulo, descricao, corpo, ativo, accent="var(--ink)", dados=None, extra_body="", extra_head=""):
         nav = "".join(f'<a class="nav" href="{h}"{" aria-current=\"page\"" if k == ativo else ""}>{t}</a>'
                       for k, h, t in [("mapa", "/", "Mapa"), ("biomas", "/biomas/", "Biomas"), ("sobre", "/sobre/", "Sobre"), ("tutorial", "/?tutorial", "Tutorial")])
         js = f'<script id="dados" type="application/json">{json.dumps(dados, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")}</script>\n' if dados else ""
@@ -185,12 +189,12 @@ class Site:
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/site.css">
-</head>
+{extra_head}</head>
 <body style="--accent:{accent}">
 <header class="topo"><a class="marca" href="/">Biomas do Brasil{BARRA_MARCA}</a>{nav}</header>
 {corpo}
 {js}<script src="/assets/site.js"></script>
-</body>
+{extra_body}</body>
 </html>
 """
 
@@ -256,6 +260,8 @@ class Site:
             corpo += '<ul class="tl">' + "".join(f"<li><b>{E(g['a'])}</b>{E(g['t'])}</li>" for g in c["linha"]) + "</ul>"
         elif k == "quiz":
             corpo += '<div id="quiz" class="quiz"></div>'
+        elif k == "mapa":
+            corpo += mapas.secao_html(self.mapas[id], self.nome(id))
         elif k == "creditos":
             corpo += self.creditos(id)
         if k == "creditos":   # dobrável, começa fechado; o sentinela de leitura fica fora do bloco para continuar visível quando ele está fechado
@@ -287,7 +293,9 @@ class Site:
         if id == "brasil":
             dados["bio"] = [{k: b.get(k) for k in ("id", "name", "km", "pct", "sp", "climate", "veg", "states", "spp")} for b in self.B]
         desc = c.get("intro", "") or f"{nome}: conteúdo do site Biomas do Brasil."
-        return self.casca(f"{nome} — Biomas do Brasil", desc, corpo, "biomas" if id != "brasil" else "biomas", self.cor(id), dados)
+        mt = id in self.mapas   # só as páginas com mapa carregam o CSS/JS dele
+        return self.casca(f"{nome} — Biomas do Brasil", desc, corpo, "biomas" if id != "brasil" else "biomas", self.cor(id), dados,
+                          extra_body='<script src="/assets/mapa-tematico.js" defer></script>\n' if mt else "", extra_head='<link rel="stylesheet" href="/assets/mapa-tematico.css">\n' if mt else "")
 
     def cartao(self, r):
         return (f'<li><a class="card" href="{r["url"]}" data-id="{r["id"]}" style="--col:{r["cor"]}">{self.silhueta(r["id"])}'
@@ -396,6 +404,12 @@ class Site:
         rd = lambda f: open(os.path.join(self.root, f), encoding="utf-8").read()
         open(os.path.join(self.dest, "assets/site.css"), "w", encoding="utf-8").write(rd("src/pagina.css") + "\n" + rd("src/comum.css"))
         open(os.path.join(self.dest, "assets/site.js"), "w", encoding="utf-8").write(rd("src/comum.js") + "\n" + rd("src/pagina.js"))
+        if self.mapas:   # mapas temáticos: CSS/JS próprios (nada disso entra no HERO MAP) e um JSON por bioma, carregado sob demanda
+            os.makedirs(os.path.join(self.dest, "assets/mapas"), exist_ok=True)
+            for f in ("mapa-tematico.css", "mapa-tematico.js"):
+                shutil.copy(os.path.join(self.root, "src", f), os.path.join(self.dest, "assets", f))
+            for i, m in self.mapas.items():
+                open(os.path.join(self.dest, f"assets/mapas/{i}.json"), "w", encoding="utf-8").write(json.dumps(mapas.dados_cliente(m), ensure_ascii=False, separators=(",", ":")))
         if not publish:
             shutil.copy(os.path.join(self.root, "src/lab-carimbo.js"), os.path.join(self.dest, "assets/lab-carimbo.js"))
         for src, dst in (("data/icon.svg", "assets/icon.svg"), ("brchad-2026.png", "assets/brchad.png")):
