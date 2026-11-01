@@ -318,6 +318,7 @@ html.boot, html.boot body { overflow: hidden; }
 .brchad { display: block; width: 80px; height: 15px; }
 #loader .brfoot { margin: 0; }
 #loader .brfoot span { font: 500 12px/1 system-ui, -apple-system, "Segoe UI", sans-serif; letter-spacing: .12em; color: #cfd3bf; }
+#loader .pct { fill: #f6ecc8; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-weight: 300; font-variant-numeric: tabular-nums; letter-spacing: .02em; paint-order: stroke; stroke: rgba(0,0,0,.55); stroke-width: 3px; }
 #loader .msg { font: 500 13px/1 system-ui, -apple-system, "Segoe UI", sans-serif; letter-spacing: .28em; text-transform: uppercase; color: #cfd3bf; transition: opacity .3s ease; }
 #loader.filled .fill { fill-opacity: .75; }
 #loader.pop svg { animation: ldpop .38s cubic-bezier(.2,.7,.3,1) forwards; }
@@ -407,6 +408,7 @@ body.lab-rios .rl:not(.gl) { pointer-events: auto; cursor: pointer; }
     <path class="glow" d="__BRD__"/>
     <path class="line" id="ldLine" d="__BRD__" pathLength="1"/>
     <circle class="head" id="ldHead" r="3.6" cx="0" cy="0" opacity="0"/>
+    <text class="pct" id="ldPct" x="__BRCX__" y="__BRCY__" text-anchor="middle" dominant-baseline="central" font-size="__BRFS__">0%</text>
   </svg>
   <div class="msg">Carregando</div>
   <div class="brfoot"><span>Site criado por Caio Amaral</span><img class="brchad" src="__BRCHAD__" width="80" height="15" alt="brchad 2026"></div>
@@ -420,26 +422,31 @@ body.lab-rios .rl:not(.gl) { pointer-events: auto; cursor: pointer; }
     const l = document.getElementById("loader"); if (l) l.remove(); return;
   }
   const line = document.getElementById("ldLine"), glow = document.querySelector("#loader .glow"), head = document.getElementById("ldHead");
-  const DRAW = 4600, MIN = 5000;   // o contorno é desenhado uma única vez (4,6 s) e o loader fica pelo menos 5 s
-  const total = line.getTotalLength ? line.getTotalLength() : 1;   // pathLength=1 normaliza só o traço; o brilho usa o comprimento real
-  const kf = [{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }];
-  const opt = { duration: DRAW, iterations: 1, fill: "forwards", easing: "cubic-bezier(.45,.1,.55,.9)" };
+  // O traçado acompanha o progresso real do carregamento (marcos informados por init3d via __ld.set); a porcentagem fica no centro do mapa
+  const pct = document.getElementById("ldPct"), total = line.getTotalLength ? line.getTotalLength() : 1;
   line.style.strokeDasharray = "1 1"; glow.setAttribute("pathLength", "1"); glow.style.strokeDasharray = "1 1";
-  line.style.strokeDashoffset = "1"; glow.style.strokeDashoffset = "1";
-  const anim = line.animate(kf, opt), ga = glow.animate(kf, opt);
-  function tick() {
-    const done = anim.playState === "finished";
-    if (!done) {
-      const off = parseFloat(getComputedStyle(line).strokeDashoffset);
-      const pt = line.getPointAtLength(Math.min(1, Math.max(0, 1 - off)) * total);
-      head.setAttribute("cx", pt.x); head.setAttribute("cy", pt.y); head.setAttribute("opacity", "1");
-      window.__ldRaf = requestAnimationFrame(tick);
-    } else head.setAttribute("opacity", "0");
+  let target = 0.03, ms = 0.03, shown = 0, last = performance.now(), waiters = [], done = false;
+  const draw = () => { line.style.strokeDashoffset = glow.style.strokeDashoffset = String(1 - shown); };
+  draw();
+  function tick(now) {
+    const dt = Math.min(.1, (now - last) / 1000); last = now;
+    if (target < Math.min(.95, ms + .07)) target = Math.min(Math.min(.95, ms + .07), target + dt * .012);   // entre um marco e o próximo o traçado nunca fica parado
+    if (shown < target) shown = Math.min(target, shown + Math.max((target - shown) * (1 - Math.exp(-dt * 5)), dt * .3));   // sobe suave, sem nunca ficar parado
+    draw();
+    if (shown >= 1) {   // 100%: o número some na hora
+      pct.style.display = "none"; head.setAttribute("opacity", "0"); done = true;
+      waiters.splice(0).forEach(cb => setTimeout(cb, 30)); return;
+    }
+    pct.textContent = Math.floor(shown * 100) + "%";
+    const pt = line.getPointAtLength(shown * total);
+    head.setAttribute("cx", pt.x); head.setAttribute("cy", pt.y); head.setAttribute("opacity", shown > 0 ? "1" : "0");
+    window.__ldRaf = requestAnimationFrame(tick);
   }
-  tick();
-  window.__ld = { anim, ga, line, glow, head, t0: performance.now(),
-    // espera o desenho terminar e os 5 s mínimos
-    whenDrawn(cb) { setTimeout(cb, Math.max(0, MIN - (performance.now() - this.t0)) + 30); }
+  window.__ldRaf = requestAnimationFrame(tick);
+  const noop = { cancel() {} };
+  window.__ld = { anim: noop, ga: noop, line, glow, head, t0: performance.now(),
+    set(f) { f = Math.min(1, f); ms = Math.max(ms, f); target = Math.max(target, f); },   // marco de progresso (0 a 1)
+    whenDrawn(cb) { if (done) setTimeout(cb, 30); else { this.set(1); waiters.push(cb); } }   // chamado no fim: completa e espera chegar a 100%
   };
 })();
 </script>
@@ -514,8 +521,9 @@ body.lab-rios .rl:not(.gl) { pointer-events: auto; cursor: pointer; }
   <p id="lrMsg" class="labhelp"></p>
 </aside>
 <!--LAB:HTML-END-->
-<script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js" onload="window.__ld&&__ld.set(.08)"></script>
 <script>
+if (window.__ld) window.__ld.set(.1);   // three.js carregado e o script principal começou
 const MAPW = __W__, MAPH = __H__;
 const CENT = __CENT__;
 const DEM_URI = "__DEM__";
@@ -1378,19 +1386,25 @@ function pixels(img) { const c = document.createElement("canvas"); c.width = img
 
 async function init3d() {
   if (!window.THREE) throw new Error("three.js indisponível");
+  const ldp = f => { if (window.__ld) window.__ld.set(f); }, yieldUI = () => new Promise(r => requestAnimationFrame(() => setTimeout(r, 0)));   // marcos do loading; o yield deixa o traçado repintar
+  ldp(.12); await yieldUI();
   const [demImg, idsImg] = await Promise.all([loadImg(DEM_URI), loadImg(IDS_URI)]);
+  ldp(.2); await yieldUI();
   const dem = pixels(demImg), ids = pixels(idsImg);
+  ldp(.26); await yieldUI();
   const DW = dem.width, DH = dem.height, IW = ids.width, IH = ids.height;
 
   // Elevação (km) em half float, e ids dos biomas (0 = fora do Brasil)
   const half = new Uint16Array(DW * DH);
   for (let i = 0; i < DW * DH; i++) half[i] = THREE.DataUtils.toHalfFloat(((dem.data[i * 4] * 256 + dem.data[i * 4 + 1]) / 6 - 6000) / 1000);
   const hTex = new THREE.DataTexture(half, DW, DH, THREE.RedFormat, THREE.HalfFloatType);
+  ldp(.32); await yieldUI();
   hTex.internalFormat = "R16F"; hTex.unpackAlignment = 1; hTex.minFilter = hTex.magFilter = THREE.LinearFilter; hTex.needsUpdate = true;
   const idArr = new Uint8Array(IW * IH);   // 0 fora; 1-7 Brasil e mar; 11-16 extensão do bioma n fora do Brasil
   for (let i = 0; i < IW * IH; i++) idArr[i] = Math.round(ids.data[i * 4] / 15);
   const iTex = new THREE.DataTexture(idArr, IW, IH, THREE.RedFormat, THREE.UnsignedByteType);
   iTex.internalFormat = "R8"; iTex.unpackAlignment = 1; iTex.minFilter = iTex.magFilter = THREE.NearestFilter; iTex.needsUpdate = true;
+  ldp(.4); await yieldUI();
 
   // Máscara suave de um bioma (para levantar o terreno sem serrilhado)
   const MW = 548, MH = Math.round(MW * IH / IW), BS = IW / MW;
@@ -1414,8 +1428,10 @@ async function init3d() {
     const t = new THREE.DataTexture(u8, MW, MH, THREE.RedFormat, THREE.UnsignedByteType);
     t.internalFormat = "R8"; t.unpackAlignment = 1; t.minFilter = t.magFilter = THREE.LinearFilter; t.needsUpdate = true; return t;
   }
-  const masks = [null, ...B.map(b => maskTex(b.n))];
+  const masks = [null];
+  for (let i = 0; i < B.length; i++) { masks.push(maskTex(B[i].n)); ldp(.4 + .4 * (i + 1) / B.length); await yieldUI(); }   // a parte mais pesada: um marco por bioma
   const emptyMask = maskTex(0);
+  ldp(.85); await yieldUI();
 
   // Sombra projetada no "chão": silhueta do país desfocada
   const sil = new Float32Array(MW * MH); for (let y = 0; y < MH; y++) for (let x = 0; x < MW; x++) { const q = idArr[Math.floor(y * BS) * IW + Math.floor(x * BS)]; sil[y * MW + x] = q && q <= 8 ? 1 : 0; }
@@ -2116,6 +2132,7 @@ async function init3d() {
   }
   requestAnimationFrame(frame);
   gl3 = true;
+  ldp(.97);
   onSelect(current);  // aplica a seleção que veio do #hash antes do 3D carregar
   requestAnimationFrame(() => requestAnimationFrame(() => revealSite()));   // 1º quadro já renderizado: pode revelar
 }

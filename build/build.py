@@ -52,6 +52,7 @@ rep = {
     "__ICONSVG__": "data:image/svg+xml," + urllib.parse.quote(_svg, safe="/:=,;"),
     "__ICONPNG__": "data:image/png;base64," + base64.b64encode(icon_png()).decode(),
     "__BRD__": BR_D, "__BRVB__": f"-8 -8 {BR_W + 14} {BR_H + 14}",
+    "__BRCX__": f"{BR_W / 2 - 1:.1f}", "__BRCY__": f"{BR_H / 2 - 1:.1f}", "__BRFS__": f"{BR_W * .17:.1f}",   # centro do mapa e tamanho da porcentagem
     "__W__": str(m["w"]), "__H__": str(m["h"]),
     "__CENT__": json.dumps(m["centroid"], ensure_ascii=False, separators=(",", ":")),
     "__BRCHAD__": uri("brchad-2026.png"),
