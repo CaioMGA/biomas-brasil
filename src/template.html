@@ -175,6 +175,8 @@ html.sem-controles .nav > .tools { pointer-events: auto; }   /* ocultar controle
 .cont.off { opacity: 0; }
 /* ordem dos textos no mapa: "América do Sul" fica por baixo de todos os demais */
 .cont { z-index: 0; }
+/* toque: os nomes dos biomas no mapa não capturam o dedo. Uma pinça (zoom e giro) que começa sobre um nome passa para o mapa em vez de ser cancelada; tocar na área do bioma já o seleciona. */
+@media (pointer: coarse), (max-width: 860px) { .labels .lbl, .labels .lbl *, .labels .txt, .labels .txt * { pointer-events: none; } }
 .lbl, .rl, .mk { z-index: 1; }
 .gl { font-style: normal; font-weight: 600; letter-spacing: .04em; color: #ffe9a8; text-shadow: 0 0 5px rgba(0,0,0,.95), 0 0 12px rgba(255,190,70,.5), 0 0 22px rgba(0,0,0,.6); }
 .gl.tr { color: #ffcfba; text-shadow: 0 0 5px rgba(0,0,0,.95), 0 0 12px rgba(255,120,80,.5), 0 0 22px rgba(0,0,0,.6); }
@@ -255,7 +257,9 @@ dd { margin: 0; }
   .stage { height: 74svh; min-height: 480px; }
   .panel { position: relative; z-index: 2; top: auto; right: auto; bottom: auto; width: auto; margin: 0 16px 32px; overflow: visible; }
   .brand { left: 16px; top: 16px; }
-  .nav { right: 12px; top: 12px; bottom: 36px; gap: 8px; }
+  .nav { right: 12px; top: 12px; bottom: auto; max-height: calc(100% - 48px); gap: 8px; }
+  .chips { display: none; }   /* no celular não há seletores de bioma: o bioma se escolhe tocando no mapa */
+  html:not(.sem-controles) .nav { padding: 10px; background: rgba(8, 12, 9, .22); border: 1px solid var(--rule); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }   /* painel de vidro: fundo transparente com blur do que está atrás */
   .pill button { width: 40px; height: 40px; }
   .dock { left: 16px; right: 16px; bottom: 10px; }
   .hint { max-width: none; }
@@ -1572,6 +1576,8 @@ async function init3d() {
 
   // Estado da câmera
   const cam = { yaw: 0, pitch: 1.5, tx: 0, tz: 0, ttx: 0, ttz: 0, fit: 20, fitT: 20, fit0: 20, user: 1, userT: 1, yawT: null, pitchT: null };   // fit: distância que enquadra a região; user: multiplicador do zoom manual
+  if (matchMedia("(max-width: 860px)").matches) cam.pitch = 1.5;   // celular: o mapa começa em 2D (de cima)
+  if (/[?&]debug\b/.test(location.search)) window.__biomasCam = cam;   // só para testes: expõe a câmera
   let panelPx = 0, W = 1, Hh = 1;
   function resize() {
     W = stage.clientWidth; Hh = stage.clientHeight;
@@ -1740,13 +1746,19 @@ async function init3d() {
   glc.addEventListener("pointerdown", e => {
     try { glc.setPointerCapture(e.pointerId); } catch (_) {} ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
     if (ptrs.size === 1) down = { x: e.clientX, y: e.clientY, moved: false, btn: e.button };
-    else if (ptrs.size === 2) { const [a, b] = [...ptrs.values()]; pinch = { d: Math.hypot(a.x - b.x, a.y - b.y), u: cam.userT }; if (down) down.moved = true; }
+    else if (ptrs.size === 2) { const [a, b] = [...ptrs.values()]; pinch = { d: Math.hypot(a.x - b.x, a.y - b.y), u: cam.userT, a: Math.atan2(b.y - a.y, b.x - a.x), cx: (a.x + b.x) / 2, cy: (a.y + b.y) / 2 }; if (down) down.moved = true; }
   });
   glc.addEventListener("pointermove", e => {
     const p = ptrs.get(e.pointerId);
     if (!p) { hover = pick(e.clientX, e.clientY); glc.classList.toggle("hover", hover > 0); return; }
     const dx = e.clientX - p.x, dy = e.clientY - p.y; p.x = e.clientX; p.y = e.clientY;
-    if (ptrs.size >= 2 && pinch) { const [a, b] = [...ptrs.values()]; cam.userT = clamp(pinch.u * pinch.d / (Math.hypot(a.x - b.x, a.y - b.y) || 1), .2, 2.8); return; }
+    if (ptrs.size >= 2 && pinch) {   // dois dedos: a pinça dá zoom, a torção gira o mapa (no sentido dos dedos) e mover os dois juntos arrasta
+      const [a, b] = [...ptrs.values()], dist = Math.hypot(a.x - b.x, a.y - b.y) || 1, ang = Math.atan2(b.y - a.y, b.x - a.x), mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
+      cam.userT = clamp(pinch.u * pinch.d / dist, .2, 2.8);
+      let da = ang - pinch.a; da -= Math.round(da / TAU) * TAU; if (da) turn(da); pinch.a = ang;
+      nudge(-(mx - pinch.cx), my - pinch.cy); pinch.cx = mx; pinch.cy = my;
+      return;
+    }
     if (!down) return;
     if (!down.moved && Math.hypot(e.clientX - down.x, e.clientY - down.y) > 6) { down.moved = true; glc.classList.add("drag"); }
     if (!down.moved) return;
@@ -2276,6 +2288,7 @@ function drawFx(dt) {
     const card = document.createElement("div"); card.className = "tut-card"; card.setAttribute("role", "dialog"); card.setAttribute("aria-modal", "true"); card.setAttribute("aria-labelledby", "tutTitulo");
     const ov = document.createElement("div"); ov.id = "tutorial"; ov.append(hole, card); document.body.appendChild(ov);
     const inertEls = [document.querySelector("main"), sitenav, $("loader")].filter(Boolean); inertEls.forEach(e => { e.inert = true; });
+    const PASSOS = STEPS.filter(st => st.rect || (document.querySelector(st.sel) || { getClientRects: () => [] }).getClientRects().length > 0);   // sem destaque visível (no celular, os seletores de bioma) o passo some e a contagem acompanha
     let i = 0;
     const rectOf = st => {
       if (innerWidth <= 860 && st.sel !== "#panel" && scrollY > 0) scrollTo(0, 0);   // celular: o painel fica abaixo do mapa; os demais passos medem e mostram o destaque com a página no topo
@@ -2286,8 +2299,8 @@ function drawFx(dt) {
       const r = e.getBoundingClientRect(); return r.width && r.height ? r : null;
     };
     function show() {
-      let st = STEPS[i], r = rectOf(st);
-      const dir = show.dir || 1; while (!r && i + dir >= 0 && i + dir < STEPS.length) { i += dir; st = STEPS[i]; r = rectOf(st); }
+      let st = PASSOS[i], r = rectOf(st);
+      const dir = show.dir || 1; while (!r && i + dir >= 0 && i + dir < PASSOS.length) { i += dir; st = PASSOS[i]; r = rectOf(st); }
       if (!r) return end();
       const pad = st.where === "inside" ? 0 : 8, hl = Math.max(4, r.left - pad), ht = Math.max(4, r.top - pad);
       const hw = Math.min(innerWidth - 8, r.left + r.width + pad) - hl, hh = Math.min(innerHeight - 8, r.top + r.height + pad) - ht;
@@ -2295,13 +2308,13 @@ function drawFx(dt) {
       card.replaceChildren();
       const mk = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
       const h = mk("h2", "", st.title); h.id = "tutTitulo";
-      const nav = mk("div", "tut-nav"), prev = mk("button", "", "Anterior"), next = mk("button", "prox", i === STEPS.length - 1 ? "Concluir" : "Próximo"), skip = mk("button", "tut-skip", "Pular");
+      const nav = mk("div", "tut-nav"), prev = mk("button", "", "Anterior"), next = mk("button", "prox", i === PASSOS.length - 1 ? "Concluir" : "Próximo"), skip = mk("button", "tut-skip", "Pular");
       prev.type = next.type = skip.type = "button"; prev.disabled = i === 0;
       prev.addEventListener("click", () => { show.dir = -1; i = Math.max(0, i - 1); show(); });
-      next.addEventListener("click", () => { if (i === STEPS.length - 1) end(); else { show.dir = 1; i++; show(); } });
+      next.addEventListener("click", () => { if (i === PASSOS.length - 1) end(); else { show.dir = 1; i++; show(); } });
       skip.addEventListener("click", end);
       nav.append(prev, next, skip);
-      card.append(mk("p", "tut-step", `Passo ${i + 1} de ${STEPS.length}`), h, mk("p", "tut-text", st.text), nav);
+      card.append(mk("p", "tut-step", `Passo ${i + 1} de ${PASSOS.length}`), h, mk("p", "tut-text", st.text), nav);
       // posição do cartão: no centro da tela (primeiro passo) ou na primeira posição ao redor do destaque que não o cubra; só cai por cima dele quando nada cabe (mapa e painel grandes)
       const cw = card.offsetWidth, chh = card.offsetHeight, g = 14, vw = innerWidth, vh = innerHeight, cl = (v, a, b) => Math.max(a, Math.min(b, v));
       const maxX = Math.max(8, vw - cw - 8), maxY = Math.max(8, vh - chh - 8);
@@ -2313,7 +2326,7 @@ function drawFx(dt) {
         pos = cands.find(p => sobre(p) === 0) || (cands.length ? cands.reduce((m, p) => sobre(p) < sobre(m) ? p : m) : [hl + 16, ht + hh - chh - 16]);
       }
       card.style.left = cl(pos[0], 8, maxX) + "px"; card.style.top = cl(pos[1], 8, maxY) + "px";
-      (i === STEPS.length - 1 ? next : next).focus({ preventScroll: true });
+      (i === PASSOS.length - 1 ? next : next).focus({ preventScroll: true });
     }
     function end() {
       if (!tut) return; tut = null;
@@ -2323,7 +2336,7 @@ function drawFx(dt) {
     }
     function key(e) {
       if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); end(); }
-      else if (e.key === "ArrowRight") { e.preventDefault(); e.stopPropagation(); if (i < STEPS.length - 1) { show.dir = 1; i++; show(); } }
+      else if (e.key === "ArrowRight") { e.preventDefault(); e.stopPropagation(); if (i < PASSOS.length - 1) { show.dir = 1; i++; show(); } }
       else if (e.key === "ArrowLeft") { e.preventDefault(); e.stopPropagation(); if (i > 0) { show.dir = -1; i--; show(); } }
       else if (e.key === "Tab") { const f = [...card.querySelectorAll("button:not(:disabled)")], k = f.indexOf(document.activeElement); e.preventDefault(); f[(k + (e.shiftKey ? -1 : 1) + f.length) % f.length].focus(); }
       else e.stopPropagation();   // nenhuma outra tecla chega ao mapa enquanto o tutorial está aberto
