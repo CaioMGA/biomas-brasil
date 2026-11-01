@@ -147,12 +147,17 @@ def secao_html(d, nome_bioma):
         for i in sorted(povos, key=lambda i: i["nome"])))
     if afl:
         MARGEM = {"esquerda": "esquerda (norte)", "direita": "direita (sul)"}; TRECHO = {"brasileiro": "dentro do Brasil (IBGE)", "estrangeiro": "fora do Brasil (Natural Earth)"}
-        t_afl = tabela("rios", ["Afluente", "Margem", "Trecho no mapa", "Países", "Estados do Brasil"], "".join(
-            f'<tr data-margem="{E(i["attrs"]["margem"])}" data-origem="{E(i["attrs"]["origem"])}"><th scope="row">{E(i["nome"])}</th><td>{E(MARGEM.get(i["attrs"]["margem"], ""))}</td>'
-            f'<td>{E(TRECHO.get(i["attrs"]["origem"], ""))}</td><td>{E(", ".join(i.get("paises", [])))}</td><td>{E(", ".join(i.get("estados", [])))}</td></tr>'
-            for i in sorted(afl, key=lambda i: i["nome"])))
+        if any("bacia" in i["attrs"] for i in afl):   # rios agrupados por bacia hidrográfica (ex.: Cerrado)
+            t_afl = tabela("rios", ["Rio", "Bacia hidrográfica", "Países", "Estados do Brasil"], "".join(
+                f'<tr data-bacia="{E(i["attrs"]["bacia"])}"><th scope="row">{E(i["nome"])}</th><td>{E(i["attrs"]["bacia"])}</td>'
+                f'<td>{E(", ".join(i.get("paises", [])))}</td><td>{E(", ".join(i.get("estados", [])))}</td></tr>' for i in sorted(afl, key=lambda i: i["nome"])))
+        else:
+            t_afl = tabela("rios", ["Afluente", "Margem", "Trecho no mapa", "Países", "Estados do Brasil"], "".join(
+                f'<tr data-margem="{E(i["attrs"]["margem"])}" data-origem="{E(i["attrs"]["origem"])}"><th scope="row">{E(i["nome"])}</th><td>{E(MARGEM.get(i["attrs"]["margem"], ""))}</td>'
+                f'<td>{E(TRECHO.get(i["attrs"]["origem"], ""))}</td><td>{E(", ".join(i.get("paises", [])))}</td><td>{E(", ".join(i.get("estados", [])))}</td></tr>'
+                for i in sorted(afl, key=lambda i: i["nome"])))
     listas = ""
-    if afl: listas += '<details class="mt-det" open><summary>Afluentes (%d) em lista</summary><p class="cap">A lista segue os filtros do mapa. Países e estados vêm dos limites do Natural Earth (aproximados).</p>%s</details>\n' % (len(afl), t_afl)
+    if afl: listas += '<details class="mt-det" open><summary>%s (%d) em lista</summary><p class="cap">A lista segue os filtros do mapa. Países e estados vêm dos limites do Natural Earth (aproximados).</p>%s</details>\n' % (por_id["rios"].get("lista_titulo", "Afluentes"), len(afl), t_afl)
     if ucs:
         nota = por_id["ucs"].get("nota_lista", "")
         listas += '<details class="mt-det"><summary>Unidades de conservação (%d) em lista</summary>%s%s</details>\n' % (len(ucs), ('<p class="cap">' + E(nota) + "</p>") if nota else "", t_uc)
