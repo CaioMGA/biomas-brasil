@@ -104,8 +104,7 @@ def plano(id, c):
             p.append({"id": "linha", "titulo": "Linha do tempo", "min": rmin(words([g["t"] for g in c["linha"]]) + 1), "kind": "linha"})
     if c.get("quiz"):
         p.append({"id": "quiz", "titulo": "Quiz final" if id == "brasil" else "Quiz do bioma", "min": max(QUIZ_MIN, round(len(c["quiz"]) * .4)), "kind": "quiz"})
-    if id == "brasil" and c.get("creditos"):
-        p.append({"id": "creditos", "titulo": "Créditos e fontes", "min": 2, "kind": "creditos"})
+    p.append({"id": "creditos", "titulo": "Créditos e fontes", "min": 2 if id == "brasil" else 1, "kind": "creditos"})   # última seção de todas as páginas
     return p
 
 
@@ -187,8 +186,10 @@ class Site:
         return (f'<div class="brfoot"><span>Site criado por Caio Amaral</span>'
                 f'<img class="brchad" src="{self.brchad}" width="80" height="15" alt="brchad 2026"></div>')
 
-    def creditos(self):
+    def creditos(self, id=None):
+        """Créditos e fontes. Com id de bioma, lista só os vídeos dele e inclui a frase de fontes da página; sem id (Brasil, Sobre, hub), todos os vídeos."""
         c = self.C["brasil"]
+        so = id if id and id != "brasil" else None
         out = []
         for g in c["creditos"]:
             out.append(f'<h3 class="cred-h">{E(g["t"])}</h3><ul class="cred">')
@@ -197,12 +198,15 @@ class Site:
                 out.append(f'<li>{nome} — {E(x["d"])}</li>')
             out.append("</ul>")
         out.append('<h3 class="cred-h">Vídeos</h3><ul class="cred">')
-        for k in self.C:
+        for k in ([so] if so else self.C):
             for v in self.C[k].get("videos", []):
                 out.append(f'<li><a href="https://www.youtube.com/watch?v={E(v["id"])}" target="_blank" rel="noopener">{E(v["titulo"])}</a> — {E(v["canal"])} ({E(self.nome(k))})</li>')
         out.append("</ul>")
         out.append('<p class="cap">Os vídeos pertencem aos respectivos canais e são exibidos pelo player oficial do YouTube. A escolha deles ainda precisa de aprovação editorial.</p>')
         out.append(f'<p class="cap">{E(c["creditos_nota"])}</p>')
+        page = self.C.get(id or "brasil", {}).get("fontes")
+        if page:
+            out.append(f'<p class="cap">{E(page)}</p>')
         return "".join(out)
 
     def secao(self, id, i, n, s):
@@ -236,7 +240,7 @@ class Site:
         elif k == "quiz":
             corpo += '<div id="quiz" class="quiz"></div>'
         elif k == "creditos":
-            corpo += self.creditos()
+            corpo += self.creditos(id)
         return f'<section id="sec-{s["id"]}">{h}{corpo}<div data-end="{s["id"]}" aria-hidden="true"></div></section>'
 
     # ---- páginas ----
@@ -246,7 +250,6 @@ class Site:
         kicker = "País" if id == "brasil" else ("Sistema" if self.byId[id].get("marine") else "Bioma")
         toc = "".join(f'<a href="#sec-{s["id"]}" data-sec="{s["id"]}">{E(s["titulo"])}</a>' for s in p)
         secs = "".join(self.secao(id, i, len(p), s) for i, s in enumerate(p))
-        fontes = f'<p class="rd-src">{E(c["fontes"])}</p>' if c.get("fontes") else ""
         corpo = f"""<div class="rd-bar"><i></i></div>
 <div class="rd-wrap">
 <nav class="rd-toc" aria-label="Seções">{toc}</nav>
@@ -256,7 +259,7 @@ class Site:
 <p class="intro">{E(c.get("intro", ""))}</p>
 <p><span class="tm" style="color:var(--muted);font-size:14px">{fmt_min(self.total[id])} de leitura</span></p>
 <a class="voltar" href="/#{"" if id == "brasil" else id}">← Ver no mapa</a>
-{secs}{fontes}
+{secs}
 </main>
 </div>
 <section class="prox" id="proximos" aria-label="Continue explorando"></section>
@@ -283,6 +286,7 @@ class Site:
 <div class="pass-bloco" id="passaporte"></div>
 </div>
 <ul class="cards">{"".join(self.cartao(r) for r in self.regioes)}</ul>
+<section id="sec-creditos" class="hub-creditos"><h2>Créditos e fontes</h2>{self.creditos()}</section>
 </div>
 <div class="rodape">{self.foot()}</div>"""
         return self.casca("Biomas — Biomas do Brasil", "Todos os biomas do Brasil e o sistema costeiro-marinho: textos, espécies, vídeos e quizzes.", corpo, "biomas", "var(--ink)", {"id": "hub", "regioes": self.regioes, "passaporte": self.P})
@@ -350,7 +354,6 @@ class Site:
 <h1>Como foi feito</h1>
 <p class="intro">Um mapa 3D dos biomas do Brasil e uma biblioteca de textos para ler sem passar por ele.</p>
 <section id="sec-tecnologias"><h2>Tecnologias</h2><dl class="gl">{lt}</dl></section>
-<section id="sec-creditos"><h2>Dados, fontes e créditos</h2>{self.creditos()}</section>
 <section id="sec-contato"><h2>Contato</h2>
 <p>Site criado por Caio Amaral.</p>
 <ul class="contato">
@@ -358,6 +361,7 @@ class Site:
 <li><a href="{CONTATO['pessoal']}" target="_blank" rel="noopener">caiomga.com</a> — site pessoal</li>
 <li><a href="{CONTATO['projetos']}" target="_blank" rel="noopener">brchad.com</a> — projetos</li>
 </ul></section>
+<section id="sec-creditos"><h2>Dados, fontes e créditos</h2>{self.creditos()}</section>
 </main>
 </div>
 <div class="rodape">{self.foot()}</div>"""

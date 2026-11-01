@@ -58,7 +58,7 @@ A linha "Espécies" (3 caixinhas) foi substituída pelo bloco **Mais emblemátic
 ## Mantido como está
 
 - Quiz e passaporte, com o mesmo armazenamento (`localStorage`, chave `biomas:prog`).
-- Créditos e fontes na página do Brasil, repetidos no Sobre.
+- **Créditos e fontes são a última seção de todas as páginas** (os 7 biomas e o Brasil, no índice lateral; no hub e no Sobre, no fim). Nos biomas a lista de vídeos mostra só os da própria página, e a frase de fontes de cada bioma fica dentro dos créditos.
 
 ## Sobre: conteúdo
 
