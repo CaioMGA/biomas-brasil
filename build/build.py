@@ -54,6 +54,7 @@ rep = {
     "__BRD__": BR_D, "__BRVB__": f"-8 -8 {BR_W + 14} {BR_H + 14}",
     "__W__": str(m["w"]), "__H__": str(m["h"]),
     "__CENT__": json.dumps(m["centroid"], ensure_ascii=False, separators=(",", ":")),
+    "__BRCHAD__": uri("brchad-2026.png"),
     "__DEM__": uri("data/dem.png"), "__IDS__": uri("data/ids.png"),
     "__CONTEUDO__": json.dumps({os.path.splitext(f)[0]: json.load(open(os.path.join(root, "data/conteudo", f), encoding="utf-8")) for f in sorted(os.listdir(os.path.join(root, "data/conteudo"))) if f.endswith(".json")}, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/"),
     "__LAYERS__": rd("data/layers.json").decode(),

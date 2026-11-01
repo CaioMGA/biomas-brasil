@@ -308,6 +308,8 @@ html.boot, html.boot body { overflow: hidden; }
 #loader .glow { fill: none; stroke: #f3e3a3; stroke-width: 7; stroke-linejoin: round; opacity: .35; filter: blur(5px); }
 #loader .line { fill: none; stroke: #f6ecc8; stroke-width: 2.4; stroke-linejoin: round; stroke-linecap: round; }
 #loader .head { fill: #fff; filter: drop-shadow(0 0 4px #fff3b8) drop-shadow(0 0 10px #ffd966) drop-shadow(0 0 22px #ffb83d); }
+.brchad { display: block; width: 160px; height: auto; image-rendering: pixelated; margin: 22px auto 4px; }
+#loader .brchad { margin: 0; opacity: .9; }
 #loader .msg { font: 500 13px/1 system-ui, -apple-system, "Segoe UI", sans-serif; letter-spacing: .28em; text-transform: uppercase; color: #cfd3bf; transition: opacity .3s ease; }
 #loader.filled .fill { fill-opacity: .75; }
 #loader.pop svg { animation: ldpop .38s cubic-bezier(.2,.7,.3,1) forwards; }
@@ -334,6 +336,7 @@ html.nav-in .navstack .pill, html.nav-in .compass, html.nav-in .pill.zm, html.na
     <circle class="head" id="ldHead" r="3.6" cx="0" cy="0" opacity="0"/>
   </svg>
   <div class="msg">Carregando</div>
+  <img class="brchad" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAAAPCAYAAABzyUiPAAAAAXNSR0IB2cksfwAAAARnQU1BAACxjwv8YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB+oBBBcZIQcJIBAAAAD1SURBVFjD7VjLDcMgDH1EXaAL9NY9Og1M0VOnYJvu0VsW6AZND5Eli9qEXyUOficwlgUvz8bEee83GJpxAoAYozHRgBDCTiAALLf71Jv9PB+4vM7T7Ge9vnfeTEd9MAJH1EApXaTU1ux8LfWnOR/n/FtKCqUTgJ80pzVur/WvJpAfID24ZM8RpX2gmvhHSMmhuTYu8e9SYKqGI6VJxJfGGV3USwnQ/GvjLDkFSiSVqKs0zqibn5RTQ57mT3ae5l0K1A7PU4zmI9qh1jhSXeNEaEor9dfgvPdbjNH6wAbVhxCsjbE+cJY+cPSt+M/n00xw9jemD1/UN6jxLsjtWgAAAABJRU5ErkJggg==" width="160" height="30" alt="brchad 2026">
 </div>
 <noscript><style>#loader { display: none; } html.boot .panel { translate: 0 0; } html.navhide .navstack .pill, html.navhide .compass, html.navhide .pill.zm, html.navhide .chips > *, html.navhide .layers > *, html.navhide .exag { opacity: 1; }</style></noscript>
 <script>
@@ -574,6 +577,7 @@ function growBars(root) {
 
 /* ---------- Painel ---------- */
 const panel = document.getElementById("panel");
+const brchadFoot = () => el("img", { class: "brchad", src: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAAAPCAYAAABzyUiPAAAAAXNSR0IB2cksfwAAAARnQU1BAACxjwv8YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB+oBBBcZIQcJIBAAAAD1SURBVFjD7VjLDcMgDH1EXaAL9NY9Og1M0VOnYJvu0VsW6AZND5Eli9qEXyUOficwlgUvz8bEee83GJpxAoAYozHRgBDCTiAALLf71Jv9PB+4vM7T7Ge9vnfeTEd9MAJH1EApXaTU1ux8LfWnOR/n/FtKCqUTgJ80pzVur/WvJpAfID24ZM8RpX2gmvhHSMmhuTYu8e9SYKqGI6VJxJfGGV3USwnQ/GvjLDkFSiSVqKs0zqibn5RTQ57mT3ae5l0K1A7PU4zmI9qh1jhSXeNEaEor9dfgvPdbjNH6wAbVhxCsjbE+cJY+cPSt+M/n00xw9jemD1/UN6jxLsjtWgAAAABJRU5ErkJggg==", width: "160", height: "30", alt: "brchad 2026" });
 const maxRain = Math.max(...LAND.map(b => RAIN[b.id].ano));
 function sources() {
   const s = el("div", { class: "src" });
@@ -694,6 +698,7 @@ function renderPanel() {
     wrap.appendChild(el("p", { class: "lead" }, "O IBGE trata o Sistema Costeiro-Marinho à parte: manguezais, restingas, dunas, recifes e as águas do litoral. É quase todo marítimo (93,7% da área); a parte continental, 6,3%, se sobrepõe aos biomas. Dela, 42% fica na faixa da Amazônia, 25% no Pampa e 20% na Mata Atlântica."));
   }
   wrap.appendChild(sources());
+  wrap.appendChild(brchadFoot());
   panel.replaceChildren(wrap);
   wrapNumbers(panel); runCounters(panel); growBars(panel);
 }
@@ -886,6 +891,7 @@ function openReader(id, opener, goto) {
     main.appendChild(sec);
   });
   if (c.fontes) main.appendChild(el("p", { class: "rd-src" }, c.fontes));
+  main.appendChild(brchadFoot());
   const wrap = el("div", { class: "rd-wrap" }); wrap.append(toc, main);
   reader.replaceChildren(top, bar, wrap);
   reader.classList.add("on"); document.documentElement.classList.add("reading");
