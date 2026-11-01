@@ -98,5 +98,49 @@
   "licenca_url": "https://creativecommons.org/licenses/by-sa/4.0",
   "fonte_url": "https://commons.wikimedia.org/wiki/File:Morro_na_mata_atl%C3%A2ntica_baiana.jpg",
   "arquivo_commons": "Morro na mata atlântica baiana.jpg"
+ },
+ "Callithrix aurita": {
+  "arquivo": "callithrix-aurita.jpg",
+  "w": 1200,
+  "h": 800,
+  "alt": "Sagui-da-serra-escuro agarrado a um tronco, de pelagem escura e com tufos claros ao redor do rosto.",
+  "autor": "Jack Hynes",
+  "licenca": "CC BY-SA 3.0",
+  "licenca_url": "https://creativecommons.org/licenses/by-sa/3.0",
+  "fonte_url": "https://commons.wikimedia.org/wiki/File:Buffy-tufted_marmoset_(Callithrix_aurita).jpg",
+  "arquivo_commons": "Buffy-tufted marmoset (Callithrix aurita).jpg"
+ },
+ "Pitangus sulphuratus": {
+  "arquivo": "pitangus-sulphuratus.jpg",
+  "w": 1200,
+  "h": 800,
+  "alt": "Bem-te-vi pousado de lado em um galho, com o peito amarelo, o dorso pardo e a cabeça preta com uma faixa branca sobre os olhos.",
+  "autor": "Sturm",
+  "licenca": "CC BY-SA 4.0",
+  "licenca_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "fonte_url": "https://commons.wikimedia.org/wiki/File:Caminata_WikiAcci%C3%B3n_and_WMB_en_S%C3%A3o_Paulo,_June_2022_(01)_38.jpg",
+  "arquivo_commons": "Caminata WikiAcción and WMB en São Paulo, June 2022 (01) 38.jpg"
+ },
+ "Brachycephalus ephippium": {
+  "arquivo": "brachycephalus-ephippium.jpg",
+  "w": 1200,
+  "h": 800,
+  "alt": "Sapinho-pingo-de-ouro alaranjado no chão da mata, ao lado de uma moeda de um real, que mostra como ele é minúsculo.",
+  "autor": "Diogo Luiz",
+  "licenca": "CC BY-SA 4.0",
+  "licenca_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "fonte_url": "https://commons.wikimedia.org/wiki/File:Brachycephalus_ephippium_46942252.jpg",
+  "arquivo_commons": "Brachycephalus ephippium 46942252.jpg"
+ },
+ "Dicksonia sellowiana": {
+  "arquivo": "dicksonia-sellowiana.jpg",
+  "w": 1200,
+  "h": 800,
+  "alt": "Broto ainda enrolado de samambaiaçu, verde e coberto de pelos acastanhados.",
+  "autor": "Evaldo Resende",
+  "licenca": "CC BY-SA 4.0",
+  "licenca_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "fonte_url": "https://commons.wikimedia.org/wiki/File:Dicksonia_sellowiana_-_PE_do_Juquery_-_EvaldoResende(001).jpg",
+  "arquivo_commons": "Dicksonia sellowiana - PE do Juquery - EvaldoResende(001).jpg"
  }
 }

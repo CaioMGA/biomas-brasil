@@ -97,6 +97,13 @@ Primata pequeno, de pelagem inteira cor de ouro e uma juba ao redor do rosto. Vi
 
 O maior primata das Américas, de corpo magro, braços longos e cauda preênsil. Também chamado de mono-carvoeiro. Vive em grupos pacíficos nas copas da mata.
 
+### Sagui-da-serra-escuro
+
+- **Nome científico:** Callithrix aurita
+- **Tipo:** fauna
+
+Pequeno primata de pelagem escura, com tufos claros nas orelhas e no rosto. Vive em grupos familiares nas matas de serra de São Paulo, Rio de Janeiro e Minas Gerais e come frutos, insetos, seiva e pequenos animais. Só existe na Mata Atlântica.
+
 ### Sabiá-laranjeira
 
 - **Nome científico:** Turdus rufiventris
@@ -110,6 +117,20 @@ Ave de peito alaranjado e dorso pardo, de canto melodioso. É a ave nacional do 
 - **Tipo:** fauna
 
 Ave de bico grande e verde-claro, peito amarelo e dorso verde-escuro. Voa em bandos e come frutos, espalhando sementes pela mata.
+
+### Bem-te-vi
+
+- **Nome científico:** Pitangus sulphuratus
+- **Tipo:** fauna
+
+Ave de peito amarelo, cabeça preta com uma faixa branca sobre os olhos e uma mancha amarela no alto, que aparece quando se agita. O nome imita o canto. Come insetos, frutos e até pequenos peixes e girinos, e é comum em matas, campos e cidades.
+
+### Sapinho-pingo-de-ouro
+
+- **Nome científico:** Brachycephalus ephippium
+- **Tipo:** fauna
+
+Anfíbio minúsculo, de cerca de 2 cm, de cor alaranjada e brilhante. Vive entre as folhas caídas das matas de serra do Sudeste. A cor forte avisa que ele é tóxico, e o filhote nasce já com a forma do adulto, sem fase de girino.
 
 ### Araucária
 
@@ -138,6 +159,13 @@ Uma das maiores árvores da Mata Atlântica: tronco reto, casca com sulcos profu
 - **Tipo:** flora
 
 Palmeira de tronco esguio e liso. Antigamente era derrubada para extrair o palmito; hoje o fruto, parecido com o açaí, é colhido sem cortar a planta, o que ajuda a proteger a espécie.
+
+### Samambaiaçu
+
+- **Nome científico:** Dicksonia sellowiana
+- **Tipo:** flora
+
+Samambaia de tronco grosso e fibroso, com folhas grandes em coroa no alto, como uma palmeira. Cresce devagar nas matas úmidas de altitude do Sul e do Sudeste. O tronco era muito extraído para virar xaxim, vaso para orquídeas; hoje o corte é proibido.
 
 ## Quiz
 
