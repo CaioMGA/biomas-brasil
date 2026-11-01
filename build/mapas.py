@@ -128,6 +128,11 @@ def secao_html(d, nome_bioma):
         f'<li><a href="{E(f["url"])}" target="_blank" rel="noopener">{E(f["titulo"])}</a> — dados de {E(f["data"])}; {E(f["licenca"])}.</li>' for f in d["fontes"].values())
     notas = "".join(f'<li><b>{E(c["titulo"])}:</b> {E(c["nota"])}</li>' for c in d["camadas"])
     lacunas = "".join(f"<li>{E(x)}</li>" for x in d.get("lacunas", []))
+    curtos = []   # nomes curtos das instituições (a lista completa, com licenças, fica em "Sobre os dados deste mapa")
+    for f in d["fontes"].values():
+        n = f["titulo"].split(": ")[0].split(", ")[0].split(" (")[0]
+        if n not in curtos: curtos.append(n)
+    fontes_curtas = "Fontes: " + "; ".join(E(n) for n in curtos) + ". Detalhes e licenças em «Sobre os dados deste mapa»."
     return f"""<figure class="mt" data-mapa="{E(id)}">
 <details class="mt-painel"><summary>Camadas e filtros</summary>
 <div class="mt-ctl">
@@ -140,7 +145,7 @@ def secao_html(d, nome_bioma):
 </div>
 <div class="mt-leg" aria-hidden="true"></div>
 <p class="mt-info" role="status" aria-live="polite">Toque ou passe o mouse sobre uma unidade de conservação, sede ou localidade para ver os detalhes.</p>
-<figcaption class="cap">{E(d.get("titulo", ""))}. Mapa plano, sem zoom: use as camadas e os filtros. {E(d.get("aviso_escopo", ""))}</figcaption>
+<figcaption class="cap">{E(d.get("titulo", ""))}. Mapa plano, sem zoom: use as camadas e os filtros. {E(d.get("aviso_escopo", ""))} <span class="mt-fonte-curta">{fontes_curtas}</span></figcaption>
 <details class="mt-det"><summary>Unidades de conservação ({len(ucs)}) em lista</summary>{t_uc}</details>
 <details class="mt-det"><summary>Sedes municipais ({len(cidades)}) em lista</summary>{t_cid}</details>
 <details class="mt-det"><summary>Localidades indígenas e quilombolas ({len(povos)}) em lista</summary>{t_pov}</details>

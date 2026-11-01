@@ -55,7 +55,9 @@ def bioma(id, root):
     amostra = [p for r in simp for p in r[::max(1, len(r) // 40)]]
     tocados = [p["nome"] for p in ctx["paises"] if any(inside(pt, [tuple(v) for v in r]) for pt in amostra for r in p["rings"])]
     out = os.path.join(root, "data", "localizacao", id + ".json")
-    json.dump({"rings": [[[round(x, 2), round(y, 2)] for x, y in r] for r in simp], "paises": sorted(set(tocados))}, open(out, "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"))
+    fontes = m.get("fontes", {}); f = fontes.get(m.get("limite_fonte", "resolve")) or next(iter(fontes.values()), {})   # fonte do limite do bioma
+    fonte = {"nome": f.get("titulo", "").split(" (")[0].split(", ")[0], "url": f.get("url", ""), "licenca": f.get("licenca", "")}
+    json.dump({"rings": [[[round(x, 2), round(y, 2)] for x, y in r] for r in simp], "paises": sorted(set(tocados)), "fonte": fonte}, open(out, "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"))
     print(out, os.path.getsize(out) // 1024, "KB; países:", sorted(set(tocados)))
 
 
@@ -73,11 +75,15 @@ def figura(root, id, nome):
     desc = f"Mapa da América do Sul: o Brasil e seus estados contornados, e o {nome} contornado e pintado na cor de destaque"
     desc += f", ocupando partes de {lista}." if len(paises) > 1 else "."
     cap = f"Localização do {E(nome)} na América do Sul" + (f": o bioma se estende por {E(lista)}." if len(paises) > 1 else ".")
+    fb = b.get("fonte") or {}
+    lic = f' ({E(fb["licenca"])})' if fb.get("licenca") else ""
+    bio = (f'contorno do bioma: <a href="{E(fb["url"])}" target="_blank" rel="noopener">{E(fb["nome"])}</a>{lic}' if fb.get("url") else "")
+    fonte = ('<span class="loc-fonte">Fontes: países e estados do Brasil: <a href="https://www.naturalearthdata.com/" target="_blank" rel="noopener">Natural Earth</a> (domínio público)' + ("; " + bio if bio else "") + ".</span>")
     S = max(P.w, P.h); vx, vy = -(S - P.w) // 2, -(S - P.h) // 2   # moldura quadrada: o continente fica centralizado, com oceano nas sobras
     return (f'<figure class="loc"><svg viewBox="{vx} {vy} {S} {S}" role="img" aria-label="{E(desc)}" preserveAspectRatio="xMidYMid meet">'
             f'<rect class="loc-mar" x="{vx}" y="{vy}" width="{S}" height="{S}"/><path class="loc-terra" d="{terra}"/><path class="loc-br" d="{brasil}"/>'
             f'<path class="loc-uf" d="{estados}"/><path class="loc-br-borda" d="{brasil}"/><path class="loc-bioma" d="{biom}"/></svg>'
-            f'<figcaption>{cap}<span class="loc-leg"><i class="loc-sw loc-sw-bioma"></i>{E(nome)}<i class="loc-sw loc-sw-br"></i>Brasil e seus estados (contornos)</span></figcaption></figure>')
+            f'<figcaption>{cap}{fonte}<span class="loc-leg"><i class="loc-sw loc-sw-bioma"></i>{E(nome)}<i class="loc-sw loc-sw-br"></i>Brasil e seus estados (contornos)</span></figcaption></figure>')
 
 
 if __name__ == "__main__":
