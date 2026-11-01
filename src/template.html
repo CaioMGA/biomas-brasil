@@ -76,7 +76,9 @@ html.nav-in .sitenav { animation: bin .4s cubic-bezier(.2,.8,.3,1) backwards; }
 .tools button:disabled { opacity: .6; cursor: progress; }
 .tools svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linejoin: round; stroke-linecap: round; }
 .tools .slash { display: none; } .tools button[aria-pressed="true"] .slash { display: block; }
-html.sem-controles .nav > :not(.tools) { display: none; }   /* ocultar controles: sobra só a barra de ferramentas, que continua no alto */
+html.sem-controles .nav { bottom: auto; pointer-events: none; }   /* sem controles, a coluna encolhe para só a barra de ferramentas e não bloqueia o clique no mapa */
+html.sem-controles .nav > :not(.tools) { display: none; }
+html.sem-controles .nav > .tools { pointer-events: auto; }   /* ocultar controles: sobra só a barra de ferramentas, que continua no alto */
 .sitenav button { padding: 3px 10px; font: inherit; font-size: 12px; line-height: 1.2; color: var(--muted); background: none; border: 0; border-bottom: 2px solid transparent; cursor: pointer; }
 .sitenav button:hover { color: var(--ink); }
 /* Tutorial: o overlay cobre tudo e o mapa e o painel ficam inertes enquanto ele está aberto */
