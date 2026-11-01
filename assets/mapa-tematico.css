@@ -27,6 +27,9 @@
 .mt-terra { fill: #f1eedf; }
 .mt-pais-0 { fill: #f4eed2; } .mt-pais-1 { fill: #ecdfc8; } .mt-pais-2 { fill: #efd9d2; }
 .mt-pais-3 { fill: #e2e6d3; } .mt-pais-4 { fill: #e8dfe6; } .mt-pais-5 { fill: #dfe6e8; }
+/* estados do Brasil: cores diferentes (sem verde nem azul, que são do bioma e da água) */
+.mt-ufc-0 { fill: #f7e7b7; } .mt-ufc-1 { fill: #f3cdbc; } .mt-ufc-2 { fill: #e4d3ec; }
+.mt-ufc-3 { fill: #f0dca8; } .mt-ufc-4 { fill: #ddd6c8; } .mt-ufc-5 { fill: #f1d3d9; }
 .mt-grade { fill: none; stroke: #8fa3ad; stroke-width: .8px; stroke-dasharray: 3 4; vector-effect: non-scaling-stroke; }
 .mt-regiao { fill: #cfe3b3; stroke: none; }
 .mt-regiao-borda { fill: none; stroke: #4f7d33; stroke-width: 2px; }

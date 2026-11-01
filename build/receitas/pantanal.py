@@ -102,11 +102,20 @@ def receita(raw):
         if a["adm0_a3"] not in PAISES: continue
         rings = [q for q in (recorta_anel(r, box) for r in gm) if q]
         if not rings: continue
-        estados.append({"nome": a["name"], "lns": [l for r in gm for l in corta_linha([tuple(p) for p in r], box)],
-                        "rotulo": centro(rings, bbox)})
+        e = {"nome": a["name"], "lns": [l for r in gm for l in corta_linha([tuple(p) for p in r], box)], "rotulo": centro(rings, bbox)}
+        if a["adm0_a3"] == "BRA":   # só os estados brasileiros são pintados; vértices (arredondados) servem para achar os vizinhos
+            e["rings"] = [r3(q) for q in (dp_ring(list(r) + [r[0]], .01) for r in rings) if q]
+            e["vert"] = {(round(p[0], 2), round(p[1], 2)) for r in gm for p in r}
+        estados.append(e)
+    br = [e for e in estados if "vert" in e]
+    viz = {i: {j for j, f in enumerate(br) if j != i and len(e["vert"] & f["vert"]) >= 2} for i, e in enumerate(br)}
+    cor = {}
+    for i in sorted(viz, key=lambda i: -len(viz[i])):   # coloração gulosa: vizinhos nunca repetem cor (6 cores)
+        usadas = {cor[j] for j in viz[i] if j in cor}; cor[i] = next(c for c in range(6) if c not in usadas)
+    for i, e in enumerate(br): e["cor"] = cor[i]
     camadas.append({"id": "estados", "titulo": "Estados e departamentos", "tipo": "contexto", "fonte": "ne", "ligada": True,
-                    "nota": "Divisas internas dos países (estados no Brasil, departamentos na Bolívia e no Paraguai, províncias na Argentina), Natural Earth 1:10 milhões.",
-                    "itens": [{"nome": e["nome"], "rotulo": e["rotulo"]} for e in estados],
+                    "nota": "Divisas internas dos países (estados no Brasil, departamentos na Bolívia e no Paraguai, províncias na Argentina), Natural Earth 1:10 milhões. Os estados do Brasil são pintados em cores diferentes; o bioma é sempre de uma cor só.",
+                    "itens": [{"nome": e["nome"], "rotulo": e["rotulo"], **({"rings": e["rings"], "cor": e["cor"]} if "rings" in e else {})} for e in estados],
                     "fronteiras": [r3(dp(l, .01)) for e in estados for l in e["lns"]]})
 
     # ---- baías, lagoas, meandros e rios largos (massas d'água; só Brasil): nomeadas ou com área relevante
