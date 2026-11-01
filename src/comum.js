@@ -210,10 +210,10 @@ const BiomasUI = (() => {
     pausaMsgFinal: 1700,       // jornada completa: do vermelho até a mensagem (ms)
     queda: 200,                // duração da queda do carimbo na folha (ms)
     escalaQueda: 1.7,          // tamanho com que o carimbo começa a cair (1 = tamanho final)
-    impacto: 200,              // do carimbo começar a cair até o passaporte tremer (ms)
+    impacto: 50,               // do carimbo começar a cair até o passaporte tremer (ms)
     leve: { amp: 5, rot: .5, dur: 500 },      // tremor dos carimbos de bioma: deslocamento (px), giro (graus) e duração (ms)
-    forte: { amp: 15, rot: 1.7, dur: 1000 },  // tremor do carimbo de jornada completa
-    clarao: 1100               // duração do clarão vermelho do carimbo de jornada completa (ms)
+    forte: { amp: 15, rot: 0, dur: 1540 },  // tremor do carimbo de jornada completa
+    clarao: 3000               // duração do clarão vermelho do carimbo de jornada completa (ms)
   };
   function animAtual() { const o = ler("biomas:anim", {}); return { ...ANIM_PADRAO, ...o, leve: { ...ANIM_PADRAO.leve, ...(o.leve || {}) }, forte: { ...ANIM_PADRAO.forte, ...(o.forte || {}) } }; }
   function quedaCarimbo(raiz, A) {     // o carimbo recém-aceito cai sobre a folha
