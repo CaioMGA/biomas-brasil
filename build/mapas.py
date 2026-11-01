@@ -151,6 +151,10 @@ def secao_html(d, nome_bioma):
             t_afl = tabela("rios", ["Rio", "Bacia hidrográfica", "Países", "Estados do Brasil"], "".join(
                 f'<tr data-bacia="{E(i["attrs"]["bacia"])}"><th scope="row">{E(i["nome"])}</th><td>{E(i["attrs"]["bacia"])}</td>'
                 f'<td>{E(", ".join(i.get("paises", [])))}</td><td>{E(", ".join(i.get("estados", [])))}</td></tr>' for i in sorted(afl, key=lambda i: i["nome"])))
+        elif any("regime" in i["attrs"] for i in afl):   # rios classificados pelo regime (ex.: Caatinga)
+            t_afl = tabela("rios", ["Rio", "Regime", "Curso sem vazão natural (Q95 = 0)", "Estados do Brasil"], "".join(
+                f'<tr data-regime="{E(i["attrs"]["regime"])}"><th scope="row">{E(i["nome"])}</th><td>{E(i["classe"])}</td>'
+                f'<td class="n">{i["pct_seco"]}%</td><td>{E(", ".join(i.get("estados", [])))}</td></tr>' for i in sorted(afl, key=lambda i: (-i["pct_seco"], i["nome"]))))
         else:
             t_afl = tabela("rios", ["Afluente", "Margem", "Trecho no mapa", "Países", "Estados do Brasil"], "".join(
                 f'<tr data-margem="{E(i["attrs"]["margem"])}" data-origem="{E(i["attrs"]["origem"])}"><th scope="row">{E(i["nome"])}</th><td>{E(MARGEM.get(i["attrs"]["margem"], ""))}</td>'
