@@ -116,23 +116,34 @@ const BiomasUI = (() => {
   const PAPEL = `<filter id="papel" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency="0.012 0.017" numOctaves="4" seed="7" result="n"/><feDiffuseLighting in="n" surfaceScale="2.4" diffuseConstant="1.12" lighting-color="#fcf7e8" result="l"><feDistantLight azimuth="228" elevation="56"/></feDiffuseLighting><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="3" result="g"/><feColorMatrix in="g" type="matrix" values="0 0 0 0 .25  0 0 0 0 .2  0 0 0 0 .12  .16 0 0 0 0" result="gr"/><feBlend in="gr" in2="l" mode="normal"/></filter><radialGradient id="vig" cx="50%" cy="50%" r="75%"><stop offset="60%" stop-color="#7a5c28" stop-opacity="0"/><stop offset="100%" stop-color="#7a5c28" stop-opacity=".2"/></radialGradient>`;
 
   /* Papel timbrado: nome do site em fonte do site, no canto inferior direito. Medidas em unidades do viewBox da folha. */
-  const TIMBRE = { dir: 14, base: 20, fs: 19, larg: 124 };
-  function timbre(P) {
+  const TIMBRE = { dir: 14, base: 24, fs: 19, larg: 124, barra: 3.6, folga: 5 };
+  const BANDEIRA = [["#009c3b", 0], ["#ffdf00", .3333], ["#002776", .6667], ["#fff", 1]];   // mesmo degradê da faixa do painel do Brasil na home
+  function timbre(P) {   // o nome do site (na imagem de compartilhar ele é desenhado no canvas, que enxerga a fonte do site)
     const [vx, vy, vw, vh] = P.vb, lx = vx + vw - TIMBRE.dir, ly = vy + vh - TIMBRE.base;
     return `<text x="${lx}" y="${ly}" text-anchor="end" font-size="${TIMBRE.fs}" font-family="'Instrument Serif',Georgia,serif" fill="#23241f" textLength="${TIMBRE.larg}" lengthAdjust="spacingAndGlyphs">Biomas do Brasil</text>`;
+  }
+  /* Barra de gradiente abaixo do nome, com a mesma textura de tinta dos carimbos (mesmas falhas e borda irregular, com menos deslocamento
+     porque a barra é fina) e a mesma mistura por multiplicação. */
+  function barraTimbre(P) {
+    const [vx, vy, vw, vh] = P.vb, lx = vx + vw - TIMBRE.dir, ly = vy + vh - TIMBRE.base, x0 = lx - TIMBRE.larg, y0 = ly + TIMBRE.folga;
+    const defs = `<linearGradient id="bandeira" gradientUnits="userSpaceOnUse" x1="${x0}" x2="${lx}" y1="0" y2="0">${BANDEIRA.map(([c, o]) => `<stop offset="${o}" stop-color="${c}"/>`).join("")}</linearGradient>
+<filter id="tt-barra" filterUnits="userSpaceOnUse" x="${x0 - 6}" y="${y0 - 5}" width="${TIMBRE.larg + 12}" height="${TIMBRE.barra + 10}"><feTurbulence type="fractalNoise" baseFrequency="0.38" numOctaves="3" seed="61" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  2.6 0 0 0 -0.42" result="m"/><feComposite in="SourceGraphic" in2="m" operator="in" result="g"/><feTurbulence type="turbulence" baseFrequency="0.035" numOctaves="2" seed="66" result="w"/><feDisplacementMap in="g" in2="w" scale="1.4" xChannelSelector="R" yChannelSelector="G"/></filter>`;
+    const el = `<g style="mix-blend-mode:multiply" filter="url(#tt-barra)" opacity=".9"><rect x="${x0}" y="${y0}" width="${TIMBRE.larg}" height="${TIMBRE.barra}" fill="url(#bandeira)" stroke="rgba(0,0,0,.28)" stroke-width=".3"/></g>`;
+    return { defs, el };
   }
 
   /* SVG da folha: papel levemente amassado, contorno do Brasil e dos biomas em traço fino e falho, e os carimbos. */
   function svgFolha(P, c, isolado) {
     const [vx, vy, vw, vh] = P.vb;
-    let defs = PAPEL + `<filter id="falha" x="-2%" y="-2%" width="104%" height="104%"><feTurbulence type="fractalNoise" baseFrequency="0.55" numOctaves="2" seed="11" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  4 0 0 0 -1.15" result="m"/><feComposite in="SourceGraphic" in2="m" operator="in" result="g"/><feTurbulence type="turbulence" baseFrequency="0.06" numOctaves="1" seed="4" result="w"/><feDisplacementMap in="g" in2="w" scale="1.6" xChannelSelector="R" yChannelSelector="G"/></filter>`;
+    const bar = barraTimbre(P);
+    let defs = PAPEL + bar.defs + `<filter id="falha" x="-2%" y="-2%" width="104%" height="104%"><feTurbulence type="fractalNoise" baseFrequency="0.55" numOctaves="2" seed="11" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  4 0 0 0 -1.15" result="m"/><feComposite in="SourceGraphic" in2="m" operator="in" result="g"/><feTurbulence type="turbulence" baseFrequency="0.06" numOctaves="1" seed="4" result="w"/><feDisplacementMap in="g" in2="w" scale="1.6" xChannelSelector="R" yChannelSelector="G"/></filter>`;
     let marks = "";
     P.regs.forEach((rg, i) => { if (c[rg.id] == null) return; const k = carimbo(rg, i, rg.pos, P.r, c[rg.id]); defs += k.defs; marks += k.g; });
     if (c.completa != null) { const k = carimboCompleta(P, c); defs += k.defs; marks += k.g; }   // só depois que o visitante aceita o carimbo de jornada completa
     return `<svg ${isolado ? `xmlns="http://www.w3.org/2000/svg" width="${vw * 4}" height="${vh * 4}" ` : ""}viewBox="${vx} ${vy} ${vw} ${vh}" role="img" aria-label="Folha do passaporte: contorno do Brasil e dos biomas e os carimbos dos biomas já completados" style="isolation:isolate"><defs>${defs}</defs>
 <rect x="${vx}" y="${vy}" width="${vw}" height="${vh}" fill="#f1ebda" filter="url(#papel)"/><rect x="${vx}" y="${vy}" width="${vw}" height="${vh}" fill="url(#vig)"/>
 <path d="${P.bio}" fill="none" stroke="#1c1c1c" stroke-width=".6" stroke-linejoin="round" stroke-dasharray="9 1.4 5 2.2 14 1 4 1.6 8 1.2 18 2.4" opacity=".8" filter="url(#falha)"/>
-<path d="${P.d}" fill="none" stroke="#161616" stroke-width=".9" stroke-linejoin="round" stroke-dasharray="13 1.6 7 2.4 19 1.2 5 2 10 1.4 25 2.8 8 1.8" filter="url(#falha)"/>${isolado ? "" : timbre(P)}${marks}</svg>`;
+<path d="${P.d}" fill="none" stroke="#161616" stroke-width=".9" stroke-linejoin="round" stroke-dasharray="13 1.6 7 2.4 19 1.2 5 2 10 1.4 25 2.8 8 1.8" filter="url(#falha)"/>${isolado ? "" : timbre(P)}${bar.el}${marks}</svg>`;
   }
 
   /* P = {vb, d, bio, r, regs: [{id, nome, pos}]}; carimbados = {id: "AAAA-MM-DD" | ""} (só os biomas que passaram no quiz) */
