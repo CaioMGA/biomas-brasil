@@ -125,6 +125,6 @@ def receita(raw):
     ]
     return {"id": "pantanal", "titulo": "Mapa do Pantanal: água, áreas protegidas e povos",
             "bbox": [round(v, 3) for v in bbox], "limite": r3(limite), "camadas": camadas, "filtros": filtros,
-            "lacunas": ["Planície alagável e cheia × seca: a camada oficial de terrenos sujeitos a inundação do IBGE (hid_terreno_sujeito_inundacao_a) não tem feições no Pantanal, e 4.363 das 4.373 massas d'água do bioma estão classificadas como permanentes; falta uma base sazonal (opção: MapBiomas Água, via Google Earth Engine, a validar).",
-                        "Terras Indígenas (FUNAI): o servidor oficial tem a cadeia de certificados inválida; é preciso baixar o shapefile manualmente (geoserver.funai.gov.br, camada tis_poligonais)."],
+            "lacunas": ["Limites das Terras Indígenas: ainda não incluídos neste mapa; os pontos de localidades indígenas e quilombolas não substituem os limites oficiais.",
+                        "Área alagada na cheia e diferença entre cheia e seca: o mapa mostra só a água permanente mapeada. A planície alagável sazonal ainda não está representada."],
             "fontes": FONTES}
