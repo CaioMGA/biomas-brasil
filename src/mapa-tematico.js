@@ -22,8 +22,7 @@
     const svg = sv("svg", { viewBox: `0 0 ${d.w} ${d.h}`, class: "mt-svg", "aria-hidden": "true", focusable: "false" });
     const clip = `mt-clip-${id}`;
     svg.append(sv("defs", {},
-      sv("clipPath", { id: clip }, sv("path", { d: d.limite })),
-      sv("pattern", { id: `mt-hach-${id}`, width: 8, height: 8, patternUnits: "userSpaceOnUse", patternTransform: "rotate(45)" }, sv("rect", { width: 8, height: 8, class: "mt-hach-bg" }), sv("line", { x1: 0, y1: 0, x2: 0, y2: 8, class: "mt-hach-ln" }))));
+      sv("clipPath", { id: clip }, sv("path", { d: d.limite }))));
     svg.append(sv("path", { d: d.limite, class: "mt-limite-fundo" }));
 
     const grupo = {};    // id da camada -> <g>
@@ -44,7 +43,6 @@
       } else if (c.tipo === "poligono") {
         grupo[c.id] = recortada(camada(c, c.itens.map(u => {
           const p = sv("path", { d: u.d, class: `mt-uc mt-uc-${u.grupo}`, "fill-rule": "evenodd", "data-grupo": u.grupo, "data-esfera": u.esfera, "vector-effect": "non-scaling-stroke" });
-          if (u.grupo === "PI") p.style.fill = `url(#mt-hach-${id})`;
           const t = `${u.nome} — ${u.categoria}, ${u.grupo === "PI" ? "proteção integral" : "uso sustentável"}, ${u.esfera.toLowerCase()} (${titulo(u.uf)}), ${fmt(u.ha)} ha${u.ano ? `, criada em ${u.ano}` : ""}.`;
           p.addEventListener("pointerenter", () => mostrar(t, p)); p.addEventListener("click", () => mostrar(t, p));
           ucPorEl.set(u.nome + "|" + u.ha, { p, t });
@@ -70,7 +68,7 @@
     ["massas", "rios", "ucs"].forEach(k => grupo[k] && svg.append(grupo[k]));
     const rotRios = d.camadas.find(c => c.id === "rios");
     const gr = sv("g", { class: "mt-cam mt-cam-rotrios" });
-    if (rotRios) for (const r of rotRios.rotulos || []) { const p = sv("g", { class: "mt-pin", "data-x": r.p[0], "data-y": r.p[1] }, sv("text", { class: "mt-rot mt-rot-rio", x: 0, y: 0, "text-anchor": "middle" }, r.nome)); pins.push({ pin: p, rot: p.firstChild, camada: "rios", rio: true }); gr.append(p); }
+    if (rotRios) for (const r of rotRios.rotulos || []) { const p = sv("g", { class: "mt-pin", "data-x": r.p[0], "data-y": r.p[1], "data-navegavel": r.navegavel }, sv("text", { class: "mt-rot mt-rot-rio", x: 0, y: 0, "text-anchor": "middle" }, r.nome)); pins.push({ pin: p, rot: p.firstChild, camada: "rios", rio: true }); gr.append(p); }
     svg.append(gr, ...["cidades", "povos"].map(k => grupo[k]).filter(Boolean));
     svg.append(sv("path", { d: d.limite, class: "mt-limite" }));
     vp.replaceChildren(svg);
@@ -82,8 +80,8 @@
     leg.replaceChildren(
       item(mini(sv("rect", { x: 1, y: 1, width: 18, height: 12, class: "mt-agua" })), "água permanente"),
       item(mini(sv("path", { d: "M1 11C7 11 8 3 19 3", class: "mt-rio", fill: "none" })), "rio ou córrego"),
-      item(mini(sv("rect", { x: 1, y: 1, width: 18, height: 12, class: "mt-uc mt-uc-PI", style: `fill:url(#mt-hach-${id})` })), "proteção integral"),
-      item(mini(sv("rect", { x: 1, y: 1, width: 18, height: 12, class: "mt-uc mt-uc-US" })), "uso sustentável"),
+      item(mini(sv("rect", { x: 1, y: 1, width: 18, height: 12, class: "mt-uc mt-uc-PI" })), "proteção integral (contorno contínuo)"),
+      item(mini(sv("rect", { x: 1, y: 1, width: 18, height: 12, class: "mt-uc mt-uc-US" })), "uso sustentável (tracejado)"),
       item(mini(sv("circle", { cx: 10, cy: 7, r: 4.5, class: "mt-pt-cid" })), "sede municipal"),
       item(mini(sv("path", { d: "M10 1L15.5 11.5h-11z", class: "mt-pt-indigena" })), "localidade indígena"),
       item(mini(sv("path", { d: "M10 1L15 7 10 13 5 7z", class: "mt-pt-quilombola" })), "localidade quilombola"));
@@ -107,14 +105,18 @@
           n.style.display = ok ? "" : "none";
         });
       }
-      const fu = filtros.filter(f => f.dataset.camada === "ucs");
-      fig.querySelectorAll(".mt-tab tbody tr").forEach(tr => { tr.hidden = !fu.every(f => !valor(f) || tr.dataset[f.dataset.campo] === valor(f)); });
+      const fr = filtros.filter(f => f.dataset.camada === "rios");   // rótulos dos rios seguem o filtro das linhas
+      gr.querySelectorAll(":scope > *").forEach(n => { n.style.display = fr.every(f => !valor(f) || (n.dataset[f.dataset.campo] || "") === valor(f)) ? "" : "none"; });
+      fig.querySelectorAll(".mt-tab[data-camada]").forEach(tb => {   // as listas em texto seguem os mesmos filtros do mapa
+        const ff = filtros.filter(f => f.dataset.camada === tb.dataset.camada);
+        tb.querySelectorAll("tbody tr").forEach(tr => { tr.hidden = !ff.every(f => !valor(f) || (tr.dataset[f.dataset.campo] || "") === valor(f)); });
+      });
       organizar();
     }
     filtros.forEach(f => f.addEventListener("change", filtrar));
 
     // tabela de UCs: o nome vira botão que destaca a unidade no mapa
-    fig.querySelectorAll(".mt-tab tbody tr").forEach(tr => {
+    fig.querySelectorAll('.mt-tab[data-camada="ucs"] tbody tr').forEach(tr => {
       const th = tr.querySelector("th"), nome = th.textContent, ha = Number(tr.children[5].textContent.replace(/\./g, ""));
       const b = document.createElement("button"); b.type = "button"; b.className = "mt-lnk"; b.textContent = nome; th.replaceChildren(b);
       b.addEventListener("click", () => {

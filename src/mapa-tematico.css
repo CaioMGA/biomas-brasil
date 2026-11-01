@@ -18,10 +18,8 @@
 .mt-rio { fill: none; stroke: #7fd3e6; stroke-width: 1.1px; stroke-linecap: round; stroke-linejoin: round; }
 .mt-rio[data-navegavel="sim"] { stroke-width: 2px; }
 .mt-uc { stroke-width: 1.2px; }
-.mt-uc-PI { stroke: #e3b341; fill: rgba(227, 179, 65, .22); }
-.mt-uc-US { stroke: #e3b341; fill: rgba(227, 179, 65, .10); stroke-dasharray: 5 3; }
-.mt-hach-bg { fill: rgba(227, 179, 65, .10); }
-.mt-hach-ln { stroke: #e3b341; stroke-width: 2.2; }
+.mt-uc-PI { stroke: #e3b341; stroke-width: 1.8px; fill: rgba(227, 179, 65, .34); }
+.mt-uc-US { stroke: #e3b341; fill: rgba(227, 179, 65, .08); stroke-dasharray: 5 3; }
 .mt-uc.mt-sel { stroke-width: 3px; stroke: #fff; }
 .mt-uc, .mt-pin { cursor: pointer; }
 .mt-pt { stroke: #0b100c; stroke-width: 1.5px; }
