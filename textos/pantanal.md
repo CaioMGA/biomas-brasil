@@ -1,0 +1,193 @@
+# Pantanal
+<!-- id: pantanal -->
+
+## Chamada
+A maior planície alagável do planeta, onde o ritmo é dado pelo sobe e desce das águas.
+
+## Painel do mapa
+
+### Estados
+Todo dentro de MS e MT, com área bem maior em Mato Grosso do Sul.
+
+### Fora do Brasil
+Bolívia e Paraguai. No mapa aparece em tom pálido.
+
+### Clima
+Tropical, com verão chuvoso e cheias que alagam a planície por meses.
+
+### Vegetação
+Mosaico de savana, campos inundáveis, matas e plantas aquáticas.
+
+### Curiosidade
+É o menor bioma do país e a maior planície alagável do planeta. O IBGE o define pela hidrologia, não pela vegetação.
+
+### Endemismo
+Sem contagem de endemismo comparável entre os biomas nas fontes consultadas.
+
+## Espécie mais emblemática
+
+**Espécie:** Tuiuiú
+
+É a ave símbolo do Pantanal, e seus ninhos enormes, no alto das árvores, marcam a paisagem da planície alagada.
+
+## Seções
+
+### Paisagem e clima
+<!-- secao: paisagem | chuva -->
+
+O Pantanal é uma imensa planície no centro da América do Sul, ocupando partes de Mato Grosso e Mato Grosso do Sul e se estendendo pela Bolívia e pelo Paraguai. Embora seja o menor dos biomas continentais do Brasil, é a maior área úmida tropical do planeta.
+
+Tudo gira em torno da água. A planície é tão plana, com um declive mínimo, que a chuva que cai nas terras mais altas ao redor, o planalto, escorre devagar para ela, e o rio Paraguai demora meses para escoar. O resultado é um ciclo de quatro fases: a enchente, quando os rios sobem; a cheia, com grande parte do terreno debaixo d'água; a vazante, quando a água recua; e a seca, em que os campos secam e as lagoas encolhem.
+
+O clima é tropical, com verão chuvoso e inverno seco, como o do Cerrado. Mas o que define a vida no Pantanal é a inundação, mais que a chuva local. Nas áreas mais altas, as cordilheiras e os capões, permanecem secas, e a fauna se refugia nelas na cheia.
+
+O mosaico de ambientes inclui baías, lagoas permanentes, corixos, canais que ligam as lagoas, vazantes, campos de gramíneas, carandazais e áreas de cerrado e mata seca. Espécies do Cerrado, da Amazônia, do Chaco e da Mata Atlântica se encontram aqui.
+
+### Gente e culturas
+<!-- secao: gente -->
+
+O Pantanal é terra de povos indígenas como os Guató, canoeiros que viveram nas ilhas e baías, os Kadiwéu, famosos pela cerâmica e pela pintura corporal, os Terena e os Bororo. Há também comunidades quilombolas e ribeirinhos, que vivem da pesca, do artesanato e de pequenas criações.
+
+A figura central é o pantaneiro, o peão que conduz o gado a cavalo em comitivas durante dias, dormindo ao relento, acompanhado de cozinheiro e de muitos cães. A pecuária extensiva sobre o campo nativo existe há mais de dois séculos e, quando bem manejada, convive com a vida silvestre.
+
+A comida mistura a influência do Paraguai e do Centro-Oeste: o tereré, erva-mate gelada tomada numa guampa, a sopa paraguaia, que na verdade é um bolo de milho e queijo, a chipa, o arroz de Maria Isabel, com carne seca, e os peixes de água doce como pintado, pacu e pacu assado. A farofa de banana e o doce de bocaiúva completam.
+
+As festas são marcadas pela fé e pela música: o Banho de São João, em Corumbá, o siriri e o cururu em Mato Grosso, com cantos, danças e violas de cocho, e as festas de peão. Nas lendas, o Pé-de-Garrafa, ser peludo com pegadas redondas que engana caçadores, e o Minhocão, criatura que escava lagoas, assombram as noites pantaneiras.
+
+### Água: uma esponja gigante
+<!-- secao: agua -->
+
+O Pantanal faz parte da bacia do Alto Paraguai. Seus rios nascem nos planaltos do entorno e descem para a planície: o Cuiabá, o Taquari, o Miranda, o Aquidauana e o próprio Paraguai, que corta a região de norte a sul e depois segue para o Paraná.
+
+A planície funciona como uma esponja gigante. Na época da cheia, ela armazena enorme volume de água, diminuindo a força das enchentes rio abaixo e liberando-a aos poucos. As águas levam sedimentos e nutrientes, que fertilizam os campos e alimentam cadeias inteiras: peixes, aves aquáticas, jacarés e capivaras dependem do pulso das águas.
+
+O Taquari forma um leque aluvial, uma espécie de delta interior, e muda de curso com frequência. Por isso o que acontece nos planaltos, como o desmatamento, o assoreamento e os represamentos, afeta o Pantanal lá embaixo, e é por isso que proteger as cabeceiras é tão importante quanto proteger a planície.
+
+### Ciência e curiosidades
+<!-- secao: ciencia -->
+
+O Pantanal é um dos melhores lugares do mundo para ver fauna. Concentra a maior população de jacaré-do-pantanal, de capivaras e de aves aquáticas, e é onde a onça-pintada é avistada com mais facilidade, sobretudo na região de Porto Jofre, em Mato Grosso, onde se faz observação em barcos.
+
+A Embrapa Pantanal, em Corumbá, estuda o ciclo das águas, a pecuária sustentável e o manejo do campo. O Sesc Pantanal, em Mato Grosso, mantém a maior reserva particular do país, e reservas como a Fazenda Rio Negro mostram que produção e conservação podem andar juntas. A arara-azul-grande, a maior arara do mundo, ficou ameaçada, mas projetos de proteção de ninhos recuperaram suas populações no Pantanal.
+
+O Pantanal Mato-Grossense foi reconhecido pela Unesco como Patrimônio Natural da Humanidade, e algumas áreas são sítios Ramsar, de proteção de zonas úmidas de importância internacional.
+
+### Para visitar e para proteger
+<!-- secao: visitar -->
+
+A Transpantaneira, estrada de terra com mais de uma centena de pontes de madeira, liga Poconé a Porto Jofre, em Mato Grosso, e é um corredor de observação de aves e animais. No Mato Grosso do Sul, a Estrada Parque Pantanal e a cidade de Corumbá são portas de entrada. O Parque Nacional do Pantanal Mato-Grossense protege uma área alagável no sul de Mato Grosso. Perto dali, Bonito e a Serra da Bodoquena oferecem rios de águas cristalinas.
+
+As melhores épocas variam: na seca, de julho a outubro, os animais se concentram nas lagoas, e fica mais fácil ver; na cheia, a paisagem se enche de água e de aves. Hospedar-se em pousadas e fazendas que fazem turismo responsável, contratar guias locais e respeitar a distância dos animais mantém a renda no Pantanal e dá valor à vida silvestre.
+
+## Fichas de espécies
+
+### Onça-pintada
+
+- **Nome científico:** Panthera onca
+- **Tipo:** fauna
+
+No Pantanal, as onças são menores e mais claras do que as da Amazônia. Caçam jacarés e capivaras e nadam muito bem.
+
+### Jacaré-do-pantanal
+
+- **Nome científico:** Caiman yacare
+- **Tipo:** fauna
+
+Réptil de porte médio, de focinho largo e cor escura, que se aquece em barrancos e se concentra nas lagoas na seca.
+
+### Tuiuiú
+
+- **Nome científico:** Jabiru mycteria
+- **Tipo:** fauna
+
+Ave símbolo do Pantanal: pernas longas, bico preto enorme e um colar vermelho no pescoço. Constrói ninhos enormes no alto das árvores.
+
+### Arara-azul-grande
+
+- **Nome científico:** Anodorhynchus hyacinthinus
+- **Tipo:** fauna
+
+A maior arara do mundo, de plumagem azul-cobalto e mancha amarela ao redor do olho e do bico. Nidifica em buracos de manduvi.
+
+### Capivara
+
+- **Nome científico:** Hydrochoerus hydrochaeris
+- **Tipo:** fauna
+
+O maior roedor do mundo, de corpo grande, focinho largo e sem cauda. Vive em grupos perto da água.
+
+### Ariranha
+
+- **Nome científico:** Pteronura brasiliensis
+- **Tipo:** fauna
+
+Lontra gigante, de mancha clara na garganta. Vive em grupos barulhentos que pescam juntos.
+
+### Aguapé
+
+- **Nome científico:** Eichhornia crassipes
+- **Tipo:** flora
+
+Planta aquática que flutua, com folhas em roseta e flores lilás. Forma ilhas flutuantes, as camalotes, que levam bichos pela água.
+
+### Paratudo
+
+- **Nome científico:** Tabebuia aurea
+- **Tipo:** flora
+
+Árvore de tronco tortuoso e flores amarelas na seca. É considerada símbolo do Pantanal e é usada na medicina popular.
+
+## Quiz
+
+### Pergunta 1
+O que caracteriza o Pantanal?
+
+- [x] É uma grande planície alagável.
+- [ ] É um deserto.
+- [ ] É uma cordilheira.
+- [ ] É uma ilha.
+
+**Explicação:** É a maior área úmida tropical do planeta, com um ciclo anual de cheia e seca.
+
+### Pergunta 2
+Qual é a ave símbolo do Pantanal?
+
+- [x] Tuiuiú
+- [ ] Sabiá
+- [ ] João-de-barro
+- [ ] Quero-quero
+
+**Explicação:** O tuiuiú, com seu bico preto e o colar vermelho.
+
+### Pergunta 3
+Qual é o maior roedor do mundo, comum no Pantanal?
+
+- [ ] Paca
+- [x] Capivara
+- [ ] Cutia
+- [ ] Preá
+
+**Explicação:** A capivara pode passar de 50 kg.
+
+### Pergunta 4
+Por que o desmatamento nas cabeceiras dos rios afeta o Pantanal?
+
+- [x] Porque muda o fluxo de água e sedimentos que descem para a planície.
+- [ ] Porque aquece o mar.
+- [ ] Porque seca o vento.
+- [ ] Não afeta.
+
+**Explicação:** O Pantanal depende da água que desce do planalto.
+
+### Pergunta 5
+O que é o tereré?
+
+- [ ] Uma dança.
+- [x] Erva-mate gelada tomada em uma guampa.
+- [ ] Um peixe.
+- [ ] Uma festa.
+
+**Explicação:** É a versão gelada do chimarrão, típica de Mato Grosso do Sul e do Paraguai.
+
+## Fontes
+Texto escrito a partir de conhecimento geral de divulgação e de materiais do IBGE, do MMA, do ICMBio e da Embrapa Pantanal. Os números de área e espécies vêm do IBGE e da Flora do Brasil 2020.
