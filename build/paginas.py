@@ -267,9 +267,10 @@ class Site:
         k, corpo = s["kind"], ""
         if k == "texto":
             if s["id"] == "paisagem": corpo += self.vista_aerea(id)   # a vista aérea abre a seção "Paisagem e clima"
-            if s["s"].get("chuva") and id != "brasil":
-                corpo += f'<div class="chuva-bioma" data-bioma="{id}"></div>'
-            corpo += "".join(f"<p>{E(t)}</p>" for t in s["s"]["p"])
+            ps = [f"<p>{E(t)}</p>" for t in s["s"]["p"]]
+            if s["s"].get("chuva") and id != "brasil":   # o gráfico de chuva fica entre o 3º e o 4º parágrafo (no fim, se a seção tiver menos de 4)
+                ps.insert(min(3, len(ps)), f'<div class="chuva-bioma" data-bioma="{id}"></div>')
+            corpo += "".join(ps)
         elif k == "especies" and id in self.fotos and any(e["c"] in self.fotos[id] for e in c["especies"]):
             corpo += self.carrossel(id, c["especies"], self.fotos[id])
             corpo += '<p class="cap">Fotos de espécimes com licença livre, do Wikimedia Commons; autor e licença aparecem em cada ficha.</p>'
