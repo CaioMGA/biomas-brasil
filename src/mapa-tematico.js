@@ -139,6 +139,7 @@
     const ctx = document.createElement("canvas").getContext("2d");
     const PRIO = { paises: 1, rios: 2, cidades: 3, estados: 4, grade: 5 };
     const ANGULOS = [0, -15, 15, -30, 30, -45, 45, -60, 60, -75, 75, 90];
+    const regiao = new Path2D((d.limite_oficial || "") + d.limite);   // o bioma (para os nomes dos países desviarem dele)
     const cache = {};   // encaixe dos nomes de países por escala (u arredondado): evita recalcular a cada redimensionamento mínimo
 
     // caixas pequenas ao longo do eixo do texto (aproximam um retângulo girado sem bloquear a área inteira)
@@ -158,13 +159,14 @@
         for (const [cx, cy] of cands) {
           if (!ctx.isPointInPath(p.pais.path, cx * u, cy * u)) continue;
           for (const ang of ANGULOS) {
-            const a = ang * Math.PI / 180, ca = Math.cos(a), sa = Math.sin(a); let ok = true;
+            const a = ang * Math.PI / 180, ca = Math.cos(a), sa = Math.sin(a); let ok = true, sobre = 0;
             for (const s of [-1, -.5, 0, .5, 1]) { for (const o of [-1, 0, 1]) {
               const lx = s * (w / 2 + 3), ly = o * (h / 2 + 2), x = cx + lx * ca - ly * sa, y = cy + lx * sa + ly * ca;
               if (x < 6 || y < 6 || x > Wp - 6 || y > Hp - 6 || !ctx.isPointInPath(p.pais.path, x * u, y * u)) { ok = false; break; }
+              if (regiao && ctx.isPointInPath(regiao, x * u, y * u)) sobre++;   // prefere não cobrir o bioma
             } if (!ok) break; }
             if (!ok) continue;
-            const custo = Math.abs(ang) / 20 + Math.hypot(cx - polo[0], cy - polo[1]) / (.12 * Wp);
+            const custo = Math.abs(ang) / 20 + Math.hypot(cx - polo[0], cy - polo[1]) / (.12 * Wp) + sobre * .5;
             if (!melhor || custo < melhor.custo) melhor = { cx, cy, ang, custo };
           }
         }
