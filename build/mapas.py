@@ -75,6 +75,7 @@ def dados_cliente(d):
             o["front"] = caminho(P, c.get("fronteiras", []), False)
         elif c["id"] == "estados":
             o["rotulos"] = [{"nome": i["nome"], "p": list(P(*i["rotulo"]))} for i in it if i.get("rotulo")]
+            o["fills"] = [{"d": caminho(P, i["rings"], True), "i": i.get("cor", 0)} for i in it if i.get("rings")]   # estados pintados (cada um com sua cor); o bioma é desenhado por cima, de uma cor só
             o["front"] = caminho(P, c.get("fronteiras", []), False)
         elif c["id"] == "massas":
             g = {}

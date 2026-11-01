@@ -36,8 +36,10 @@
     svg.append(sv("rect", { width: d.w, height: d.h, class: "mt-terra" }));
     const cp = por("paises");
     if (cp) { const g = sv("g", { class: "mt-cam-paises" }); cp.itens.forEach((p, i) => g.append(sv("path", { d: p.d, class: `mt-pais mt-pais-${i % 6}` }))); svg.append(g); add("paises", g); }
+    const cef = por("estados");   // estados pintados em cores diferentes; o bioma vem por cima, sempre de uma cor só
+    if (cef && cef.fills && cef.fills.length) { const g = sv("g", { class: "mt-cam-ufcor" }); cef.fills.forEach(f => g.append(sv("path", { d: f.d, class: `mt-ufc mt-ufc-${f.i % 6}` }))); svg.append(g); add("estados", g); }
     const gg = sv("g", { class: "mt-cam-grade" }); gg.append(sv("path", { d: d.grade.d, class: "mt-grade" })); svg.append(gg); add("grade", gg);
-    d.grade.rotulos.forEach(r => { const p = pino("grade", r.p[0], r.p[1], rotulo(r.t, "mt-rot-grade", r.eixo === "x" ? { x: 3, y: 13 } : { x: 4, y: -4 })); pins.push({ pin: p, camada: "grade" }); });
+    d.grade.rotulos.forEach(r => { const p = pino("grade", r.p[0], r.p[1], rotulo(r.t, "mt-rot-grade", r.eixo === "x" ? { x: 3, y: 13 } : { x: 4, y: -4 })); pins.push({ pin: p, rot: p.firstChild, camada: "grade", fixo: r.eixo === "x" ? [3, 2] : [4, -16] }); });
 
     // ---- a região (o bioma inteiro) e a água
     if (d.limite_oficial) svg.append(sv("path", { d: d.limite_oficial, class: "mt-regiao" }));   // a parte brasileira (IBGE) também é preenchida; as duas bases não coincidem exatamente
@@ -83,7 +85,7 @@
       const t = `${it.nome} (${it.uf}) — localidade ${it.tipo === "indigena" ? "indígena" : "quilombola"}, Censo 2022 (IBGE); ponto, não é o limite do território.`;
       p.addEventListener("pointerenter", () => mostrar(t, p)); p.addEventListener("click", () => mostrar(t, p)); pins.push({ pin: p, camada: "povos" });
     }
-    if (cp) cp.itens.forEach(p => { if (!p.p) return; const g = pino("paises", p.p[0], p.p[1], rotulo(p.nome, "mt-rot-pais", { "text-anchor": "middle" })); pins.push({ pin: g, camada: "paises" }); });
+    if (cp) cp.itens.forEach(p => { if (!p.p) return; const g = pino("paises", p.p[0], p.p[1], rotulo(p.nome.toUpperCase(), "mt-rot-pais", { "text-anchor": "middle", dy: ".35em" })); pins.push({ pin: g, rot: g.firstChild, camada: "paises", pais: { path: new Path2D(p.d), polo: p.p } }); });
 
     // ---- escala e norte (sempre visíveis)
     const kmAlvo = (d.w / d.upk) * .16, kms = [10, 20, 50, 100, 200, 500], km = kms.reduce((a, b) => Math.abs(b - kmAlvo) < Math.abs(a - kmAlvo) ? b : a);
@@ -105,7 +107,7 @@
       li(mini(sv("circle", { cx: 10, cy: 7, r: 4.5, class: "mt-pt mt-pt-cid" })), "sede municipal"),
       li(mini(sv("path", { d: "M10 1L15.5 11.5h-11z", class: "mt-pt mt-pt-indigena" })), "localidade indígena"),
       li(mini(sv("path", { d: "M10 1L15 7 10 13 5 7z", class: "mt-pt mt-pt-quilombola" })), "localidade quilombola"),
-      li(mini(sv("path", { d: "M1 7h18", class: "mt-front" })), "fronteira entre países"), li(mini(sv("path", { d: "M1 7h18", class: "mt-uf" })), "divisa de estados"));
+      li(mini(sv("path", { d: "M1 7h18", class: "mt-front" })), "fronteira entre países"), li(mini(sv("path", { d: "M1 7h18", class: "mt-uf" })), "divisa de estados (estados do Brasil em cores diferentes)"));
     leg.replaceChildren(...L); leg.removeAttribute("aria-hidden");
 
     // ---- camadas (checkbox) e filtros (radios); cada um usa a sua própria máscara
@@ -132,20 +134,75 @@
       });
     });
 
-    // ---- escala dos marcadores e rótulos em px, e rótulos sem sobreposição (os primeiros da lista têm prioridade)
+    // ---- escala dos marcadores e rótulos em px; nenhum texto fica sobre outro (ordem de prioridade abaixo)
     const oculto = el => el.classList.contains("mt-oc") || el.classList.contains("mt-fil");
+    const ctx = document.createElement("canvas").getContext("2d");
+    const PRIO = { paises: 1, rios: 2, cidades: 3, estados: 4, grade: 5 };
+    const ANGULOS = [0, -15, 15, -30, 30, -45, 45, -60, 60, -75, 75, 90];
+    const cache = {};   // encaixe dos nomes de países por escala (u arredondado): evita recalcular a cada redimensionamento mínimo
+
+    // caixas pequenas ao longo do eixo do texto (aproximam um retângulo girado sem bloquear a área inteira)
+    const caixasTexto = (cx, cy, w, h, ang) => {
+      const n = Math.max(1, Math.ceil(w / (h * .9))), a = ang * Math.PI / 180, out = [];
+      for (let i = 0; i < n; i++) { const l = -w / 2 + (i + .5) * w / n; out.push([cx + l * Math.cos(a) - h / 2, cy + l * Math.sin(a) - h / 2, h, h]); }
+      return out;
+    };
+    // procura posição, ângulo e tamanho de fonte para o nome caber INTEIRO dentro do território (testa pontos ao longo do texto)
+    function encaixar(p, u, Wp, Hp) {
+      const t = p.rot, polo = [p.pais.polo[0] / u, p.pais.polo[1] / u];
+      for (const fs of [17, 15, 13, 11, 10]) {
+        t.style.fontSize = fs + "px"; const w = t.getComputedTextLength(), h = fs * 1.2;
+        const passos = 14, cands = [polo];
+        for (let i = 1; i < passos; i++) for (let j = 1; j < Math.round(passos * Hp / Wp) + 1; j++) cands.push([Wp * i / passos, Hp * j / (Math.round(passos * Hp / Wp) + 1)]);
+        let melhor = null;
+        for (const [cx, cy] of cands) {
+          if (!ctx.isPointInPath(p.pais.path, cx * u, cy * u)) continue;
+          for (const ang of ANGULOS) {
+            const a = ang * Math.PI / 180, ca = Math.cos(a), sa = Math.sin(a); let ok = true;
+            for (const s of [-1, -.5, 0, .5, 1]) { for (const o of [-1, 0, 1]) {
+              const lx = s * (w / 2 + 3), ly = o * (h / 2 + 2), x = cx + lx * ca - ly * sa, y = cy + lx * sa + ly * ca;
+              if (x < 6 || y < 6 || x > Wp - 6 || y > Hp - 6 || !ctx.isPointInPath(p.pais.path, x * u, y * u)) { ok = false; break; }
+            } if (!ok) break; }
+            if (!ok) continue;
+            const custo = Math.abs(ang) / 20 + Math.hypot(cx - polo[0], cy - polo[1]) / (.12 * Wp);
+            if (!melhor || custo < melhor.custo) melhor = { cx, cy, ang, custo };
+          }
+        }
+        if (melhor) return { ...melhor, w, h, fs };
+      }
+      return null;
+    }
     function organizar() {
       const r = svg.getBoundingClientRect(); if (!r.width) return;
-      const u = 1 / Math.min(r.width / d.w, r.height / d.h);
-      const caixas = [], cabe = (x, y, w, h) => !caixas.some(b => x < b[0] + b[2] && x + w > b[0] && y < b[1] + b[3] && y + h > b[1]);
-      pins.forEach(p => {
+      const u = 1 / Math.min(r.width / d.w, r.height / d.h), Wp = d.w / u, Hp = d.h / u, caixas = [];
+      const cabe = (x, y, w, h) => !caixas.some(b => x < b[0] + b[2] && x + w > b[0] && y < b[1] + b[3] && y + h > b[1]);
+      const cabem = bs => bs.every(b => cabe(...b));
+      pins.forEach(p => {   // marcadores, escala e norte: posição fixa em px
         const x = +p.pin.dataset.x, y = +p.pin.dataset.y;
         p.pin.setAttribute("transform", `translate(${x} ${y}) scale(${u})`);
-        if (p.escala) p.barra.setAttribute("x2", (p.km * d.upk) / u);
-        if (!p.rot) return;
+        if (p.escala) { p.barra.setAttribute("x2", (p.km * d.upk) / u); caixas.push([x / u - 4, y / u - 26, (p.km * d.upk) / u + 70, 38]); }
+        else if (!p.rot && !p.camada) caixas.push([x / u - 22, y / u - 26, 44, 60]);   // seta do norte
+      });
+      const rot = pins.filter(p => p.rot).sort((a, b) => PRIO[a.camada] - PRIO[b.camada]);
+      rot.forEach(p => {
+        const x = +p.pin.dataset.x, y = +p.pin.dataset.y, px = x / u, py = y / u;
         if (oculto(p.pin)) { p.rot.style.display = "none"; return; }
         p.rot.style.display = "";
-        const px = x / u, py = y / u, w = p.rot.textContent.length * 6.4 + 4;
+        if (p.pais) {   // nome do país: contido no território, com rotação se precisar
+          const k = Math.round(u * 20) + "|" + Math.round(r.width / 30);
+          const e = cache[p.rot.textContent + k] || (cache[p.rot.textContent + k] = encaixar(p, u, Wp, Hp) || { nada: true });
+          if (e.nada) { p.rot.style.display = "none"; return; }
+          p.rot.style.fontSize = e.fs + "px";
+          p.pin.setAttribute("transform", `translate(${e.cx * u} ${e.cy * u}) scale(${u}) rotate(${e.ang})`);
+          caixasTexto(e.cx, e.cy, e.w, e.h, e.ang).forEach(b => caixas.push(b));
+          return;
+        }
+        const w = p.rot.textContent.length * 6.4 + 4;
+        if (p.fixo) {   // grade: posição fixa; some se bater em algo mais importante
+          const b = [px + p.fixo[0], py + p.fixo[1], w, 14];
+          if (!cabe(...b)) { p.rot.style.display = "none"; return; }
+          caixas.push(b); return;
+        }
         const tent = p.centro ? [[px - w / 2, py - 8]] : [[px + 7, py - 8], [px - 7 - w, py - 8], [px - w / 2, py + 8]];
         const ok = tent.find(t => cabe(t[0], t[1], w, 14));
         if (!ok) { p.rot.style.display = "none"; return; }
