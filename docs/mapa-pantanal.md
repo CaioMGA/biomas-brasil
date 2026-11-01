@@ -30,3 +30,10 @@ RESOLVE Ecoregions 2017 (CC BY 4.0; citar Dinerstein et al., 2017, BioScience); 
 ## Pendências de validação
 
 O JS/CSS só foi validado por sintaxe e pela geometria renderizada em PNG. Falta o teste no Chrome (desktop e celular): console, camadas, filtros, painel recolhível, painel de detalhes, listas, colisão de rótulos e escala.
+
+## Mapa de localização (América do Sul)
+
+Figura estática no começo da página (SVG embutido, sem JavaScript): oceano azul, continente amarelo, Brasil em amarelo mais forte com os estados contornados e o bioma (inteiro, com as partes na Bolívia e no Paraguai) contornado e pintado na cor de destaque. Países de apoio, estados do Brasil: Natural Earth 1:10 milhões (domínio público); contorno do bioma: o mesmo limite RESOLVE do mapa temático.
+
+- Contexto da América do Sul (igual para todos os biomas, uma vez só): `python3 -I build/localizacao.py contexto <pasta com ne_10m_admin_0_countries/ e ne_10m_admin_1_states_provinces/>` → `data/localizacao/america-do-sul.json`.
+- Contorno do bioma e países que ele toca: `python3 -I build/localizacao.py bioma pantanal` → `data/localizacao/pantanal.json` (lê `data/mapas/pantanal.json`).
