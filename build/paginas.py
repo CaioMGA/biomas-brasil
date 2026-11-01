@@ -157,8 +157,8 @@ class Site:
                        f'<figcaption>{cred}</figcaption></figure>')
             else:
                 fig = '<figure class="car-fig car-sem"><div>Sem foto de licença livre confirmada para esta espécie.</div></figure>'
-            slides.append(f'<li class="car-slide" role="group" aria-roledescription="slide" aria-label="{i + 1} de {n}: {E(e["n"])}">{fig}'
-                          f'<div class="sp"><h3>{E(e["n"])}<small>{E(e["t"])}</small></h3><em>{E(e["c"])}</em><p>{E(e["d"])}</p></div></li>')
+            slides.append(f'<li class="car-slide" role="group" aria-roledescription="slide" aria-label="{i + 1} de {n}: {E(e["n"])}"><div class="sp car-card">{fig}'
+                          f'<div class="car-txt"><h3>{E(e["n"])}<small>{E(e["t"])}</small></h3><em>{E(e["c"])}</em><p>{E(e["d"])}</p></div></div></li>')
         return (f'<div class="car" role="region" aria-roledescription="carrossel" aria-label="Fichas de espécies: {E(self.nome(id))}">'
                 f'<div class="car-ctl" hidden><button type="button" class="car-prev" aria-label="Espécie anterior">←</button>'
                 f'<span class="car-n" aria-live="polite">1 de {n}</span><button type="button" class="car-next" aria-label="Próxima espécie">→</button></div>'
