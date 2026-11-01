@@ -2257,7 +2257,7 @@ function drawFx(dt) {
   // Tutorial: destaca cada recurso da interface com botões Anterior e Próximo; mapa e painel ficam inertes enquanto ele está aberto.
   const mapRect = () => { const sr = $("stage").getBoundingClientRect(), pr = $("panel").getBoundingClientRect(), d = innerWidth > 860; return { left: sr.left, top: sr.top, width: d ? pr.left - 24 - sr.left : sr.width, height: sr.height }; };
   const STEPS = [
-    { rect: mapRect, title: "O mapa", text: "Arraste para mover o mapa e use a roda do mouse (ou dois dedos no celular) para dar zoom. Clique em um bioma para destacá-lo e ver as informações dele no painel.", where: "inside" },
+    { rect: mapRect, title: "O mapa", text: "Arraste para mover o mapa e use a roda do mouse (ou dois dedos no celular) para dar zoom. Clique em um bioma para destacá-lo e ver as informações dele no painel.", where: "center" },
     { sel: "#nav .navrow", title: "Vista e bússola", text: "Arraste a bússola para girar e inclinar o mapa; um clique nela põe o norte para cima. O botão 3D alterna entre as vistas 2D e 3D, ⌂ reinicia a visão e + e − aproximam e afastam." },
     { sel: "#chips", title: "Biomas", text: "Escolha um bioma por aqui. A mira ao lado de cada nome enquadra o bioma inteiro no mapa." },
     { sel: "#layers", title: "Camadas", text: "Ligue e desligue o relevo, as divisas, as siglas dos estados, os rios, as capitais e outros detalhes do mapa." },
@@ -2276,6 +2276,7 @@ function drawFx(dt) {
     const inertEls = [document.querySelector("main"), sitenav, $("loader")].filter(Boolean); inertEls.forEach(e => { e.inert = true; });
     let i = 0;
     const rectOf = st => {
+      if (innerWidth <= 860 && st.sel !== "#panel" && scrollY > 0) scrollTo(0, 0);   // celular: o painel fica abaixo do mapa; os demais passos medem e mostram o destaque com a página no topo
       if (st.rect) return st.rect();
       const e = document.querySelector(st.sel); if (!e) return null;
       const nav = e.closest(".nav"); if (nav) e.scrollIntoView({ block: "nearest" });
@@ -2299,12 +2300,17 @@ function drawFx(dt) {
       skip.addEventListener("click", end);
       nav.append(prev, next, skip);
       card.append(mk("p", "tut-step", `Passo ${i + 1} de ${STEPS.length}`), h, mk("p", "tut-text", st.text), nav);
-      // posição do cartão: ao lado do destaque, senão abaixo ou acima, senão dentro dele (mapa e painel grandes)
+      // posição do cartão: no centro da tela (primeiro passo) ou na primeira posição ao redor do destaque que não o cubra; só cai por cima dele quando nada cabe (mapa e painel grandes)
       const cw = card.offsetWidth, chh = card.offsetHeight, g = 14, vw = innerWidth, vh = innerHeight, cl = (v, a, b) => Math.max(a, Math.min(b, v));
-      const cands = st.where === "inside" ? [] : [[hl + hw + g, ht], [hl - cw - g, ht], [hl, ht + hh + g], [hl, ht - chh - g]];
-      let pos = cands.find(([x, y]) => x >= 8 && y >= 8 && x + cw <= vw - 8 && y + chh <= vh - 8);
-      if (!pos) pos = [hl + 16, ht + hh - chh - 16];
-      card.style.left = cl(pos[0], 8, Math.max(8, vw - cw - 8)) + "px"; card.style.top = cl(pos[1], 8, Math.max(8, vh - chh - 8)) + "px";
+      const maxX = Math.max(8, vw - cw - 8), maxY = Math.max(8, vh - chh - 8);
+      const sobre = ([x, y]) => Math.max(0, Math.min(x + cw, hl + hw) - Math.max(x, hl)) * Math.max(0, Math.min(y + chh, ht + hh) - Math.max(y, ht));   // área em que o cartão cobriria o destaque
+      let pos;
+      if (st.where === "center") pos = [(vw - cw) / 2, (vh - chh) / 2];
+      else {
+        const cands = st.where === "inside" ? [] : [[hl + hw + g, ht], [hl - cw - g, ht], [hl, ht + hh + g], [hl + hw - cw, ht + hh + g], [hl, ht - chh - g], [hl + hw - cw, ht - chh - g]].map(([x, y]) => [cl(x, 8, maxX), cl(y, 8, maxY)]);
+        pos = cands.find(p => sobre(p) === 0) || (cands.length ? cands.reduce((m, p) => sobre(p) < sobre(m) ? p : m) : [hl + 16, ht + hh - chh - 16]);
+      }
+      card.style.left = cl(pos[0], 8, maxX) + "px"; card.style.top = cl(pos[1], 8, maxY) + "px";
       (i === STEPS.length - 1 ? next : next).focus({ preventScroll: true });
     }
     function end() {
