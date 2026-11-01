@@ -48,14 +48,14 @@
     svg.append(sv("path", { d: d.limite, class: "mt-regiao" }));
     const cm = por("massas");
     if (cm) { const g = sv("g", { class: "mt-cam-massas" }); cm.grupos.filter(x => x.d).forEach(x => g.append(item("massas", sv("path", { d: x.d, class: "mt-agua", "fill-rule": "evenodd", "data-tipo": x.tipo })))); svg.append(g); add("massas", g); }
-    const cr = por("rios");
-    if (cr) { const g = sv("g", { class: "mt-cam-rios" }); cr.grupos.filter(x => x.d).forEach(x => {
+    const rioCamadas = ["amazonas", "rios"].map(k => [k, por(k)]).filter(([, c]) => c);   // "amazonas": o canal principal (fixo, sem caixa de seleção); "rios": os afluentes
+    for (const [kr, cr] of rioCamadas) { const g = sv("g", { class: `mt-cam-${kr}` }); cr.grupos.filter(x => x.d).forEach(x => {
       const p = sv("path", { d: x.d, class: "mt-rio", "vector-effect": "non-scaling-stroke" });
       if (x.attrs) Object.assign(p.dataset, x.attrs); else p.dataset[x.campo || "navegavel"] = x.v ?? x.navegavel;
       if (x.fixo) p.dataset.fixo = "1";
       if (x.texto) { p.addEventListener("pointerenter", () => mostrar(x.texto, p)); p.addEventListener("click", () => mostrar(x.texto, p)); }
-      g.append(item("rios", p));
-    }); svg.append(g); add("rios", g); }
+      g.append(item(kr, p));
+    }); svg.append(g); add(kr, g); }
 
     // ---- unidades de conservação (PI: contorno contínuo; US: tracejado)
     const cti = por("tis");
@@ -91,7 +91,7 @@
     svg.append(sv("path", { d: d.contorno || d.limite, class: "mt-regiao-borda", "vector-effect": "non-scaling-stroke" }));
 
     // ---- rótulos e marcadores (px), do mais ao menos prioritário para a colisão
-    if (cr) for (const r of cr.rotulos || []) { const p = pino("rios", r.p[0], r.p[1], rotulo(r.nome, "mt-rot-rio", { "text-anchor": "middle" })); if (r.attrs) Object.assign(p.dataset, r.attrs); else p.dataset[r.campo || "navegavel"] = r.v ?? r.navegavel; if (r.fixo) p.dataset.fixo = "1"; item("rios", p); pins.push({ pin: p, rot: p.firstChild, camada: "rios", centro: true }); }
+    for (const [kr, cr] of rioCamadas) for (const r of cr.rotulos || []) { const p = pino(kr, r.p[0], r.p[1], rotulo(r.nome, "mt-rot-rio", { "text-anchor": "middle" })); if (r.attrs) Object.assign(p.dataset, r.attrs); else p.dataset[r.campo || "navegavel"] = r.v ?? r.navegavel; if (r.fixo) p.dataset.fixo = "1"; item(kr, p); pins.push({ pin: p, rot: p.firstChild, camada: kr, centro: true }); }
     const ccid = por("cidades");
     if (ccid) for (const it of ccid.itens) {
       const p = pino("cidades", it.p[0], it.p[1], sv("circle", { r: 4.5, class: "mt-pt mt-pt-cid" }), rotulo(it.nome, "mt-rot-cid", { x: 8, y: 4 }));
@@ -129,6 +129,7 @@
     const L = [li(mini(ret("mt-regiao mt-leg-reg")), d.limite_nome)];
     if (d.limite_oficial) L.push(li(mini(sv("path", { d: "M1 7h18", class: "mt-oficial" })), d.limite_oficial_nome || "limite oficial"));
     L.push(li(mini(ret("mt-agua")), "água permanente", () => ativa("massas") && vis("massas")),
+      li(mini(sv("path", { d: "M1 11C7 11 8 3 19 3", class: "mt-rio", "data-margem": "principal", fill: "none" })), "Rio Amazonas (canal principal)", () => ativa("amazonas")),
       li(mini(sv("path", { d: "M1 11C7 11 8 3 19 3", class: "mt-rio", fill: "none" })), "rio ou córrego", () => ativa("rios") && vis("rios", e => tem(e, "mt-rio"))),
       li(mini(ret("mt-ti")), "Terra Indígena", () => ativa("tis")),
       li(mini(ret("mt-uc mt-uc-PI")), "proteção integral (contorno contínuo)", () => ativa("ucs") && vis("ucs", e => tem(e, "mt-uc-PI"))),
@@ -170,7 +171,7 @@
     // ---- escala dos marcadores e rótulos em px; nenhum texto fica sobre outro (ordem de prioridade abaixo)
     const oculto = el => el.classList.contains("mt-oc") || el.classList.contains("mt-fil");
     const ctx = document.createElement("canvas").getContext("2d");
-    const PRIO = { paises: 1, rios: 2, cidades: 3, ecorregioes: 4, estados: 5, grade: 6 };
+    const PRIO = { paises: 1, amazonas: 2, rios: 2, cidades: 3, ecorregioes: 4, estados: 5, grade: 6 };
     const ANGULOS = [0, -15, 15, -30, 30, -45, 45, -60, 60, -75, 75, 90];
     const regiao = new Path2D((d.limite_oficial || "") + d.limite);   // o bioma (para os nomes dos países desviarem dele)
     const cache = {};   // encaixe dos nomes de países por escala (u arredondado): evita recalcular a cada redimensionamento mínimo

@@ -83,7 +83,7 @@ def dados_cliente(d):
             g = {}
             for m in it: g.setdefault(m["tipo"], []).append(m["rings"])
             o["grupos"] = [{"tipo": t, "d": caminho(P, [r for rs in v for r in rs], True)} for t, v in g.items()]
-        elif c["id"] == "rios" and c.get("por_rio"):
+        elif c.get("por_rio"):   # rios individuais (a camada "amazonas" é a fixa; "rios" são os afluentes, que entram nos filtros)
             # cada rio é um elemento próprio, com atributos para os filtros (valores múltiplos separados por "|", ex.: países e estados que ele atravessa)
             fixos = c.get("fixos", [])
             o["grupos"] = [{"nome": r["nome"], "attrs": r["attrs"], "fixo": r["attrs"].get("margem") in fixos, "texto": r.get("texto", ""), "d": caminho(P, r["linhas"], False)} for r in it]
@@ -127,7 +127,7 @@ def secao_html(d, nome_bioma):
     tis = por_id["tis"]["itens"] if "tis" in por_id else []
     ligados = "".join(
         f'<label class="mt-chk"><input type="checkbox" data-camada="{E(c["id"])}"{" checked" if c["ligada"] else ""}> {E(c["titulo"])}</label>'
-        for c in d["camadas"]) + '<label class="mt-chk"><input type="checkbox" data-camada="grade"> Grade de coordenadas</label>'
+        for c in d["camadas"] if not c.get("fixa")) + '<label class="mt-chk"><input type="checkbox" data-camada="grade"> Grade de coordenadas</label>'   # camadas "fixas" não têm caixa de seleção: sempre aparecem
     filtros = "".join(
         f'<fieldset class="mt-filtro" data-filtro="{E(f["id"])}" data-camada="{E(f["camada"])}" data-campo="{E(f["campo"])}"><legend>{E(f["titulo"])}</legend>'
         + "".join(f'<label><input type="radio" name="mt-{E(id)}-{E(f["id"])}" value="{E(v)}"{" checked" if i == 0 else ""}> {E(t)}</label>' for i, (v, t) in enumerate(f["opcoes"]))
