@@ -56,10 +56,11 @@ a { color: inherit; }
 .loc svg { display: block; width: 100%; height: auto; aspect-ratio: 1 / 1; border: 1px solid var(--rule); }
 .rd-main .loc-mini { margin: 6px 0 0; font-size: 13px; line-height: 1.35; color: var(--muted); text-align: center; }
 .loc-mar { fill: #a9d1ec; }
-.loc-terra { fill: #efe29d; stroke: #8c8c8c; stroke-width: .5px; vector-effect: non-scaling-stroke; stroke-linejoin: round; }
+.loc-terra { fill: #efe29d; }
+.loc-front { fill: none; stroke: #666; stroke-width: .5px; vector-effect: non-scaling-stroke; stroke-linejoin: round; }   /* fronteiras: por cima do bioma */
 .loc-br { fill: #efe29d; }
-.loc-uf { fill: none; stroke: #8c8c8c; stroke-width: .5px; vector-effect: non-scaling-stroke; stroke-linejoin: round; }
-.loc-br-borda { fill: none; stroke: #6f6f6f; stroke-width: .9px; vector-effect: non-scaling-stroke; stroke-linejoin: round; }
+.loc-uf { fill: none; stroke: #666; stroke-width: .5px; vector-effect: non-scaling-stroke; stroke-linejoin: round; }
+.loc-br-borda { fill: none; stroke: #555; stroke-width: .9px; vector-effect: non-scaling-stroke; stroke-linejoin: round; }
 .loc-bioma { fill: var(--accent); stroke: none; }
 .loc-bioma-borda { fill: none; stroke: #8c8c8c; stroke-width: .6px; vector-effect: non-scaling-stroke; stroke-linejoin: round; }
 .loc figcaption { display: grid; gap: 12px; font-size: 15px; line-height: 1.5; color: var(--muted); }
