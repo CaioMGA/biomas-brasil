@@ -266,6 +266,7 @@ class Site:
         h = f'<h2>{E(s["titulo"])}</h2>'
         k, corpo = s["kind"], ""
         if k == "texto":
+            if s["id"] == "paisagem": corpo += self.vista_aerea(id)   # a vista aérea abre a seção "Paisagem e clima"
             if s["s"].get("chuva") and id != "brasil":
                 corpo += f'<div class="chuva-bioma" data-bioma="{id}"></div>'
             corpo += "".join(f"<p>{E(t)}</p>" for t in s["s"]["p"])
@@ -319,7 +320,6 @@ class Site:
 <p><span class="tm" style="color:var(--muted);font-size:14px">{fmt_min(self.total[id])} de leitura</span></p>
 <a class="voltar" href="/#{"" if id == "brasil" else id}">← Ver no mapa</a>
 {localizacao.figura(self.root, id, nome)}
-{self.vista_aerea(id)}
 {secs}
 </main>
 </div>
