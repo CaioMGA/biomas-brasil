@@ -1,9 +1,12 @@
 {
   "intro": "A maior planície alagável do planeta, onde o ritmo é dado pelo sobe e desce das águas.",
   "emblema": { "n": "Tuiuiú", "porque": "É a ave símbolo do Pantanal, e seus ninhos enormes, no alto das árvores, marcam a paisagem da planície alagada." },
+  "painel": { "states": "Todo dentro de MS e MT, com área bem maior em Mato Grosso do Sul.", "abroad": "Bolívia e Paraguai. No mapa aparece em tom pálido.", "climate": "Tropical, com verão chuvoso e cheias que alagam a planície por meses.", "veg": "Mosaico de savana, campos inundáveis, matas e plantas aquáticas.", "curio": "É o menor bioma do país e a maior planície alagável do planeta. O IBGE o define pela hidrologia, não pela vegetação.", "endem": "Sem contagem de endemismo comparável entre os biomas nas fontes consultadas." },
   "secoes": [
     {
-      "id": "paisagem", "titulo": "Paisagem e clima", "chuva": true,
+      "id": "paisagem",
+      "titulo": "Paisagem e clima",
+      "chuva": true,
       "p": [
         "O Pantanal é uma imensa planície no centro da América do Sul, ocupando partes de Mato Grosso e Mato Grosso do Sul e se estendendo pela Bolívia e pelo Paraguai. Embora seja o menor dos biomas continentais do Brasil, é a maior área úmida tropical do planeta.",
         "Tudo gira em torno da água. A planície é tão plana, com um declive mínimo, que a chuva que cai nas terras mais altas ao redor, o planalto, escorre devagar para ela, e o rio Paraguai demora meses para escoar. O resultado é um ciclo de quatro fases: a enchente, quando os rios sobem; a cheia, com grande parte do terreno debaixo d'água; a vazante, quando a água recua; e a seca, em que os campos secam e as lagoas encolhem.",
@@ -12,7 +15,8 @@
       ]
     },
     {
-      "id": "gente", "titulo": "Gente e culturas",
+      "id": "gente",
+      "titulo": "Gente e culturas",
       "p": [
         "O Pantanal é terra de povos indígenas como os Guató, canoeiros que viveram nas ilhas e baías, os Kadiwéu, famosos pela cerâmica e pela pintura corporal, os Terena e os Bororo. Há também comunidades quilombolas e ribeirinhos, que vivem da pesca, do artesanato e de pequenas criações.",
         "A figura central é o pantaneiro, o peão que conduz o gado a cavalo em comitivas durante dias, dormindo ao relento, acompanhado de cozinheiro e de muitos cães. A pecuária extensiva sobre o campo nativo existe há mais de dois séculos e, quando bem manejada, convive com a vida silvestre.",
@@ -21,7 +25,8 @@
       ]
     },
     {
-      "id": "agua", "titulo": "Água: uma esponja gigante",
+      "id": "agua",
+      "titulo": "Água: uma esponja gigante",
       "p": [
         "O Pantanal faz parte da bacia do Alto Paraguai. Seus rios nascem nos planaltos do entorno e descem para a planície: o Cuiabá, o Taquari, o Miranda, o Aquidauana e o próprio Paraguai, que corta a região de norte a sul e depois segue para o Paraná.",
         "A planície funciona como uma esponja gigante. Na época da cheia, ela armazena enorme volume de água, diminuindo a força das enchentes rio abaixo e liberando-a aos poucos. As águas levam sedimentos e nutrientes, que fertilizam os campos e alimentam cadeias inteiras: peixes, aves aquáticas, jacarés e capivaras dependem do pulso das águas.",
@@ -29,7 +34,8 @@
       ]
     },
     {
-      "id": "ciencia", "titulo": "Ciência e curiosidades",
+      "id": "ciencia",
+      "titulo": "Ciência e curiosidades",
       "p": [
         "O Pantanal é um dos melhores lugares do mundo para ver fauna. Concentra a maior população de jacaré-do-pantanal, de capivaras e de aves aquáticas, e é onde a onça-pintada é avistada com mais facilidade, sobretudo na região de Porto Jofre, em Mato Grosso, onde se faz observação em barcos.",
         "A Embrapa Pantanal, em Corumbá, estuda o ciclo das águas, a pecuária sustentável e o manejo do campo. O Sesc Pantanal, em Mato Grosso, mantém a maior reserva particular do país, e reservas como a Fazenda Rio Negro mostram que produção e conservação podem andar juntas. A arara-azul-grande, a maior arara do mundo, ficou ameaçada, mas projetos de proteção de ninhos recuperaram suas populações no Pantanal.",
@@ -37,7 +43,8 @@
       ]
     },
     {
-      "id": "visitar", "titulo": "Para visitar e para proteger",
+      "id": "visitar",
+      "titulo": "Para visitar e para proteger",
       "p": [
         "A Transpantaneira, estrada de terra com mais de uma centena de pontes de madeira, liga Poconé a Porto Jofre, em Mato Grosso, e é um corredor de observação de aves e animais. No Mato Grosso do Sul, a Estrada Parque Pantanal e a cidade de Corumbá são portas de entrada. O Parque Nacional do Pantanal Mato-Grossense protege uma área alagável no sul de Mato Grosso. Perto dali, Bonito e a Serra da Bodoquena oferecem rios de águas cristalinas.",
         "As melhores épocas variam: na seca, de julho a outubro, os animais se concentram nas lagoas, e fica mais fácil ver; na cheia, a paisagem se enche de água e de aves. Hospedar-se em pousadas e fazendas que fazem turismo responsável, contratar guias locais e respeitar a distância dos animais mantém a renda no Pantanal e dá valor à vida silvestre."

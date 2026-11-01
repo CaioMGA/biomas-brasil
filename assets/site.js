@@ -2,6 +2,7 @@
    Inlinado no template do mapa (__COMUM__) e no início de assets/site.js. Não declara nada além de BiomasUI. */
 const BiomasUI = (() => {
   const NS = "http://www.w3.org/2000/svg";
+  const MES3C = ["JAN", "FEV", "MAR", "ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ"];   // abreviações de 3 letras do gráfico de chuva
   const MESES = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
   const n1 = v => v.toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
   const hash = s => { let h = 2166136261; for (const c of s) h = Math.imul(h ^ c.charCodeAt(0), 16777619); return h >>> 0; };
@@ -11,7 +12,7 @@ const BiomasUI = (() => {
   /* ---------- Gráfico de chuva: eixo em mm por mês, valor sobre cada barra e % do ano embaixo ---------- */
   function graficoChuva(r, topo, nome) {
     const max = Math.ceil(topo / 100) * 100;                  // mesmo eixo para todos os biomas, para comparar
-    const W = 430, H = 200, L = 38, T = 24, Bt = 44, ph = H - T - Bt, base = T + ph;
+    const W = 430, H = 216, L = 38, T = 24, Bt = 60, ph = H - T - Bt, base = T + ph;
     const y = v => T + ph * (1 - v / max);
     const total = r.mm.reduce((a, b) => a + b, 0);
     const col = (W - L) / 12, bw = col * .66;
@@ -22,10 +23,11 @@ const BiomasUI = (() => {
       const x = L + k * col + (col - bw) / 2, pk = k === r.pico;
       s += `<rect x="${x.toFixed(1)}" y="${y(v).toFixed(1)}" width="${bw.toFixed(1)}" height="${(base - y(v)).toFixed(1)}" class="ch-b${pk ? " ch-pk" : ""}"><title>${MESES[k]}: ${v} mm (${n1(v / total * 100)}% do ano)</title></rect>`;
       s += `<text x="${(x + bw / 2).toFixed(1)}" y="${(y(v) - 4).toFixed(1)}" text-anchor="middle" class="ch-v${pk ? " ch-pk" : ""}">${v}</text>`;
-      s += `<text x="${(x + bw / 2).toFixed(1)}" y="${base + 13}" text-anchor="middle" class="ch-m">${"JFMAMJJASOND"[k]}</text>`;
-      s += `<text x="${(x + bw / 2).toFixed(1)}" y="${base + 27}" text-anchor="middle" class="ch-p">${n1(v / total * 100)}%</text>`;
+      const cx = (x + bw / 2).toFixed(1);
+      s += `<text transform="translate(${(+cx + 3.5).toFixed(1)} ${base + 6}) rotate(-90)" text-anchor="end" class="ch-m">${MES3C[k]}</text>`;   // abreviação de 3 letras, na vertical
+      s += `<text x="${cx}" y="${base + 44}" text-anchor="middle" class="ch-p">${n1(v / total * 100)}%</text>`;
     });
-    s += `<text x="${L - 6}" y="${base + 27}" text-anchor="end" class="ch-ax">% ano</text></svg>`;
+    s += `<text x="${L - 6}" y="${base + 44}" text-anchor="end" class="ch-ax">% ano</text></svg>`;
     const d = wrap("chuva", s); d.setAttribute("data-nocount", "");   // o painel do mapa anima números; aqui eles ficam fixos
     const cap = document.createElement("p"); cap.className = "cap";
     cap.textContent = `Chuva média mensal (WorldClim 2.1, 1970–2000). Eixo e valores sobre as barras: milímetros por mês. Linha de baixo: parte da chuva do ano, que soma ${total.toLocaleString("pt-BR")} mm.`;
@@ -516,6 +518,11 @@ const BiomasUI = (() => {
   }
 
   if (!D) return;
+  // Créditos e fontes começam fechados; abrem quando o endereço ou o link do índice apontam para eles
+  const abrirCreditos = () => { if (location.hash === "#sec-creditos") { const d = document.querySelector("#sec-creditos details"); if (d) d.open = true; } };
+  abrirCreditos(); addEventListener("hashchange", abrirCreditos);
+  document.querySelectorAll('a[href="#sec-creditos"]').forEach(a => a.addEventListener("click", () => { const d = document.querySelector("#sec-creditos details"); if (d) d.open = true; }));
+
   if (D.id === "hub") {
     passaporte(document.getElementById("passaporte"));
     const decorar = () => document.querySelectorAll("a.card").forEach(a => {

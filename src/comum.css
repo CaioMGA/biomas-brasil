@@ -8,7 +8,7 @@
 .chuva .ch-b.ch-pk { opacity: 1; }
 .chuva .ch-v { font: 600 9.5px var(--body); fill: var(--muted); }
 .chuva .ch-v.ch-pk { fill: var(--ink); }
-.chuva .ch-m { font: 500 10px var(--body); fill: var(--ink); }
+.chuva .ch-m { font: 500 9.5px var(--body); letter-spacing: .04em; fill: var(--ink); }
 .chuva .ch-p { font: 400 8.6px var(--body); fill: var(--muted); }
 .folha svg { display: block; width: 100%; height: auto; }
 .selo { margin-left: 8px; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--col, var(--accent)); font-weight: 600; }

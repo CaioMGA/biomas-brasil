@@ -1,9 +1,12 @@
 {
   "intro": "O único bioma exclusivamente brasileiro: uma floresta seca que reverdece em poucos dias de chuva.",
   "emblema": { "n": "Ararinha-azul", "porque": "Considerada extinta na natureza, voltou a voar livre em Curaçá, na Bahia, em 2022. É a imagem da Caatinga e da possibilidade de recuperação." },
+  "painel": { "states": "Todo o CE e grande parte de BA, PE, PB, RN, PI, SE e AL, com um trecho do norte de MG.", "climate": "Semiárido: quente, com chuva escassa e irregular.", "veg": "Savana-estépica: arbustos espinhosos, cactos e árvores que perdem as folhas na seca.", "curio": "O nome vem do tupi e quer dizer “mata branca”, pela cor da vegetação na seca. Com as primeiras chuvas, tudo reverdece.", "endem": "Sem contagem de endemismo comparável entre os biomas nas fontes consultadas." },
   "secoes": [
     {
-      "id": "paisagem", "titulo": "Paisagem e clima", "chuva": true,
+      "id": "paisagem",
+      "titulo": "Paisagem e clima",
+      "chuva": true,
       "p": [
         "A Caatinga cobre cerca de 10% do Brasil, em grande parte do Nordeste e no norte de Minas Gerais. Seu nome vem do tupi e quer dizer mata branca, por causa do aspecto das árvores sem folhas na seca. É o único bioma que existe só no Brasil, e abriga uma imensa parte da vida nordestina.",
         "O clima é semiárido: chove pouco e de modo irregular, quase sempre em poucos meses, e em alguns anos nem isso. O gráfico acima mostra a concentração da chuva num período curto. Nas outras épocas, o sol forte e a temperatura alta evaporam o que sobrou.",
@@ -12,7 +15,8 @@
       ]
     },
     {
-      "id": "gente", "titulo": "Gente e culturas",
+      "id": "gente",
+      "titulo": "Gente e culturas",
       "p": [
         "Entre os povos indígenas da Caatinga estão os Xukuru, os Pankararu, os Tuxá, os Kariri-Xocó e os Fulni-ô, que mantêm viva a língua Yaathe, a única língua indígena preservada no Nordeste fora da Amazônia. O sertanejo, o vaqueiro e o artesão fazem parte da identidade do bioma, e muitos dos seus saberes vêm da convivência com a seca.",
         "A cozinha sertaneja é pensada para o calor e a escassez: carne de sol com macaxeira, baião de dois, paçoca de pilão, queijo coalho, cuscuz, rapadura, a umbuzada e o doce de caju. O bode é um prato celebrado. A culinária aproveita todo o produto, seja o animal, o milho ou o feijão.",
@@ -20,7 +24,8 @@
       ]
     },
     {
-      "id": "agua", "titulo": "Água: viver com pouca",
+      "id": "agua",
+      "titulo": "Água: viver com pouca",
       "p": [
         "A maior parte dos rios da Caatinga é intermitente: corre na época das chuvas e seca depois. A grande exceção é o São Francisco, o Velho Chico, que nasce no Cerrado e atravessa o semiárido garantindo água a milhões de pessoas, para beber, irrigar frutas e gerar energia.",
         "Por isso a convivência com o semiárido ganhou soluções próprias. As cisternas de placas, que guardam a água da chuva dos telhados para beber, foram difundidas por organizações da sociedade civil, como a Articulação Semiárido Brasileiro, e mudaram a vida de famílias rurais. Há também barragens subterrâneas, que seguram a água no solo, e os açudes. O Projeto de Integração do Rio São Francisco levou canais de água a bacias do Ceará, da Paraíba, do Rio Grande do Norte e de Pernambuco.",
@@ -28,7 +33,8 @@
       ]
     },
     {
-      "id": "ciencia", "titulo": "Ciência e curiosidades",
+      "id": "ciencia",
+      "titulo": "Ciência e curiosidades",
       "p": [
         "A Caatinga é uma floresta seca tropical, e a mais biodiversa do mundo entre as sazonalmente secas. Tem centenas de espécies de aves e peixes e milhares de plantas. A ararinha-azul, ave que já foi considerada extinta na natureza, voltou a voar livre em Curaçá, na Bahia, em 2022, depois de reintroduções planejadas, e hoje é um símbolo do trabalho conjunto de pesquisadores e comunidades.",
         "O tatu-bola, bichinho que se enrola numa bola quando se sente em perigo, só existe na Caatinga, e foi o mascote da Copa do Mundo de 2014. A Embrapa Semiárido, em Petrolina, desenvolve culturas e técnicas para o semiárido.",
@@ -37,7 +43,8 @@
       ]
     },
     {
-      "id": "visitar", "titulo": "Para visitar e para proteger",
+      "id": "visitar",
+      "titulo": "Para visitar e para proteger",
       "p": [
         "A Serra da Capivara, em São Raimundo Nonato, tem trilhas entre paredões com pinturas de milhares de anos. O Parque Nacional do Catimbau, em Pernambuco, reúne cânions, cavernas e formações de arenito. Os Cânions do Xingó, entre Sergipe e Alagoas, são percorridos de barco no São Francisco. Em Sete Cidades, no Piauí, rochas esculpidas pelo vento parecem cidades antigas. A Chapada Diamantina, na Bahia, é uma região de transição onde as cachoeiras e o clima mais ameno contrastam com a caatinga em volta.",
         "Visitar essas regiões com guias locais, comer em restaurantes da comunidade e comprar artesanato do lugar são formas diretas de ajudar. Para proteger, vale apoiar projetos de manejo sustentável da lenha, de apicultura e de criação de caprinos, que dão renda sem derrubar a mata, e a recuperação de áreas degradadas com plantas nativas."
@@ -54,11 +61,7 @@
     { "n": "Juazeiro", "c": "Ziziphus joazeiro", "t": "flora", "d": "Árvore de copa redonda e densa que fica verde mesmo na seca. Os frutos são comidos pela fauna, e a casca é usada tradicionalmente na higiene dos dentes." },
     { "n": "Xique-xique", "c": "Pilosocereus gounellei", "t": "flora", "d": "Cacto ramificado e baixo, de caule azul-esverdeado e espinhos amarelados. Forma moitas espalhadas e serve de alimento para o gado em tempos de seca." }
   ],
-  "leitura": {
-    "autor": "Euclides da Cunha",
-    "obra": "Os Sertões (1902)",
-    "texto": "O sertanejo é, antes de tudo, um forte."
-  },
+  "leitura": { "autor": "Euclides da Cunha", "obra": "Os Sertões (1902)", "texto": "O sertanejo é, antes de tudo, um forte." },
   "videos": [
     { "id": "xjRWPFhxzlA", "tipo": "Documentário", "canal": "TV Brasil", "titulo": "Caatinga, coração do sertão nordestino (Nossos Biomas)", "dur": "24:42" },
     { "id": "DypQphGkJhQ", "tipo": "Documentário", "canal": "Associação Caatinga", "titulo": "No Clima da Caatinga, fase II", "dur": "27:14" },

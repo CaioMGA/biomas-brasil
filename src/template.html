@@ -551,60 +551,20 @@ const PASSAPORTE = __PASSAPORTE__;   // contorno do Brasil e posição dos carim
 /* ---------- Dados ---------- */
 const B = [
   { id: "amazonia", name: "Amazônia", key: "Amazônia", n: 1, km: 4212742, pct: "49,5", sp: 13056, zoom: .86,
-    states: "Todo o AC, AM, AP e RR e quase todo o PA e RO, além de partes de MT, MA e TO.",
-    abroad: "Bolívia, Peru, Equador, Colômbia, Venezuela, Guiana, Suriname e Guiana Francesa. No mapa aparece em tom pálido.",
-    climate: "Equatorial: quente e úmido o ano todo, com chuva abundante.",
-    veg: "Floresta ombrófila densa e aberta, a maior floresta tropical do planeta.",
-    spp: [["Onça-pintada", "fauna"], ["Boto-cor-de-rosa", "fauna"], ["Vitória-régia", "flora"]],
-    curio: "Ocupa quase metade do Brasil e cobre por inteiro o Amazonas, Roraima, Acre e Amapá.",
-    endem: "Sem contagem de endemismo comparável entre os biomas nas fontes consultadas." },
+    spp: [["Onça-pintada", "fauna"], ["Boto-cor-de-rosa", "fauna"], ["Vitória-régia", "flora"]], },
   { id: "cerrado", name: "Cerrado", key: "Cerrado", n: 2, km: 1983017, pct: "23,3", sp: 12829, dark: true, zoom: .8,
-    states: "Ocupa GO, DF e TO quase inteiros, boa parte de MT, MS, MG e MA, e trechos de PI, BA, SP, PR e PA.",
-    abroad: "Pequenas áreas do Paraguai e da Bolívia. No mapa aparece em tom pálido.",
-    climate: "Tropical sazonal: verão chuvoso e inverno seco.",
-    veg: "Savana: árvores baixas e retorcidas entre gramíneas, com matas ao longo dos rios.",
-    spp: [["Lobo-guará", "fauna"], ["Tamanduá-bandeira", "fauna"], ["Pequi", "flora"]],
-    curio: "É o único bioma presente nas cinco regiões do país, e o Distrito Federal fica inteiro dentro dele.",
-    endem: "Material escolar cita cerca de 4.400 plantas endêmicas entre as cerca de 10 mil espécies vegetais do Cerrado. É uma estimativa e usa outro critério de contagem que o gráfico." },
+    spp: [["Lobo-guará", "fauna"], ["Tamanduá-bandeira", "fauna"], ["Pequi", "flora"]], },
   { id: "mata-atlantica", name: "Mata Atlântica", key: "Mata Atlântica", n: 3, km: 1107419, pct: "13,0", sp: 17150, dark: true, zoom: .78,
-    states: "15 estados, do RS ao RN pelo litoral, mais MG, MS e GO. Cobre todo o ES e o RJ e quase todo o SP e o PR.",
-    abroad: "Leste do Paraguai e nordeste da Argentina (Misiones). No mapa aparece em tom pálido.",
-    climate: "Tropical úmido no litoral e subtropical no sul, com chuva bem distribuída.",
-    veg: "Florestas ombrófilas e estacionais, com araucárias nas terras altas do sul.",
-    spp: [["Mico-leão-dourado", "fauna"], ["Pau-brasil", "flora"], ["Araucária", "flora"]],
-    curio: "Reúne a maior flora entre os biomas e é daqui o pau-brasil, a árvore que deu nome ao país.",
-    endem: "Sem contagem de endemismo comparável entre os biomas nas fontes consultadas." },
+    spp: [["Mico-leão-dourado", "fauna"], ["Pau-brasil", "flora"], ["Araucária", "flora"]], },
   { id: "caatinga", name: "Caatinga", key: "Caatinga", n: 4, km: 862818, pct: "10,1", sp: 4963, zoom: .72,
-    states: "Todo o CE e grande parte de BA, PE, PB, RN, PI, SE e AL, com um trecho do norte de MG.",
-    climate: "Semiárido: quente, com chuva escassa e irregular.",
-    veg: "Savana-estépica: arbustos espinhosos, cactos e árvores que perdem as folhas na seca.",
-    spp: [["Tatu-bola", "fauna"], ["Mandacaru", "flora"], ["Umbuzeiro", "flora"]],
-    curio: "O nome vem do tupi e quer dizer “mata branca”, pela cor da vegetação na seca. Com as primeiras chuvas, tudo reverdece.",
-    endem: "Sem contagem de endemismo comparável entre os biomas nas fontes consultadas." },
+    spp: [["Tatu-bola", "fauna"], ["Mandacaru", "flora"], ["Umbuzeiro", "flora"]], },
   { id: "pampa", name: "Pampa", key: "Pampa", n: 5, km: 193836, pct: "2,3", sp: 2817, zoom: .46,
-    states: "Só o Rio Grande do Sul, onde cobre 68,8% do estado.",
-    abroad: "Uruguai e áreas vizinhas da Argentina. No mapa aparece em tom pálido.",
-    climate: "Subtropical, com estações bem marcadas e geadas no inverno.",
-    veg: "Estepe: campos de gramíneas, com capões de mato e matas ao longo dos rios.",
-    spp: [["Ema", "fauna"], ["Veado-campeiro", "fauna"], ["Butiá", "flora"]],
-    curio: "No Brasil só existe no Rio Grande do Sul. O bioma segue pelo Uruguai e pela Argentina.",
-    endem: "Sem contagem de endemismo comparável entre os biomas nas fontes consultadas." },
+    spp: [["Ema", "fauna"], ["Veado-campeiro", "fauna"], ["Butiá", "flora"]], },
   { id: "pantanal", name: "Pantanal", key: "Pantanal", n: 6, km: 150988, pct: "1,8", sp: 1682, zoom: .46,
-    states: "Todo dentro de MS e MT, com área bem maior em Mato Grosso do Sul.",
-    abroad: "Bolívia e Paraguai. No mapa aparece em tom pálido.",
-    climate: "Tropical, com verão chuvoso e cheias que alagam a planície por meses.",
-    veg: "Mosaico de savana, campos inundáveis, matas e plantas aquáticas.",
-    spp: [["Tuiuiú", "fauna"], ["Jacaré-do-pantanal", "fauna"], ["Aguapé", "flora"]],
-    curio: "É o menor bioma do país e a maior planície alagável do planeta. O IBGE o define pela hidrologia, não pela vegetação.",
-    endem: "Sem contagem de endemismo comparável entre os biomas nas fontes consultadas." },
+    spp: [["Tuiuiú", "fauna"], ["Jacaré-do-pantanal", "fauna"], ["Aguapé", "flora"]], },
   { id: "costeiro", name: "Costeiro-marinho", key: "Sistema Costeiro", n: 7, marine: true, zoom: .66,
     nums: [["93,7%", "da área é marítima"], ["6,3%", "é parte continental"], ["17", "estados litorâneos"]],
-    states: "Presente nos 17 estados litorâneos. As maiores ocorrências continentais estão no RS, no PA e no MA.",
-    climate: "Varia ao longo da costa, do equatorial no norte ao subtropical no sul.",
-    veg: "Formações pioneiras de influência marinha e fluviomarinha: manguezais, restingas e dunas.",
-    spp: [["Peixe-boi-marinho", "fauna"], ["Golfinho-rotador", "fauna"], ["Mangue-vermelho", "flora"]],
-    curio: "Da parte continental do sistema, 42% fica na faixa da Amazônia, 25% no Pampa e 20% na Mata Atlântica, que tem a maior linha de costa do país.",
-    endem: "Sem contagem de endemismo comparável entre os biomas nas fontes consultadas." }
+    spp: [["Peixe-boi-marinho", "fauna"], ["Golfinho-rotador", "fauna"], ["Mangue-vermelho", "flora"]], }
 ];
 const byId = Object.fromEntries(B.map(b => [b.id, b]));
 const BR_KM = 8510821;
@@ -709,8 +669,8 @@ const brchadFoot = () => { const f = el("div", { class: "brfoot" }); f.append(el
 const maxRain = Math.max(...LAND.map(b => RAIN[b.id].ano));
 function sources() {
   const s = el("div", { class: "src" });
-  s.appendChild(el("p", {}, "Chuva: WorldClim 2.1 (Fick e Hijmans, 2017), médias mensais de 1970 a 2000, calculadas sobre o território brasileiro de cada bioma; a faixa mostra de 10% a 90% do território, e meses secos são os que têm menos de 60 mm."));
-  s.appendChild(el("p", {}, "Fontes: IBGE, Biomas e Sistema Costeiro-Marinho do Brasil (áreas, estados e vegetação, escala 1:250 000); contornos dos biomas do IBGE 2019 pelo pacote geobr; extensão dos biomas fora do Brasil por ecorregiões do WWF (RESOLVE Ecoregions 2017), associadas ao bioma brasileiro de maior sobreposição, então é aproximada; fronteiras, rios e cidades do Natural Earth, divisas estaduais do IBGE; relevo dos Terrain Tiles (SRTM, GMTED e ETOPO1); espécies da Flora do Brasil 2020, conforme reportagem do JB. Clima, espécies emblemáticas e curiosidades são conhecimento geral de divulgação."));
+  s.appendChild(el("p", {}, CONT.brasil.painel.fonte_chuva));
+  s.appendChild(el("p", {}, CONT.brasil.painel.fonte_geral));
   const cl = el("a", { class: "credlink", href: "/brasil/#sec-creditos" }, "Créditos e fontes completos");
   s.appendChild(cl);
   return s;
@@ -763,7 +723,7 @@ function renderPanel() {
   } else {
     wrap.appendChild(el("p", { class: "kicker" }, "País"));
     wrap.appendChild(el("h2", {}, "Brasil"));
-    wrap.appendChild(el("p", { class: "lead" }, "Seis grandes paisagens dividem o território, da floresta que cobre quase metade do país aos campos do extremo sul. Cerca de 40% do país tem vegetação predominantemente campestre, segundo o IBGE."));
+    wrap.appendChild(el("p", { class: "lead" }, CONT.brasil.painel.lead));
     const nums = el("div", { class: "nums" });
     [[fmt(BR_KM), "km² de território"], ["6", "biomas continentais"], ["27", "unidades da federação"]].forEach(([v, l]) => {
       const n = el("div", { class: "num" });
@@ -781,8 +741,8 @@ function renderPanel() {
     });
     wrap.appendChild(strip);
     wrap.appendChild(el("p", { class: "cap" }, "Cada faixa tem a largura proporcional à área do bioma."));
-    wrap.appendChild(el("h3", {}, "Grande não é o mesmo que diverso"));
-    wrap.appendChild(el("p", { class: "lead" }, "A Amazônia é quase quatro vezes maior que a Mata Atlântica, mas a Mata Atlântica tem mais espécies de plantas, algas e fungos."));
+    wrap.appendChild(el("h3", {}, CONT.brasil.painel.diverso_titulo));
+    wrap.appendChild(el("p", { class: "lead" }, CONT.brasil.painel.diverso));
     const rows = el("div", { class: "rows" });
     const endem = el("p", { class: "endem" });
     const showEndem = b => {
@@ -808,11 +768,11 @@ function renderPanel() {
     wrap.appendChild(rows);
     showEndem(byId["cerrado"]);
     wrap.appendChild(endem);
-    wrap.appendChild(el("p", { class: "note", "data-nocount": "" }, "Contagens de espécies da Flora do Brasil 2020. Uma espécie pode ocorrer em mais de um bioma, então os números não somam o total nacional, e não há lista de animais comparável entre os seis biomas. A chuva é a média anual de 1970 a 2000 (WorldClim 2.1). Passe o mouse ou toque numa linha para ver o endemismo."));
+    wrap.appendChild(el("p", { class: "note", "data-nocount": "" }, CONT.brasil.painel.nota));
     const mb0 = mergulharBtn("brasil"); if (mb0) wrap.appendChild(mb0);
     wrap.appendChild(passaporte());
-    wrap.appendChild(el("h3", {}, "E o mar?"));
-    wrap.appendChild(el("p", { class: "lead" }, "O IBGE trata o Sistema Costeiro-Marinho à parte: manguezais, restingas, dunas, recifes e as águas do litoral. É quase todo marítimo (93,7% da área); a parte continental, 6,3%, se sobrepõe aos biomas. Dela, 42% fica na faixa da Amazônia, 25% no Pampa e 20% na Mata Atlântica."));
+    wrap.appendChild(el("h3", {}, CONT.brasil.painel.mar_titulo));
+    wrap.appendChild(el("p", { class: "lead" }, CONT.brasil.painel.mar));
   }
   wrap.appendChild(sources());
   wrap.appendChild(brchadFoot());
@@ -822,6 +782,7 @@ function renderPanel() {
 
 /* ---------- Conteúdo, modo leitura, passaporte, comparador e quiz ---------- */
 const CONT = __CONTEUDO__;   // textos, espécies, vídeos e quiz de cada região, de data/conteudo/*.json
+B.forEach(b => Object.assign(b, (CONT[b.id] || {}).painel || {}));   // textos do painel de cada bioma (estados, clima, vegetação, curiosidade…) vêm do JSON
 const store = {
   get(k, d) { try { const v = localStorage.getItem("biomas:" + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
   set(k, v) { try { localStorage.setItem("biomas:" + k, JSON.stringify(v)); } catch (e) {} }

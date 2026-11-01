@@ -132,6 +132,11 @@
   }
 
   if (!D) return;
+  // Créditos e fontes começam fechados; abrem quando o endereço ou o link do índice apontam para eles
+  const abrirCreditos = () => { if (location.hash === "#sec-creditos") { const d = document.querySelector("#sec-creditos details"); if (d) d.open = true; } };
+  abrirCreditos(); addEventListener("hashchange", abrirCreditos);
+  document.querySelectorAll('a[href="#sec-creditos"]').forEach(a => a.addEventListener("click", () => { const d = document.querySelector("#sec-creditos details"); if (d) d.open = true; }));
+
   if (D.id === "hub") {
     passaporte(document.getElementById("passaporte"));
     const decorar = () => document.querySelectorAll("a.card").forEach(a => {

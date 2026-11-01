@@ -1,9 +1,11 @@
 {
   "intro": "Manguezais, restingas, dunas, recifes e o mar que banha o Brasil.",
   "emblema": { "n": "Baleia-jubarte", "porque": "Salta e bate a cauda na água, e vem ao litoral da Bahia para se reproduzir: um dos espetáculos mais conhecidos do mar brasileiro." },
+  "painel": { "states": "Presente nos 17 estados litorâneos. As maiores ocorrências continentais estão no RS, no PA e no MA.", "climate": "Varia ao longo da costa, do equatorial no norte ao subtropical no sul.", "veg": "Formações pioneiras de influência marinha e fluviomarinha: manguezais, restingas e dunas.", "curio": "Da parte continental do sistema, 42% fica na faixa da Amazônia, 25% no Pampa e 20% na Mata Atlântica, que tem a maior linha de costa do país.", "endem": "Sem contagem de endemismo comparável entre os biomas nas fontes consultadas." },
   "secoes": [
     {
-      "id": "paisagem", "titulo": "Paisagem e clima",
+      "id": "paisagem",
+      "titulo": "Paisagem e clima",
       "p": [
         "O Sistema Costeiro-Marinho é o conjunto de ambientes onde a terra encontra o mar. O IBGE o trata à parte porque ele não é uma vegetação, mas uma zona que combina manguezais, restingas, dunas, praias, lagoas costeiras, recifes e as águas do litoral. É quase todo marítimo: 93,7% da área está no mar, e a parte continental, 6,3%, se sobrepõe aos biomas.",
         "O litoral brasileiro tem mais de sete mil quilômetros e passa por climas muito diferentes. No Norte, estuários gigantes e a maior faixa contínua de manguezal do mundo na costa do Pará e do Maranhão; no Nordeste, dunas, recifes de coral e praias de água morna; no Sudeste, costões rochosos e ilhas cobertas pela Mata Atlântica; no Sul, lagoas e praias longas e retas.",
@@ -12,7 +14,8 @@
       ]
     },
     {
-      "id": "gente", "titulo": "Gente e culturas",
+      "id": "gente",
+      "titulo": "Gente e culturas",
       "p": [
         "A vida no litoral é de pesca, de coleta de mariscos e de caranguejos. Os pescadores artesanais navegam em jangadas no Nordeste, canoas de um tronco só no Sul e barcos de madeira em toda a costa. As marisqueiras, que coletam mariscos na maré baixa, são uma figura marcante em Alagoas, na Bahia e em Pernambuco. Os caiçaras, no Sudeste, e os quilombolas e comunidades de pescadores de Norte a Sul mantêm tradições ligadas ao mar.",
         "A comida é um dos orgulhos da costa: a moqueca baiana e a capixaba, o caranguejo-uçá, o sururu de Alagoas, a tapioca, o camarão, a peixada, o acarajé, o bobó de camarão. O dendê, o coco e a pimenta moldam o sabor.",
@@ -20,7 +23,8 @@
       ]
     },
     {
-      "id": "agua", "titulo": "Água: mar, estuário e recife",
+      "id": "agua",
+      "titulo": "Água: mar, estuário e recife",
       "p": [
         "Onde os rios encontram o mar, formam-se estuários e lagunas, ambientes ricos em nutrientes que alimentam camarões, peixes e aves. Os manguezais ajudam a proteger a costa da erosão, filtram a água e servem de berçário a espécies que depois vão viver no mar aberto.",
         "Os recifes de coral e de arenito são esconderijo e moradia de centenas de espécies de peixes. O Banco dos Abrolhos, na Bahia, abriga os maiores recifes de coral do Atlântico Sul e é local onde as baleias-jubarte vêm se reproduzir entre julho e novembro. O Atol das Rocas, no Rio Grande do Norte, é o único atol do Atlântico Sul. Fernando de Noronha, em Pernambuco, é um arquipélago vulcânico com águas muito claras, e o conjunto foi reconhecido pela Unesco como Patrimônio Natural da Humanidade.",
@@ -28,7 +32,8 @@
       ]
     },
     {
-      "id": "ciencia", "titulo": "Ciência e curiosidades",
+      "id": "ciencia",
+      "titulo": "Ciência e curiosidades",
       "p": [
         "O Projeto Tamar, criado em 1980, protege as tartarugas marinhas em dezenas de praias do país. Hoje, as cinco espécies que desovam no Brasil contam com monitoramento e proteção de ninhos feitos junto com comunidades de pescadores. O Projeto Peixe-Boi acompanha o peixe-boi-marinho, mamífero herbívoro que vive em estuários do Nordeste e que quase desapareceu.",
         "Os corais brasileiros têm particularidades: espécies que só existem aqui, como o coral-cérebro (Mussismilia braziliensis), e formas que crescem em águas turvas, o que é incomum no mundo. Pesquisadores acompanham o branqueamento dos corais causado pelo aquecimento das águas.",
@@ -36,7 +41,8 @@
       ]
     },
     {
-      "id": "visitar", "titulo": "Para visitar e para proteger",
+      "id": "visitar",
+      "titulo": "Para visitar e para proteger",
       "p": [
         "Os Lençóis Maranhenses, no Maranhão, formam um mar de dunas brancas com lagoas de água da chuva que se enchem entre março e setembro. Jericoacoara, no Ceará, mistura dunas, lagoas e vento. O Parque Nacional Marinho dos Abrolhos, na Bahia, é refúgio de baleias e corais. Fernando de Noronha tem cota de visitantes e taxa de preservação para proteger o ambiente. O Parque Nacional da Restinga de Jurubatiba, no Rio de Janeiro, protege a restinga. A Costa dos Corais, entre Pernambuco e Alagoas, tem piscinas naturais.",
         "Para visitar sem machucar: não pisar nos corais, não levar nada da praia, não alimentar os peixes, usar protetor solar que respeite os recifes e deixar a areia sem lixo. Evitar plásticos descartáveis e participar de mutirões de limpeza ajuda diretamente, porque grande parte do lixo do mar vem do continente."
@@ -53,11 +59,7 @@
     { "n": "Mangue-vermelho", "c": "Rhizophora mangle", "t": "flora", "d": "Árvore de raízes em arco, que a sustentam no lodo. Produz sementes que já nascem germinadas na planta-mãe." },
     { "n": "Coral-cérebro", "c": "Mussismilia braziliensis", "t": "fauna", "d": "Coral endêmico do Brasil, de colônia redonda com sulcos que lembram um cérebro. Cresce nos recifes da Bahia." }
   ],
-  "leitura": {
-    "autor": "José de Alencar",
-    "obra": "Iracema (1865)",
-    "texto": "Verdes mares bravios de minha terra natal, onde canta a jandaia nas frondes da carnaúba;\nVerdes mares, que brilhais como líquida esmeralda aos raios do sol nascente, perlongando as alvas praias ensombradas de coqueiros;\nSerenai, verdes mares, e alisai docemente as vagas impetuosas, para que o barco aventureiro manso resvale à flor das águas."
-  },
+  "leitura": { "autor": "José de Alencar", "obra": "Iracema (1865)", "texto": "Verdes mares bravios de minha terra natal, onde canta a jandaia nas frondes da carnaúba;\nVerdes mares, que brilhais como líquida esmeralda aos raios do sol nascente, perlongando as alvas praias ensombradas de coqueiros;\nSerenai, verdes mares, e alisai docemente as vagas impetuosas, para que o barco aventureiro manso resvale à flor das águas." },
   "videos": [
     { "id": "m5LiOO7Jx_8", "tipo": "Turismo", "canal": "CNN Viagem e Gastronomia", "titulo": "Veja como é uma experiência de mergulho em Noronha", "dur": "5:29" }
   ],

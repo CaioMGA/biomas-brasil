@@ -118,6 +118,8 @@ class Site:
         self.rain = json.load(open(os.path.join(root, "data/rain.json"), encoding="utf-8"))
         cdir = os.path.join(root, "data/conteudo")
         self.C = {f[:-5]: json.load(open(os.path.join(cdir, f), encoding="utf-8")) for f in sorted(os.listdir(cdir)) if f.endswith(".json")}
+        for b in self.B:   # textos do painel (estados, clima, vegetação…) vêm dos JSONs
+            b.update(self.C.get(b["id"], {}).get("painel", {}))
         self.outl = json.load(open(os.path.join(root, "data/outlines.json")))
         self.plan = {i: plano(i, self.C[i]) for i in self.C}
         self.total = {i: sum(s["min"] for s in p) for i, p in self.plan.items()}
@@ -186,6 +188,11 @@ class Site:
         return (f'<div class="brfoot"><span>Site criado por Caio Amaral</span>'
                 f'<img class="brchad" src="{self.brchad}" width="80" height="15" alt="brchad 2026"></div>')
 
+    @staticmethod
+    def dobra(titulo, conteudo, extra=""):
+        """Bloco dobrável (details) que começa fechado; o título é um h2 dentro do summary."""
+        return f'<details class="creditos-dobra"><summary><h2>{extra}{E(titulo)}</h2></summary>{conteudo}</details>'
+
     def creditos(self, id=None):
         """Créditos e fontes. Com id de bioma, lista só os vídeos dele e inclui a frase de fontes da página; sem id (Brasil, Sobre, hub), todos os vídeos."""
         c = self.C["brasil"]
@@ -241,6 +248,8 @@ class Site:
             corpo += '<div id="quiz" class="quiz"></div>'
         elif k == "creditos":
             corpo += self.creditos(id)
+        if k == "creditos":   # dobrável, começa fechado; o sentinela de leitura fica fora do bloco para continuar visível quando ele está fechado
+            return f'<section id="sec-{s["id"]}">{self.dobra(s["titulo"], corpo, f"<small>{i + 1} de {n}</small>")}<div data-end="{s["id"]}" aria-hidden="true"></div></section>'
         return f'<section id="sec-{s["id"]}">{h}{corpo}<div data-end="{s["id"]}" aria-hidden="true"></div></section>'
 
     # ---- páginas ----
@@ -286,7 +295,7 @@ class Site:
 <div class="pass-bloco" id="passaporte"></div>
 </div>
 <ul class="cards">{"".join(self.cartao(r) for r in self.regioes)}</ul>
-<section id="sec-creditos" class="hub-creditos"><h2>Créditos e fontes</h2>{self.creditos()}</section>
+<section id="sec-creditos" class="hub-creditos">{self.dobra("Créditos e fontes", self.creditos())}</section>
 </div>
 <div class="rodape">{self.foot()}</div>"""
         return self.casca("Biomas — Biomas do Brasil", "Todos os biomas do Brasil e o sistema costeiro-marinho: textos, espécies, vídeos e quizzes.", corpo, "biomas", "var(--ink)", {"id": "hub", "regioes": self.regioes, "passaporte": self.P})
@@ -340,19 +349,14 @@ class Site:
 
     def sobre(self):
         c = self.C["brasil"]
-        tecno = [
-            ("Mapa 3D", "three.js e shaders próprios, com relevo real e um efeito de fundo para cada bioma."),
-            ("Relevo", "Terrain Tiles da AWS (SRTM, GMTED e ETOPO1), reamostrados para a grade do mapa."),
-            ("Dados geográficos", "Biomas, estados e áreas do IBGE (via geobr/Ipea); rios e cidades do Natural Earth 1:10m; chuva do WorldClim 2.1."),
-            ("Build", "Python gera o mapa e estas páginas estáticas a partir de um template e dos dados em JSON."),
-            ("Hospedagem", "Cloudflare Pages."),
-        ]
+        sobre = json.load(open(os.path.join(self.root, "data/sobre.json"), encoding="utf-8"))   # textos do Sobre
+        tecno = [(x["t"], x["d"]) for x in sobre["tecnologias"]]
         lt = "".join(f"<dt>{E(a)}</dt><dd>{E(b)}</dd>" for a, b in tecno)
         corpo = f"""<div class="rd-wrap simples">
 <main class="rd-main">
 <p class="kicker">Sobre</p>
 <h1>Como foi feito</h1>
-<p class="intro">Um mapa 3D dos biomas do Brasil e uma biblioteca de textos para ler sem passar por ele.</p>
+<p class="intro">{E(sobre["intro"])}</p>
 <section id="sec-tecnologias"><h2>Tecnologias</h2><dl class="gl">{lt}</dl></section>
 <section id="sec-contato"><h2>Contato</h2>
 <p>Site criado por Caio Amaral.</p>
@@ -361,7 +365,7 @@ class Site:
 <li><a href="{CONTATO['pessoal']}" target="_blank" rel="noopener">caiomga.com</a> — site pessoal</li>
 <li><a href="{CONTATO['projetos']}" target="_blank" rel="noopener">brchad.com</a> — projetos</li>
 </ul></section>
-<section id="sec-creditos"><h2>Dados, fontes e créditos</h2>{self.creditos()}</section>
+<section id="sec-creditos">{self.dobra("Créditos e fontes", self.creditos())}</section>
 </main>
 </div>
 <div class="rodape">{self.foot()}</div>"""

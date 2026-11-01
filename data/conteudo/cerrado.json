@@ -1,6 +1,7 @@
 {
   "intro": "A savana mais rica do planeta, onde nascem as águas de boa parte do Brasil.",
   "emblema": { "n": "Lobo-guará", "porque": "Suas pernas finas e longas desenham a silhueta mais reconhecível do Cerrado. É o maior canídeo da América do Sul e aparece na nota de R$ 200." },
+  "painel": { "states": "Ocupa GO, DF e TO quase inteiros, boa parte de MT, MS, MG e MA, e trechos de PI, BA, SP, PR e PA.", "abroad": "Pequenas áreas do Paraguai e da Bolívia. No mapa aparece em tom pálido.", "climate": "Tropical sazonal: verão chuvoso e inverno seco.", "veg": "Savana: árvores baixas e retorcidas entre gramíneas, com matas ao longo dos rios.", "curio": "É o único bioma presente nas cinco regiões do país, e o Distrito Federal fica inteiro dentro dele.", "endem": "Material escolar cita cerca de 4.400 plantas endêmicas entre as cerca de 10 mil espécies vegetais do Cerrado. É uma estimativa e usa outro critério de contagem que o gráfico." },
   "secoes": [
     {
       "id": "paisagem",

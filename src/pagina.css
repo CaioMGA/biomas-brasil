@@ -139,3 +139,11 @@ html { scroll-behavior: smooth; }
 .grupo-titulo { margin: 30px 0 0; font: 500 12px var(--body); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
 .grupo-titulo + .cards { margin-top: 10px; }
 .hub-creditos { margin-top: 56px; max-width: 68ch; } .hub-creditos h2 { margin: 0 0 6px; font: 400 clamp(32px, 4vw, 44px)/1.05 var(--display); }
+.creditos-dobra > summary { display: flex; align-items: center; gap: 12px; cursor: pointer; list-style: none; }
+.creditos-dobra > summary::-webkit-details-marker { display: none; }
+.creditos-dobra > summary::before { content: ""; flex: none; width: 10px; height: 10px; border-right: 2px solid var(--accent); border-bottom: 2px solid var(--accent); transform: rotate(-45deg); transition: transform .2s; }
+.creditos-dobra[open] > summary::before { transform: rotate(45deg); }
+.creditos-dobra > summary h2 { margin: 0; }
+.creditos-dobra > summary:hover h2 { color: var(--accent); }
+.creditos-dobra > summary:focus-visible { outline: 3px solid var(--ink); outline-offset: 4px; }
+@media (prefers-reduced-motion: reduce) { .creditos-dobra > summary::before { transition: none; } }

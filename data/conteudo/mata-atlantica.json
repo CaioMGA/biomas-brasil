@@ -1,9 +1,12 @@
 {
   "intro": "A floresta que o Brasil encontrou primeiro, e onde vive a maior parte dos brasileiros.",
   "emblema": { "n": "Mico-leão-dourado", "porque": "Ameaçado e restrito às matas do Rio de Janeiro, virou o grande símbolo da conservação da Mata Atlântica." },
+  "painel": { "states": "15 estados, do RS ao RN pelo litoral, mais MG, MS e GO. Cobre todo o ES e o RJ e quase todo o SP e o PR.", "abroad": "Leste do Paraguai e nordeste da Argentina (Misiones). No mapa aparece em tom pálido.", "climate": "Tropical úmido no litoral e subtropical no sul, com chuva bem distribuída.", "veg": "Florestas ombrófilas e estacionais, com araucárias nas terras altas do sul.", "curio": "Reúne a maior flora entre os biomas e é daqui o pau-brasil, a árvore que deu nome ao país.", "endem": "Sem contagem de endemismo comparável entre os biomas nas fontes consultadas." },
   "secoes": [
     {
-      "id": "paisagem", "titulo": "Paisagem e clima", "chuva": true,
+      "id": "paisagem",
+      "titulo": "Paisagem e clima",
+      "chuva": true,
       "p": [
         "A Mata Atlântica acompanha o litoral do Rio Grande do Sul ao Rio Grande do Norte e entra para o interior em Minas Gerais, Mato Grosso do Sul e Goiás. Ocupa cerca de 13% do território, mas é o bioma com mais espécies de plantas, algas e fungos registradas no país. Foi a primeira paisagem que os europeus viram ao chegar, em 1500, e hoje é onde vive a maior parte da população brasileira.",
         "O nome esconde um conjunto de ambientes. Há a floresta ombrófila densa, úmida e alta, que cobre as encostas da Serra do Mar; a floresta com araucárias, nos planaltos frios do Sul; as florestas estacionais, que perdem parte das folhas na estação seca; os campos de altitude, nos topos de serras como a Mantiqueira; e, na beira do mar, as restingas e os manguezais.",
@@ -12,7 +15,8 @@
       ]
     },
     {
-      "id": "gente", "titulo": "Gente e culturas",
+      "id": "gente",
+      "titulo": "Gente e culturas",
       "p": [
         "Os povos indígenas da Mata Atlântica incluem os Guarani, os Pataxó, os Tupinikim, os Kaingang, os Krenak e os Xokleng. Muitos deles perderam grandes parte das terras no passado, mas continuam presentes e reivindicam seus territórios, mantendo línguas e rituais.",
         "No litoral vivem os caiçaras, descendentes de indígenas, portugueses e africanos, que pescam, plantam mandioca e mantêm tradições como o fandango caiçara, dança de sapateado ao som de viola e rabeca. No Vale do Ribeira, entre São Paulo e Paraná, ficam comunidades quilombolas que preservam um dos maiores remanescentes de Mata Atlântica do país. Na Serra Catarinense e no Paraná, os tropeiros e os criadores marcaram a cultura serrana, e o pinhão, semente da araucária, aparece em inúmeros pratos.",
@@ -21,7 +25,8 @@
       ]
     },
     {
-      "id": "agua", "titulo": "Água: das serras ao mar",
+      "id": "agua",
+      "titulo": "Água: das serras ao mar",
       "p": [
         "A Mata Atlântica protege nascentes de rios que abastecem mais de 100 milhões de pessoas, entre elas as regiões metropolitanas de São Paulo, do Rio de Janeiro e de Belo Horizonte. Os rios descem das serras do Mar e da Mantiqueira em direção ao oceano, como o Paraíba do Sul, o Doce, o Ribeira de Iguape e o Itajaí-Açu, ou em direção ao interior, como o Tietê e o Paranapanema, afluentes do Paraná.",
         "A floresta funciona como esponja. As folhas amortecem a chuva forte, as raízes seguram o solo e a água infiltra aos poucos, alimentando as nascentes mesmo no período seco. Quando a mata é retirada das encostas, a chuva escorre rápido, carrega terra e engrossa enchentes e deslizamentos. Por isso a restauração de matas ciliares, nas margens dos rios, e de encostas é uma das ferramentas mais baratas para proteger a água das cidades.",
@@ -29,7 +34,8 @@
       ]
     },
     {
-      "id": "ciencia", "titulo": "Ciência e curiosidades",
+      "id": "ciencia",
+      "titulo": "Ciência e curiosidades",
       "p": [
         "A Mata Atlântica e o Cerrado são os dois hotspots de biodiversidade do Brasil. Aqui vivem o muriqui, o maior primata das Américas, o mico-leão-dourado e dezenas de aves que só existem nela.",
         "O mico-leão-dourado é uma história de sucesso da conservação: nos anos 1970 restavam algumas centenas de animais, em pequenos fragmentos de mata no Rio de Janeiro. Com reprodução em cativeiro, reintrodução, corredores de floresta e a participação das comunidades vizinhas, as populações voltaram a crescer, e a espécie hoje conta com alguns milhares de indivíduos.",
@@ -38,7 +44,8 @@
       ]
     },
     {
-      "id": "visitar", "titulo": "Para visitar e para proteger",
+      "id": "visitar",
+      "titulo": "Para visitar e para proteger",
       "p": [
         "O Parque Nacional do Itatiaia, criado em 1937, foi o primeiro parque nacional do Brasil. O Parque Nacional da Serra dos Órgãos, em Teresópolis, tem trilhas entre as pedras do Dedo de Deus. O Parque Nacional do Iguaçu protege as Cataratas, Patrimônio Natural da Humanidade. O Parque Estadual da Ilha do Cardoso e o Parque Nacional de Superagui, no litoral Sul de São Paulo e Norte do Paraná, mostram a mata junto ao mar. Em Santa Catarina, o Parque Nacional de São Joaquim guarda campos de altitude e neve ocasional.",
         "Quem visita uma trilha na Mata Atlântica contribui quando respeita as regras: não retira plantas, não alimenta bichos, leva o lixo de volta. Outra forma de ajudar é comprar produtos de agroflorestas e de cooperativas da região, como palmito-juçara de manejo sustentável, que evita a derrubada da palmeira. E quem tem um terreno pode criar uma Reserva Particular do Patrimônio Natural (RPPN) ou plantar espécies nativas, formando corredores que ligam os fragmentos de mata."

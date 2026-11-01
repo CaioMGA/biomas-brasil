@@ -1,9 +1,12 @@
 {
   "intro": "A maior floresta tropical do planeta e o maior sistema de rios da Terra.",
   "emblema": { "n": "Onça-pintada", "porque": "É o maior felino das Américas e caça até jacarés. No topo da cadeia alimentar, é a espécie que mais se associa à imagem da floresta." },
+  "painel": { "states": "Todo o AC, AM, AP e RR e quase todo o PA e RO, além de partes de MT, MA e TO.", "abroad": "Bolívia, Peru, Equador, Colômbia, Venezuela, Guiana, Suriname e Guiana Francesa. No mapa aparece em tom pálido.", "climate": "Equatorial: quente e úmido o ano todo, com chuva abundante.", "veg": "Floresta ombrófila densa e aberta, a maior floresta tropical do planeta.", "curio": "Ocupa quase metade do Brasil e cobre por inteiro o Amazonas, Roraima, Acre e Amapá.", "endem": "Sem contagem de endemismo comparável entre os biomas nas fontes consultadas." },
   "secoes": [
     {
-      "id": "paisagem", "titulo": "Paisagem e clima", "chuva": true,
+      "id": "paisagem",
+      "titulo": "Paisagem e clima",
+      "chuva": true,
       "p": [
         "A Amazônia ocupa quase metade do território brasileiro e se estende ainda por oito países vizinhos e pela Guiana Francesa. No Brasil, cobre por inteiro o Acre, o Amazonas, o Amapá e Roraima, e quase todo o Pará e Rondônia, além de partes do Mato Grosso, do Maranhão e do Tocantins.",
         "O clima é equatorial: quente e úmido o ano inteiro, com chuva abundante em quase todos os meses. Mesmo assim há uma estação mais chuvosa e outra menos chuvosa, e é essa variação que faz os rios subirem e descerem muitos metros ao longo do ano.",
@@ -12,7 +15,8 @@
       ]
     },
     {
-      "id": "gente", "titulo": "Gente e culturas",
+      "id": "gente",
+      "titulo": "Gente e culturas",
       "p": [
         "A Amazônia abriga centenas de povos indígenas, entre eles os Yanomami, os Tikuna, os Kayapó, os Munduruku, os Baniwa e os Ashaninka, muitos com línguas próprias. Seus territórios, reconhecidos como terras indígenas, formam uma das barreiras mais eficazes contra a perda de floresta.",
         "Ao lado deles vivem os ribeirinhos, que moram em casas sobre palafitas ou à beira dos rios e se deslocam de barco; os extrativistas, como os seringueiros e os castanheiros, que ganharam voz com Chico Mendes e com a criação das reservas extrativistas; e as comunidades quilombolas, como as do rio Trombetas, no Pará.",
@@ -21,7 +25,8 @@
       ]
     },
     {
-      "id": "agua", "titulo": "Água: o maior rio do mundo",
+      "id": "agua",
+      "titulo": "Água: o maior rio do mundo",
       "p": [
         "A bacia do Amazonas é a maior do planeta e despeja no Atlântico uma quantidade de água maior que a de qualquer outro rio. O Amazonas nasce nos Andes, no Peru, e corre por milhares de quilômetros. No Brasil, ele recebe o nome de Solimões até a junção com o Rio Negro, perto de Manaus.",
         "Ali acontece o famoso encontro das águas: o Negro, de água escura e ácida, e o Solimões, barrento e claro, correm lado a lado por vários quilômetros sem se misturar, por causa da diferença de temperatura, velocidade e densidade. Outros rios gigantes, como o Madeira, o Tapajós, o Xingu e o Negro, juntam-se ao Amazonas. Na foz, no Amapá e no Pará, a maré pode empurrar a água contra a corrente e formar a pororoca, uma onda que sobe o rio por quilômetros.",
@@ -29,7 +34,8 @@
       ]
     },
     {
-      "id": "ciencia", "titulo": "Ciência e curiosidades",
+      "id": "ciencia",
+      "titulo": "Ciência e curiosidades",
       "p": [
         "Boa parte da fauna e da flora da Amazônia ainda não foi descrita. Todo ano pesquisadores do INPA, em Manaus, e do Museu Paraense Emílio Goeldi, em Belém, publicam novas espécies de peixes, anfíbios, plantas e insetos. A floresta é também laboratório do clima: no meio da mata, no Amazonas, fica a torre ATTO, de 325 metros, uma das mais altas da América do Sul, que mede gases e partículas para entender como a floresta e a atmosfera conversam.",
         "O ponto mais alto do Brasil, o Pico da Neblina, com cerca de 2.995 metros, fica dentro do bioma, na fronteira com a Venezuela. O pirarucu, um dos maiores peixes de água doce do mundo, passou de ameaçado a símbolo de manejo bem-sucedido: comunidades ribeirinhas contam os peixes, pescam só uma cota e fiscalizam seus lagos, e as populações voltaram a crescer em vários locais.",
@@ -37,7 +43,8 @@
       ]
     },
     {
-      "id": "visitar", "titulo": "Para visitar e para proteger",
+      "id": "visitar",
+      "titulo": "Para visitar e para proteger",
       "p": [
         "O Parque Nacional de Anavilhanas, no rio Negro, protege um dos maiores arquipélagos fluviais do planeta. O Parque Nacional do Jaú, também no Negro, é um dos maiores parques de floresta tropical do mundo. A Reserva de Desenvolvimento Sustentável Mamirauá, perto de Tefé, protege uma extensa várzea e o uacari-branco, um macaco de rosto vermelho. A Floresta Nacional do Tapajós e o balneário de Alter do Chão, no Pará, têm praias de água clara de rio, chamadas de Caribe amazônico.",
         "Visitar a Amazônia de forma responsável é dar emprego a quem mora nela. Escolher passeios com guias da região, hospedar-se em pousadas comunitárias e comprar artesanato e produtos do extrativismo, como castanha, óleos e cestaria, mantém a renda perto da floresta em pé. Quem quer ajudar de longe também pode escolher produtos com origem rastreável, como castanha-do-brasil e cacau de manejo comunitário."
