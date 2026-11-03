@@ -112,8 +112,15 @@ def figura(root, id, nome):
     terra = cam([r for p in resto for r in p["rings"]]); brasil = cam([r for p in br for r in p["rings"]])
     estados = cam(ctx["estados"])
     area = lambda r: sum(r[i][0] * r[(i + 1) % len(r)][1] - r[(i + 1) % len(r)][0] * r[i][1] for i in range(len(r)))
-    biom = cam([r if area(r) < 0 else r[::-1] for r in b["rings"] + b.get("oficial", [])])   # o bioma é pintado inteiro: rios e lagos dentro dele (anéis internos) não abrem buracos; todos os anéis na mesma orientação, preenchimento "nonzero"
-    borda = mapas.caminho(P, b["contorno"], False) if b.get("contorno") else biom   # só o contorno externo, sem as divisas internas entre peças do bioma
+    orient = lambda rs: [r if area(r) < 0 else r[::-1] for r in rs]   # todos os anéis na mesma orientação (preenchimento "nonzero"): rios e lagos dentro do bioma não abrem buracos
+    res, ofi = cam(orient(b["rings"])), cam(orient(b.get("oficial", [])))
+    # Limites reais: dentro do Brasil vale o limite oficial (IBGE); fora, o das ecorregiões (RESOLVE), mascarado onde cai o Brasil.
+    # O preenchimento e a linha cinza saem das MESMAS formas: a linha é um traço mais largo por baixo do preenchimento, então só sobra a borda externa da união.
+    mid, F = f"loc-m-{id}", max(P.h // 34, 1)
+    partes = [(ofi, ""), (res, f' mask="url(#{mid})"')] if ofi else [(res, "")]
+    mascara = (f'<defs><mask id="{mid}" maskUnits="userSpaceOnUse" x="{-P.w}" y="{-P.h}" width="{3 * P.w}" height="{3 * P.h}"><rect x="{-P.w}" y="{-P.h}" width="{3 * P.w}" height="{3 * P.h}" fill="#fff"/>'
+               f'<path d="{brasil}" fill="#000"/><path d="{brasil}" fill="none" stroke="#fff" stroke-width="{F * .14:.0f}"/></mask></defs>') if ofi else ""
+    borda = "".join(f'<path class="loc-bioma-borda" d="{d}"{m}/>' for d, m in partes); biom = "".join(f'<path class="loc-bioma" d="{d}"{m}/>' for d, m in partes)
     paises = b["paises"]; lista = ", ".join(paises[:-1]) + " e " + paises[-1] if len(paises) > 1 else (paises[0] if paises else "")
     desc = f"Mapa da América do Sul: o Brasil e seus estados contornados, e {o_} {nome} {cp} na cor de destaque"
     desc += f", ocupando partes de {lista}." if len(paises) > 1 else "."
@@ -125,8 +132,8 @@ def figura(root, id, nome):
     S = max(P.w, P.h); vx, vy = -(S - P.w) // 2, -(S - P.h) // 2   # moldura quadrada: o continente fica centralizado, com oceano nas sobras
     ref = referencias_loc(P, S, vx, vy)
     return (f'<figure class="loc"><div class="loc-mapa"><svg viewBox="{vx} {vy} {S} {S}" role="img" aria-label="{E(desc)}" preserveAspectRatio="xMidYMid meet">'
-            f'<rect class="loc-mar" x="{vx}" y="{vy}" width="{S}" height="{S}"/><path class="loc-terra" d="{terra}"/><path class="loc-br" d="{brasil}"/><path class="loc-bioma" d="{biom}"/>'
-            f'<path class="loc-front" d="{terra}"/><path class="loc-uf" d="{estados}"/><path class="loc-br-borda" d="{brasil}"/><path class="loc-bioma-borda" d="{borda}"/>{ref}</svg>'
+            f'<rect class="loc-mar" x="{vx}" y="{vy}" width="{S}" height="{S}"/><path class="loc-terra" d="{terra}"/><path class="loc-br" d="{brasil}"/>{mascara}{borda}{biom}'
+            f'<path class="loc-front" d="{terra}"/><path class="loc-uf" d="{estados}"/><path class="loc-br-borda" d="{brasil}"/>{ref}</svg>'
             f'<p class="loc-mini">{E(nome)} em destaque na América do Sul</p></div>'
             f'<figcaption>{cap}{fonte}<span class="loc-leg"><i class="loc-sw loc-sw-bioma"></i>{E(nome)}</span></figcaption></figure>')
 
