@@ -178,9 +178,9 @@ class Site:
         img = (f'<img class="hero-img" src="/assets/fotos/{id}/{E(f["arquivo"])}" width="{f["w"]}" height="{f["h"]}" alt="{E(f["alt"])}" fetchpriority="high" decoding="async">') if f else ""
         mapa = '<path d="M9 4 3 6.5v13L9 17l6 2.5 6-2.5v-13L15 6.5 9 4Zm0 0v13m6-10.5v13" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"/>'
         voltar = f'<a class="voltar" href="/#{"" if id == "brasil" else id}"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">{mapa}</svg>Ver no mapa</a>'
-        return (f'<header class="hero{" hero-foto" if f else ""}">{img}<div class="hero-loc">{loc}</div><div class="hero-in">'
+        return (f'<header class="hero{" hero-foto" if f else ""}">{img}<div class="hero-in"><div class="hero-txt">'
                 f'<p class="kicker">{kicker}</p><h1>{E(nome)}</h1><p class="intro">{E(intro)}</p>'
-                f'<p class="hero-meta"><span class="tm">{minutos} de leitura</span>{voltar}</p>{cred}</div></header>')
+                f'<p class="hero-meta"><span class="tm">{minutos} de leitura</span>{voltar}</p>{cred}</div><div class="hero-loc">{loc}</div></div></header>')
 
     def nome(self, id):
         return "Brasil" if id == "brasil" else self.byId[id]["name"]
