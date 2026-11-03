@@ -324,7 +324,7 @@ class Site:
 {secs}
 </main>
 </div>
-<section class="prox" id="proximos" aria-label="Continue explorando"></section>
+{self.bloco_proximo(id)}
 <div class="rodape">{self.foot()}</div>"""
         dados = {"id": id, "regioes": self.regioes, "passaporte": self.P, "chuva": {k: {"mm": v["mm"], "ano": v["ano"], "seco": v["seco"], "pico": v["pico"]} for k, v in self.rain.items()}, "plano": [{"id": s["id"], "kind": s["kind"]} for s in p], "quiz": c.get("quiz", [])}
         if id == "brasil":
@@ -333,6 +333,21 @@ class Site:
         mt = id in self.mapas   # só as páginas com mapa carregam o CSS/JS dele
         return self.casca(f"{nome} — Biomas do Brasil", desc, corpo, "biomas" if id != "brasil" else "biomas", self.cor(id), dados,
                           extra_body='<script src="/assets/mapa-tematico.js" defer></script>\n' if mt else "", extra_head='<link rel="stylesheet" href="/assets/mapa-tematico.css">\n' if mt else "")
+
+    def bloco_proximo(self, id):
+        """Fim da página: Brasil mantém passaporte e cards (preenchidos pelo JS); cada bioma aponta sempre para o próximo da ORDEM, e o último, para a página final da jornada."""
+        if id not in ORDEM:
+            return '<section class="prox" id="proximos" aria-label="Continue explorando"></section>'
+        i = ORDEM.index(id)
+        if i + 1 < len(ORDEM):
+            r = self.regiao(ORDEM[i + 1])
+            rotulo, nome, intro, href, cor, sil = "Próximo bioma", r["nome"], r["intro"], r["url"], r["cor"], self.silhueta(r["id"])
+        else:
+            rotulo, nome, href, cor, sil = "Fim da jornada", "Seu passaporte", "/biomas/jornada/", "var(--ink)", ""
+            intro = "Veja os carimbos que você reuniu e revisite qualquer bioma."
+        return (f'<nav class="prox-nav" aria-label="{rotulo}"><a class="prox-link" href="{href}" style="--col:{cor}">{sil}'
+                f'<span class="prox-txt"><span class="prox-rotulo">{rotulo}</span><span class="prox-nome">{E(nome)}</span>'
+                f'<span class="prox-intro">{E(intro)}</span></span><span class="prox-seta" aria-hidden="true">→</span></a></nav>')
 
     def cartao(self, r):
         return (f'<li><a class="card" href="{r["url"]}" data-id="{r["id"]}" style="--col:{r["cor"]}">{self.silhueta(r["id"])}'
@@ -354,6 +369,22 @@ class Site:
 </div>
 <div class="rodape">{self.foot()}</div>"""
         return self.casca("Biomas — Biomas do Brasil", "Todos os biomas do Brasil e o sistema costeiro-marinho: textos, espécies, vídeos e quizzes.", corpo, "biomas", "var(--ink)", {"id": "hub", "regioes": self.regioes, "passaporte": self.P})
+
+    def jornada(self):
+        """Página depois do último bioma: passaporte (com botões para tocar as animações de carimbo) e os cards de todas as regiões."""
+        corpo = f"""<div class="hub">
+<div class="hub-topo">
+<div>
+<p class="kicker">Fim da jornada</p>
+<h1>Seu passaporte</h1>
+<p class="intro">Você chegou ao último bioma. Aqui ficam os carimbos que você reuniu; quem ainda não tem todos pode voltar a qualquer bioma pelos cartões abaixo.</p>
+</div>
+<div><div class="pass-bloco" id="passaporte"></div><div class="pass-tocar" id="tocar"></div></div>
+</div>
+<ul class="cards">{"".join(self.cartao(r) for r in self.regioes)}</ul>
+</div>
+<div class="rodape">{self.foot()}</div>"""
+        return self.casca("Seu passaporte — Biomas do Brasil", "Fim da jornada: o passaporte com os carimbos dos biomas e os cartões para revisitar cada um.", corpo, "biomas", "var(--ink)", {"id": "jornada", "regioes": self.regioes, "passaporte": self.P})
 
     def lab_carimbo(self):
         """Lab para ajustar o timing das animações de carimbo e a intensidade e duração do tremor (só no build de desenvolvimento)."""
@@ -434,6 +465,7 @@ class Site:
         for id in self.C:
             w(self.url(id).strip("/") + "/index.html", self.pagina_conteudo(id))
         w("biomas/index.html", self.hub())
+        w("biomas/jornada/index.html", self.jornada())
         w("sobre/index.html", self.sobre())
         if not publish:   # o lab não vai para a versão final
             w("lab-carimbo/index.html", self.lab_carimbo())
@@ -461,4 +493,4 @@ class Site:
 def gerar(root, dest, br_path, publish=False):
     s = Site(root, dest, br_path, "/assets/brchad.png")
     s.escrever(publish)
-    print("páginas:", ", ".join(s.url(i) for i in s.C), "/biomas/ /sobre/")
+    print("páginas:", ", ".join(s.url(i) for i in s.C), "/biomas/ /biomas/jornada/ /sobre/")

@@ -459,6 +459,79 @@ const BiomasUI = (() => {
     addEventListener("scroll", onScroll, { passive: true }); onScroll();
   }
 
+  // ---- telas estreitas: botão fixo que abre o painel de seções (o índice lateral some) ----
+  function painelSecoes() {
+    const toc = document.querySelector(".rd-toc"); if (!toc) return;
+    const orig = [...toc.querySelectorAll("a[data-sec]")]; if (!orig.length) return;
+    const html = document.documentElement, estreita = matchMedia("(max-width: 860px)");
+    const reduz = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const secs = orig.map(a => document.getElementById("sec-" + a.dataset.sec));
+    const fab = el("button", { type: "button", class: "toc-fab", "aria-haspopup": "dialog", "aria-expanded": "false", "aria-controls": "toc-painel" });
+    const atualTxt = el("span", { class: "toc-fab-atual" }, orig[0].textContent);
+    const txt = el("span", { class: "toc-fab-txt" }); txt.append(el("span", { class: "toc-fab-rot" }, "Seções"), atualTxt);
+    fab.append(el("span", { class: "toc-fab-icone", "aria-hidden": "true" }), txt);
+    const fundo = el("div", { class: "toc-fundo", hidden: "" });
+    const painel = el("div", { class: "toc-painel", id: "toc-painel", role: "dialog", "aria-modal": "true", "aria-label": "Seções desta página", hidden: "" });
+    const cab = el("div", { class: "toc-cab" }), min = el("button", { type: "button", class: "toc-min", "aria-label": "Minimizar painel de seções" });
+    min.append(el("span", { class: "toc-min-seta", "aria-hidden": "true" }), el("span", {}, "Minimizar"));
+    cab.append(el("strong", {}, "Seções"), min);
+    const lista = el("nav", { class: "toc-lista", "aria-label": "Seções" });
+    const links = orig.map(a => {
+      const l = el("a", { href: "#sec-" + a.dataset.sec, "data-sec": a.dataset.sec }, a.firstChild.textContent);
+      const m = a.querySelector("small"); if (m) l.appendChild(el("small", {}, m.textContent));
+      lista.appendChild(l); return l;
+    });
+    painel.append(cab, lista); document.body.append(fundo, painel, fab);
+
+    let aberto = false, atual = -1;
+    const marcar = i => {
+      if (i === atual) return; atual = i;
+      atualTxt.textContent = orig[i].firstChild.textContent;
+      links.forEach((l, k) => { if (k === i) l.setAttribute("aria-current", "location"); else l.removeAttribute("aria-current"); });
+    };
+    let raf = 0;
+    const medir = () => {
+      raf = 0; let i = 0;
+      secs.forEach((s, k) => { if (s && s.getBoundingClientRect().top <= 140) i = k; });
+      if (innerHeight + scrollY >= html.scrollHeight - 4) i = secs.length - 1;
+      marcar(i);
+    };
+    addEventListener("scroll", () => { if (!raf) raf = requestAnimationFrame(medir); }, { passive: true }); medir();
+
+    function abrir() {
+      if (aberto) return; aberto = true;
+      links.forEach((l, k) => l.classList.toggle("vis", orig[k].classList.contains("vis")));   // seções já lidas
+      fundo.hidden = painel.hidden = false; fab.hidden = true; fab.setAttribute("aria-expanded", "true"); html.classList.add("toc-aberto");
+      const alvo = links[Math.max(0, atual)]; alvo.focus({ preventScroll: true }); alvo.scrollIntoView({ block: "center" });
+    }
+    function fechar(devolverFoco) {   // sem transição de saída: o painel some na hora
+      if (!aberto) return; aberto = false;
+      fundo.hidden = painel.hidden = true; fab.hidden = false; fab.setAttribute("aria-expanded", "false"); html.classList.remove("toc-aberto");
+      if (devolverFoco) fab.focus({ preventScroll: true });
+    }
+    fab.addEventListener("click", abrir); min.addEventListener("click", () => fechar(true)); fundo.addEventListener("click", () => fechar(true));
+    document.addEventListener("keydown", e => {
+      if (!aberto) return;
+      if (e.key === "Escape") { e.preventDefault(); fechar(true); }
+      else if (e.key === "Tab") { const f = [min, ...links]; const k = f.indexOf(document.activeElement); e.preventDefault(); f[(k + (e.shiftKey ? -1 : 1) + f.length) % f.length].focus(); }
+    });
+    estreita.addEventListener("change", () => { if (!estreita.matches) fechar(false); });
+    links.forEach((l, k) => l.addEventListener("click", ev => {
+      ev.preventDefault(); const alvo = secs[k]; fechar(false);   // fecha primeiro (destrava a rolagem) e rola em seguida
+      if (!alvo) return;
+      if (l.dataset.sec === "creditos") { const d = alvo.querySelector("details"); if (d) d.open = true; }
+      alvo.scrollIntoView({ behavior: reduz() ? "auto" : "smooth", block: "start" });
+      try { history.replaceState(null, "", "#" + alvo.id); } catch (e) {}   // endereço da seção, sem recarregar a página
+    }));
+  }
+
+  // ---- página final da jornada: toca as animações de carimbo (simuladas: nada é gravado no navegador) ----
+  function tocarAnimacoes(box) {
+    const bt = (txt, tipo) => { const b = el("button", { type: "button", class: "pass-btn" }, txt); b.addEventListener("click", () => BiomasUI.simular(D.passaporte, tipo)); return b; };
+    box.append(el("p", { class: "cap" }, "Veja de novo como os carimbos batem no passaporte. É uma demonstração: seus carimbos reais não mudam."),
+      bt("▶ Tocar animação dos carimbos", "bioma"), bt("▶ Tocar animação da jornada completa", "completa"));
+  }
+
   function videos() {
     document.querySelectorAll("button[data-yt]").forEach(btn => btn.addEventListener("click", () => {
       const f = el("iframe", { src: `https://www.youtube-nocookie.com/embed/${btn.dataset.yt}?autoplay=1&rel=0`, title: btn.dataset.titulo, allow: "autoplay; encrypted-media; picture-in-picture; fullscreen", allowfullscreen: "", referrerpolicy: "strict-origin-when-cross-origin" });
@@ -486,7 +559,7 @@ const BiomasUI = (() => {
             setProg(id, p => { const antes = p.quiz; if (antes && antes.ok / antes.n >= .6 && !sel0) return; p.quiz = { ok, n: D.quiz.length }; if (sel0) p.quiz.em = (antes && antes.em) || new Date().toLocaleDateString("sv-SE"); });
             const sel = sel0; if (sel0) BiomasUI.registrarGanho(id);   // guarda o carimbo ganho e o dia em que o quiz foi vencido
             res.hidden = false;
-            res.replaceChildren(document.createTextNode(`Você acertou ${ok} de ${D.quiz.length}. ${sel ? "Carimbo conquistado! Ele espera por você no passaporte, no fim da página." : "Releia as seções e tente de novo para ganhar o carimbo."}`));
+            res.replaceChildren(document.createTextNode(`Você acertou ${ok} de ${D.quiz.length}. ${sel ? "Carimbo conquistado! " + (D.id === "brasil" ? "Ele espera por você no passaporte, no fim da página." : "Ele espera por você no passaporte, na página final da jornada (depois do último bioma) ou no menu Biomas.") : "Releia as seções e tente de novo para ganhar o carimbo."}`));
             const again = el("button", { type: "button" }, "Refazer o quiz"); again.addEventListener("click", () => location.reload()); res.appendChild(again);
           }
         });
@@ -541,8 +614,9 @@ const BiomasUI = (() => {
   abrirCreditos(); addEventListener("hashchange", abrirCreditos);
   document.querySelectorAll('a[href="#sec-creditos"]').forEach(a => a.addEventListener("click", () => { const d = document.querySelector("#sec-creditos details"); if (d) d.open = true; }));
 
-  if (D.id === "hub") {
+  if (D.id === "hub" || D.id === "jornada") {
     passaporte(document.getElementById("passaporte"));
+    if (D.id === "jornada") tocarAnimacoes(document.getElementById("tocar"));
     const decorar = () => document.querySelectorAll("a.card").forEach(a => {
       const r = regioes.find(x => x.id === a.dataset.id); if (!r) return;
       a.classList.toggle("lido", lida(r));
@@ -550,7 +624,7 @@ const BiomasUI = (() => {
     });
     decorar(); addEventListener("biomas:carimbos", decorar);
   } else {
-    leitura(); videos(); quiz(); comparador(); chuvas(); carrosseis();
-    proximos(document.getElementById("proximos"));
+    const prox = document.getElementById("proximos"); if (prox) proximos(prox);   // só a página do Brasil termina com passaporte e cards
+    leitura(); videos(); quiz(); comparador(); chuvas(); carrosseis(); painelSecoes();
   }
 })();
