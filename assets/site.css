@@ -333,6 +333,12 @@ html { overflow-x: clip; }   /* o 100vw conta a barra de rolagem; sem isto a pá
 .loc-ov-fonte a { text-decoration: underline; text-underline-offset: 2px; }
 .loc-t-pais { fill: #1d2a20; stroke: rgba(239, 226, 157, .9); font-weight: 600; letter-spacing: .03em; }
 
+/* Foto de abertura das seções de texto */
+.foto-sec { margin: 18px 0 0; }
+.foto-sec .foto img { aspect-ratio: 16 / 9; }
+.foto-sec figcaption { margin-top: 8px; }
+.foto-sec .fig-leg { font-size: 17px; }
+
 /* Compartilhado pelo painel do mapa e pelas páginas: gráfico de chuva e folha do passaporte. */
 .chuva { margin-top: 14px; }
 .chuva svg { display: block; width: 100%; height: auto; overflow: visible; }

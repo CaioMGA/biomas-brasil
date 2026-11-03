@@ -98,5 +98,67 @@
   "licenca_url": "https://creativecommons.org/licenses/by-sa/4.0",
   "fonte_url": "https://commons.wikimedia.org/wiki/File:PARNA_da_Chapada_dos_Veadeiros_-_Danilo.roger(001).jpg",
   "arquivo_commons": "PARNA da Chapada dos Veadeiros - Danilo.roger(001).jpg"
+ },
+ "_secoes": {
+  "fogo": {
+   "arquivo": "secao-fogo.jpg",
+   "w": 1600,
+   "h": 900,
+   "alt": "Linha de fogo alaranjada sobre uma serra ao longe, sob nuvens de fumaça rosadas, com árvores escuras em primeiro plano.",
+   "legenda": "A vegetação do Cerrado sendo consumida pelo fogo logo depois do pôr do sol; o fogo é relativamente comum na savana brasileira.",
+   "autor": "Arthur de Magalhães Goulart",
+   "licenca": "CC BY-SA 4.0",
+   "licenca_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "fonte_url": "https://commons.wikimedia.org/wiki/File:O_Fogo_e_o_Cerrado.jpg",
+   "arquivo_commons": "O Fogo e o Cerrado.jpg"
+  },
+  "gente": {
+   "arquivo": "secao-gente.jpg",
+   "w": 1600,
+   "h": 899,
+   "alt": "Capela branca em uma encosta de vegetação baixa, sob um céu de nuvens ao entardecer.",
+   "legenda": "Entardecer na comunidade quilombola Kalunga, em Cavalcante (GO), na região da Chapada dos Veadeiros.",
+   "autor": "Antonio Afras",
+   "licenca": "CC BY-SA 4.0",
+   "licenca_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "fonte_url": "https://commons.wikimedia.org/wiki/File:Entardecer_na_Comunidade_Quilombola_Kalunga.jpg",
+   "arquivo_commons": "Entardecer na Comunidade Quilombola Kalunga.jpg"
+  },
+  "agua": {
+   "arquivo": "secao-agua.jpg",
+   "w": 1600,
+   "h": 899,
+   "alt": "Cachoeira descendo por uma serra de rocha entre árvores, sob céu azul com nuvens.",
+   "legenda": "Cachoeira no norte de Minas Gerais, na Serra do Espinhaço: no planalto do Cerrado nascem rios de várias bacias.",
+   "autor": "Luc Antunes",
+   "licenca": "CC BY-SA 3.0",
+   "licenca_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "fonte_url": "https://commons.wikimedia.org/wiki/File:2011-12-27-_Cachoeira_do_Cerrado_(23).jpg",
+   "arquivo_commons": "2011-12-27- Cachoeira do Cerrado (23).jpg"
+  },
+  "ciencia": {
+   "arquivo": "secao-ciencia.jpg",
+   "w": 1600,
+   "h": 900,
+   "alt": "Árvore de tronco torto e copa esparsa de folhas grandes, contra o céu e uma serra ao fundo.",
+   "legenda": "Árvore de feição típica do Cerrado, na Serra do Cipó (MG).",
+   "autor": "AmbrosimM",
+   "licenca": "CC BY-SA 4.0",
+   "licenca_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "fonte_url": "https://commons.wikimedia.org/wiki/File:%C3%81rvore_do_Cerrado_na_Serra_do_Cip%C3%B3.jpg",
+   "arquivo_commons": "Árvore do Cerrado na Serra do Cipó.jpg"
+  },
+  "visitar": {
+   "arquivo": "secao-visitar.jpg",
+   "w": 1600,
+   "h": 900,
+   "alt": "Três cupinzeiros de terra, de cores diferentes, em meio ao capim do campo, com uma árvore pequena atrás.",
+   "legenda": "Cupinzeiros no campo do Parque Nacional das Emas (GO).",
+   "autor": "Emilio Swany Guerreiro",
+   "licenca": "CC BY-SA 4.0",
+   "licenca_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "fonte_url": "https://commons.wikimedia.org/wiki/File:Cupinzeiros_multicoloridos_no_Parque_Nacional_das_Emas.jpg",
+   "arquivo_commons": "Cupinzeiros multicoloridos no Parque Nacional das Emas.jpg"
+  }
  }
 }

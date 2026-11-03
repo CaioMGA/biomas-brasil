@@ -182,6 +182,15 @@ class Site:
                 f'<p class="kicker">{kicker}</p><h1>{E(nome)}</h1><p class="intro">{E(intro)}</p>'
                 f'<p class="hero-meta"><span class="tm">{minutos} de leitura</span>{voltar}</p>{cred}</div><div class="hero-loc">{loc}{"<button type=\"button\" class=\"loc-dica\" aria-haspopup=\"dialog\">Mais detalhes</button>" if loc else ""}</div></div></header>')
 
+    def foto_secao(self, id, sec):
+        """Foto de abertura de uma seção de texto (opcional: chave "_secoes" -> id da seção em data/fotos/<id>.json), com legenda em itálico e crédito."""
+        f = ((self.fotos.get(id) or {}).get("_secoes") or {}).get(sec)
+        if not f: return ""
+        lic = "Domínio público" if f["licenca"].lower().startswith("public domain") else f["licenca"]
+        lic = f'<a href="{E(f["licenca_url"])}" target="_blank" rel="noopener">{E(lic)}</a>' if f.get("licenca_url") else E(lic)
+        return (f'<figure class="foto-sec"><div class="foto"><img src="/assets/fotos/{id}/{E(f["arquivo"])}" width="{f["w"]}" height="{f["h"]}" alt="{E(f["alt"])}" loading="lazy" decoding="async"></div>'
+                f'<figcaption><span class="fig-leg">{E(f["legenda"])}</span> <span class="fig-cred">Foto: {E(f["autor"])} · {lic} · <a href="{E(f["fonte_url"])}" target="_blank" rel="noopener">Wikimedia Commons</a></span></figcaption></figure>')
+
     def nome(self, id):
         return "Brasil" if id == "brasil" else self.byId[id]["name"]
 
@@ -276,6 +285,7 @@ class Site:
         h = f'<h2>{E(s["titulo"])}</h2>'
         k, corpo = s["kind"], ""
         if k == "texto":
+            if s["id"] != "paisagem": corpo += self.foto_secao(id, s["id"])   # a foto da paisagem é a do hero
             ps = [f"<p>{E(t)}</p>" for t in s["s"]["p"]]
             if s["s"].get("chuva") and id != "brasil":   # o gráfico de chuva fica entre o 3º e o 4º parágrafo (no fim, se a seção tiver menos de 4)
                 ps.insert(min(3, len(ps)), f'<div class="chuva-bioma" data-bioma="{id}"></div>')

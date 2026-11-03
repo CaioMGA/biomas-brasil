@@ -98,5 +98,55 @@
   "licenca_url": "https://creativecommons.org/licenses/by-sa/4.0",
   "fonte_url": "https://commons.wikimedia.org/wiki/File:Rio_seco_na_Caatinga.jpg",
   "arquivo_commons": "Rio seco na Caatinga.jpg"
+ },
+ "_secoes": {
+  "gente": {
+   "arquivo": "secao-gente.jpg",
+   "w": 1600,
+   "h": 900,
+   "alt": "Dois vaqueiros a cavalo, com chapéus e gibões de couro, entre galhos secos da Caatinga.",
+   "legenda": "Vaqueiros em posição de guarda na Caatinga, vestidos com o tradicional couro.",
+   "autor": "Joao Monteiro Neto",
+   "licenca": "CC BY-SA 4.0",
+   "licenca_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "fonte_url": "https://commons.wikimedia.org/wiki/File:Vaqueiros_em_posi%C3%A7%C3%A3o_de_guarda_na_Caatinga-Foto_Joao_Monteiro_Neto.jpeg",
+   "arquivo_commons": "Vaqueiros em posição de guarda na Caatinga-Foto Joao Monteiro Neto.jpeg"
+  },
+  "agua": {
+   "arquivo": "secao-agua.jpg",
+   "w": 1600,
+   "h": 900,
+   "alt": "Paredões de arenito avermelhado sobre o rio, com um barco de passeio e visitantes ao fundo.",
+   "legenda": "Cânions do Xingó, no rio São Francisco, o rio que atravessa o semiárido.",
+   "autor": "Dearaújo",
+   "licenca": "CC BY 2.0",
+   "licenca_url": "https://creativecommons.org/licenses/by/2.0",
+   "fonte_url": "https://commons.wikimedia.org/wiki/File:Rio_S%C3%A3o_Francisco_-_Xing%C3%B3.jpg",
+   "arquivo_commons": "Rio São Francisco - Xingó.jpg"
+  },
+  "ciencia": {
+   "arquivo": "secao-ciencia.jpg",
+   "w": 1600,
+   "h": 900,
+   "alt": "Lagarto de corpo alongado, sem patas visíveis, sobre cascalho claro.",
+   "legenda": "Scriptosaura catimbau, lagarto registrado no Parque Nacional do Catimbau.",
+   "autor": "Ofiologiosertãoo",
+   "licenca": "CC BY-SA 4.0",
+   "licenca_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "fonte_url": "https://commons.wikimedia.org/wiki/File:Scriptosaura_catimbau-PARNA_do_Catimbau-Marcello_Mastroianni_Albuquerque_Ara%C3%BAjo(003).jpg",
+   "arquivo_commons": "Scriptosaura catimbau-PARNA do Catimbau-Marcello Mastroianni Albuquerque Araújo(003).jpg"
+  },
+  "visitar": {
+   "arquivo": "secao-visitar.jpg",
+   "w": 1600,
+   "h": 900,
+   "alt": "Pinturas vermelhas na rocha, com a figura de um animal de quatro patas e outros desenhos.",
+   "legenda": "Pintura rupestre no Parque Nacional Serra da Capivara (PI).",
+   "autor": "Mateus S. Figueiredo",
+   "licenca": "CC BY-SA 4.0",
+   "licenca_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "fonte_url": "https://commons.wikimedia.org/wiki/File:Pintura_rupestre_no_Parque_Nacional_Serra_da_Capivara_(0356).jpg",
+   "arquivo_commons": "Pintura rupestre no Parque Nacional Serra da Capivara (0356).jpg"
+  }
  }
 }

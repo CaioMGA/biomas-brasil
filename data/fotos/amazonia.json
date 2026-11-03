@@ -98,5 +98,55 @@
   "licenca_url": "https://creativecommons.org/licenses/by-sa/2.0",
   "fonte_url": "https://commons.wikimedia.org/wiki/File:Aerial_view_of_the_Amazon_Rainforest.jpg",
   "arquivo_commons": "Aerial view of the Amazon Rainforest.jpg"
+ },
+ "_secoes": {
+  "gente": {
+   "arquivo": "secao-gente.jpg",
+   "w": 1600,
+   "h": 900,
+   "alt": "Vista aérea de uma aldeia de casas baixas na margem de um rio de curso largo, cercada por floresta.",
+   "legenda": "Aldeia do povo Munduruku, às margens do rio Cururu.",
+   "autor": "Serra Massuda",
+   "licenca": "CC BY-SA 4.0",
+   "licenca_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "fonte_url": "https://commons.wikimedia.org/wiki/File:Waro_Apompu_(Posto_Munduruku_-_Rio_Cururu).JPG",
+   "arquivo_commons": "Waro Apompu (Posto Munduruku - Rio Cururu).JPG"
+  },
+  "agua": {
+   "arquivo": "secao-agua.jpg",
+   "w": 1600,
+   "h": 900,
+   "alt": "Faixa de água cor de barro encostada em água escura e agitada, com a margem coberta de floresta ao fundo.",
+   "legenda": "O encontro das águas dos rios Negro e Solimões: as águas escuras e as barrentas correm lado a lado sem se misturar de imediato.",
+   "autor": "Paulo Cattelan",
+   "licenca": "CC BY-SA 3.0",
+   "licenca_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "fonte_url": "https://commons.wikimedia.org/wiki/File:Encontro_das_%C3%A1guas_dos_rios_Negro_e_Solim%C3%B5es.jpg",
+   "arquivo_commons": "Encontro das águas dos rios Negro e Solimões.jpg"
+  },
+  "ciencia": {
+   "arquivo": "secao-ciencia.jpg",
+   "w": 1600,
+   "h": 900,
+   "alt": "Casarão histórico de fachada clara atrás de um gradil de ferro e de árvores, no parque do museu.",
+   "legenda": "Parque Zoobotânico do Museu Paraense Emílio Goeldi, em Belém, uma das instituições que descrevem novas espécies da Amazônia.",
+   "autor": "Prburley",
+   "licenca": "CC BY 4.0",
+   "licenca_url": "https://creativecommons.org/licenses/by/4.0",
+   "fonte_url": "https://commons.wikimedia.org/wiki/File:Parque_Zoobot%C3%A2nico_Museu_Paraense_Em%C3%ADlio_Goeldi_2023-8316.jpg",
+   "arquivo_commons": "Parque Zoobotânico Museu Paraense Emílio Goeldi 2023-8316.jpg"
+  },
+  "visitar": {
+   "arquivo": "secao-visitar.jpg",
+   "w": 1600,
+   "h": 900,
+   "alt": "Margem de ilha coberta de floresta escura, recortada contra o céu com nuvens e as águas largas do rio Negro.",
+   "legenda": "O arquipélago de Anavilhanas, no rio Negro (AM).",
+   "autor": "Karen Mohrstedt Badin",
+   "licenca": "CC BY-SA 4.0",
+   "licenca_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "fonte_url": "https://commons.wikimedia.org/wiki/File:Arquip%C3%A9lago_de_Anavilhanas_12.jpg",
+   "arquivo_commons": "Arquipélago de Anavilhanas 12.jpg"
+  }
  }
 }

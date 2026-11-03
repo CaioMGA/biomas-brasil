@@ -1,0 +1,52 @@
+{
+ "_secoes": {
+  "gente": {
+   "arquivo": "secao-gente.jpg",
+   "w": 1600,
+   "h": 900,
+   "alt": "Jangada de vela triangular com pescadores a bordo, no mar calmo, com o sol vermelho no horizonte.",
+   "legenda": "Jangada ao amanhecer, perto de Canoa Quebrada (CE).",
+   "autor": "Iury0545",
+   "licenca": "CC BY-SA 3.0",
+   "licenca_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "fonte_url": "https://commons.wikimedia.org/wiki/File:A_jangada_e_o_nascer.jpg",
+   "arquivo_commons": "A jangada e o nascer.jpg"
+  },
+  "agua": {
+   "arquivo": "secao-agua.jpg",
+   "w": 1600,
+   "h": 900,
+   "alt": "Emaranhado de raízes e troncos de mangue sobre o solo claro do manguezal.",
+   "legenda": "Raízes de mangue no manguezal da APA de Guadalupe (PE).",
+   "autor": "Eric Bem dos Santos",
+   "licenca": "CC BY-SA 4.0",
+   "licenca_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "fonte_url": "https://commons.wikimedia.org/wiki/File:Mangue_-_Manguezal_na_%C3%81rea_de_Prote%C3%A7%C3%A3o_Ambiental_de_Guadalupe_(_APA_de_Guadalupe_)_%E2%80%93_Pernambuco,_Brasil_%E2%80%93_Eric_Bem_dos_Santos_(_2019_)_-_1.jpg",
+   "arquivo_commons": "Mangue - Manguezal na Área de Proteção Ambiental de Guadalupe ( APA de Guadalupe ) – Pernambuco, Brasil – Eric Bem dos Santos ( 2019 ) - 1.jpg"
+  },
+  "ciencia": {
+   "arquivo": "secao-ciencia.jpg",
+   "w": 1600,
+   "h": 900,
+   "alt": "Tartaruga-verde sobre a areia, de frente, com um morro rochoso e o céu azul ao fundo.",
+   "legenda": "Tartaruga-verde na Ilha da Trindade, uma das ilhas oceânicas onde a espécie se reproduz no Brasil.",
+   "autor": "Marinha do Brasil",
+   "licenca": "CC BY-SA 2.0",
+   "licenca_url": "https://creativecommons.org/licenses/by-sa/2.0",
+   "fonte_url": "https://commons.wikimedia.org/wiki/File:Tartaruga-verde_habita_a_Ilha_da_Trindade_-_2023_(53221102357).jpg",
+   "arquivo_commons": "Tartaruga-verde habita a Ilha da Trindade - 2023 (53221102357).jpg"
+  },
+  "visitar": {
+   "arquivo": "secao-visitar.jpg",
+   "w": 1600,
+   "h": 900,
+   "alt": "Duna de areia branca em forma de arco, com uma lagoa azul-esverdeada encostada na base e areia ondulada à frente.",
+   "legenda": "Dunas e lagoa de água da chuva no Parque Nacional dos Lençóis Maranhenses (MA).",
+   "autor": "Paulo Cattelan",
+   "licenca": "CC BY-SA 4.0",
+   "licenca_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "fonte_url": "https://commons.wikimedia.org/wiki/File:Parque_Nacional_dos_Len%C3%A7%C3%B3is_Maranhenses_Paulo_Cattelan_(03).jpg",
+   "arquivo_commons": "Parque Nacional dos Lençóis Maranhenses Paulo Cattelan (03).jpg"
+  }
+ }
+}

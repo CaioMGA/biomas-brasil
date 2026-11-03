@@ -98,5 +98,55 @@
   "licenca_url": "https://commons.wikimedia.org/wiki/File:Flavio_Andre_Pantanal_Vista_aerea_Pocone_MT_(40958332021).jpg",
   "fonte_url": "https://commons.wikimedia.org/wiki/File:Flavio_Andre_Pantanal_Vista_aerea_Pocone_MT_(40958332021).jpg",
   "arquivo_commons": "Flavio Andre Pantanal Vista aerea Pocone MT (40958332021).jpg"
+ },
+ "_secoes": {
+  "gente": {
+   "arquivo": "secao-gente.jpg",
+   "w": 1600,
+   "h": 900,
+   "alt": "Vaqueiros a cavalo, de chapéu, conduzindo uma boiada de gado claro por uma estrada de terra vermelha.",
+   "legenda": "Pantaneiros conduzindo uma boiada.",
+   "autor": "Vicente Bissoni Neto",
+   "licenca": "CC BY-SA 4.0",
+   "licenca_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "fonte_url": "https://commons.wikimedia.org/wiki/File:Boiada_sendo_conduzida_pelos_pantaneiros.jpg",
+   "arquivo_commons": "Boiada sendo conduzida pelos pantaneiros.jpg"
+  },
+  "agua": {
+   "arquivo": "secao-agua.jpg",
+   "w": 1600,
+   "h": 900,
+   "alt": "Água calma cobrindo a planície, com árvores parcialmente submersas e uma casa de madeira ao fundo.",
+   "legenda": "Cheia no Pantanal, no rio Abobral: a planície alagada com árvores e uma casa dentro da água.",
+   "autor": "Márcio Fernandes de Lima",
+   "licenca": "CC BY-SA 3.0",
+   "licenca_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "fonte_url": "https://commons.wikimedia.org/wiki/File:Cheia_no_Pantanal.JPG",
+   "arquivo_commons": "Cheia no Pantanal.JPG"
+  },
+  "ciencia": {
+   "arquivo": "secao-ciencia.jpg",
+   "w": 1600,
+   "h": 900,
+   "alt": "Jacaré com a cabeça fora da água, segurando uma presa na boca, entre plantas aquáticas.",
+   "legenda": "Jacaré-do-pantanal se alimentando no Parque Nacional do Pantanal Matogrossense.",
+   "autor": "Jairmoreirafotografia",
+   "licenca": "CC BY-SA 4.0",
+   "licenca_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "fonte_url": "https://commons.wikimedia.org/wiki/File:Jacar%C3%A9_do_pantanal.jpg",
+   "arquivo_commons": "Jacaré do pantanal.jpg"
+  },
+  "visitar": {
+   "arquivo": "secao-visitar.jpg",
+   "w": 1600,
+   "h": 900,
+   "alt": "Pórtico de madeira com a placa Transpantaneira, e a estrada de terra seguindo para dentro do Pantanal.",
+   "legenda": "Portal de entrada da Transpantaneira, em Poconé (MT): a estrada onde começa o Pantanal mato-grossense.",
+   "autor": "Bernard DUPONT from FRANCE",
+   "licenca": "CC BY-SA 2.0",
+   "licenca_url": "https://creativecommons.org/licenses/by-sa/2.0",
+   "fonte_url": "https://commons.wikimedia.org/wiki/File:Pantanal_Gate_(31676283802).jpg",
+   "arquivo_commons": "Pantanal Gate (31676283802).jpg"
+  }
  }
 }

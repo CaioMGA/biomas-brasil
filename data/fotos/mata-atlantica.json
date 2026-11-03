@@ -142,5 +142,55 @@
   "licenca_url": "https://creativecommons.org/licenses/by-sa/4.0",
   "fonte_url": "https://commons.wikimedia.org/wiki/File:Dicksonia_sellowiana_-_PE_do_Juquery_-_EvaldoResende(001).jpg",
   "arquivo_commons": "Dicksonia sellowiana - PE do Juquery - EvaldoResende(001).jpg"
+ },
+ "_secoes": {
+  "gente": {
+   "arquivo": "secao-gente.jpg",
+   "w": 1600,
+   "h": 900,
+   "alt": "Crianças e adultos brincam em um gramado, com barracas ao fundo e mata de palmeiras atrás.",
+   "legenda": "Atividade de recreação na Aldeia Guarani Rio Silveira, entre Bertioga e São Sebastião (SP).",
+   "autor": "Victoria H C Marcondes",
+   "licenca": "CC BY-SA 4.0",
+   "licenca_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "fonte_url": "https://commons.wikimedia.org/wiki/File:Aldeia_durante_recrea%C3%A7%C3%A3o.jpg",
+   "arquivo_commons": "Aldeia durante recreação.jpg"
+  },
+  "agua": {
+   "arquivo": "secao-agua.jpg",
+   "w": 1600,
+   "h": 900,
+   "alt": "Queda d'água branca e agitada descendo por pedras escuras.",
+   "legenda": "Cachoeira do Salto Grande, na trilha do Pirapitinga, no Parque Estadual da Serra do Mar (SP).",
+   "autor": "Isabela Waissmann",
+   "licenca": "CC BY-SA 3.0",
+   "licenca_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "fonte_url": "https://commons.wikimedia.org/wiki/File:Parque_Estadual_da_Serra_do_Mar_(N%C3%BAcleo_Santa_Virg%C3%ADnia)_10.JPG",
+   "arquivo_commons": "Parque Estadual da Serra do Mar (Núcleo Santa Virgínia) 10.JPG"
+  },
+  "ciencia": {
+   "arquivo": "secao-ciencia.jpg",
+   "w": 1600,
+   "h": 900,
+   "alt": "Mico-leão-dourado de pelagem alaranjada sobre um galho, com folhas de palmeira ao fundo.",
+   "legenda": "Mico-leão-dourado em uma Reserva Particular do Patrimônio Natural, um dos símbolos da conservação da Mata Atlântica.",
+   "autor": "Claudiarlfranco",
+   "licenca": "CC BY-SA 4.0",
+   "licenca_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "fonte_url": "https://commons.wikimedia.org/wiki/File:Mico-le%C3%A3o-dourado-RPPN_Mico_Le%C3%A3o_Dourado-Claudiarlfranco(005).jpg",
+   "arquivo_commons": "Mico-leão-dourado-RPPN Mico Leão Dourado-Claudiarlfranco(005).jpg"
+  },
+  "visitar": {
+   "arquivo": "secao-visitar.jpg",
+   "w": 1600,
+   "h": 900,
+   "alt": "Picos de granito com a ponta fina do Dedo de Deus em destaque, cobertos de mata em volta, sob céu azul.",
+   "legenda": "O Dedo de Deus, na Serra dos Órgãos, em Teresópolis (RJ).",
+   "autor": "Josias.c.gomes",
+   "licenca": "CC BY-SA 4.0",
+   "licenca_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "fonte_url": "https://commons.wikimedia.org/wiki/File:Dedo_de_Deus_Teres%C3%B3polis_RJ.JPG",
+   "arquivo_commons": "Dedo de Deus Teresópolis RJ.JPG"
+  }
  }
 }
