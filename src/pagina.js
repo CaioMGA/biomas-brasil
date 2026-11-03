@@ -141,7 +141,7 @@
 
   // ---- página final da jornada: "Ver carimbos" refaz a animação com os carimbos que o visitante já recebeu ----
   function tocarAnimacoes(box) {
-    const b = el("button", { type: "button", class: "pass-btn" }, "\u25B6 Ver carimbos"), msg = el("span", { class: "pass-sem", role: "status" });
+    const b = el("button", { type: "button", class: "pass-btn" }, "\u25B6 Ver carimbos"), msg = el("span", { class: "pass-sem", role: "alert" });
     const primeiro = regioes.find(r => r.id !== "brasil");
     b.addEventListener("click", () => {
       if (BiomasUI.rever(D.passaporte)) { msg.replaceChildren(); return; }

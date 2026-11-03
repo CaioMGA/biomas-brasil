@@ -271,6 +271,10 @@ html { scroll-behavior: smooth; }
 .jornada-pass .folha { margin-left: auto; margin-right: auto; }
 .jornada-pass .pass-fim { text-align: left; }
 .jornada-pass .pass-tocar { justify-content: center; align-items: center; max-width: none; }
-.pass-sem { font-size: 14px; color: var(--muted); }
-.pass-sem a { color: var(--ink); text-underline-offset: 3px; }
+.pass-sem { flex-basis: 100%; margin-top: 10px; padding: 12px 16px; text-align: left; font-size: 16px; line-height: 1.45; color: var(--ink); background: rgba(240, 195, 106, .14); border: 1px solid rgba(240, 195, 106, .45); border-left: 5px solid #f0c36a; animation: pass-sem-entra .25s ease-out; }
+.pass-sem:empty { display: none; }
+.pass-sem::before { content: "!"; display: inline-grid; place-items: center; width: 22px; height: 22px; margin-right: 10px; border-radius: 50%; font: 700 14px/1 var(--body); color: #11160f; background: #f0c36a; }
+.pass-sem a { font-weight: 600; text-underline-offset: 3px; }
+@keyframes pass-sem-entra { from { opacity: 0; transform: translateY(-4px); } }
+@media (prefers-reduced-motion: reduce) { .pass-sem { animation: none; } }
 .cards { margin-top: 40px; }
