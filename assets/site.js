@@ -546,6 +546,26 @@ const BiomasUI = (() => {
     box.append(b, msg);
   }
 
+  // ---- mapa de localização (não interativo): clique abre num overlay, o maior possível, com o mesmo recorte e proporção ----
+  function mapaAmpliavel() {
+    document.querySelectorAll(".loc-mapa").forEach(box => {
+      const svg = box.querySelector("svg"); if (!svg) return;
+      box.classList.add("loc-zoom"); box.setAttribute("role", "button"); box.setAttribute("tabindex", "0"); box.setAttribute("aria-haspopup", "dialog"); box.setAttribute("aria-label", "Ampliar o mapa");
+      const abrir = () => {
+        const html = document.documentElement, foco = document.activeElement;
+        const ov = el("div", { class: "loc-ov", role: "dialog", "aria-modal": "true", "aria-label": "Mapa ampliado" });
+        const fechar = el("button", { type: "button", class: "loc-ov-fechar" }, "Fechar"), caixa = el("div", { class: "loc-ov-mapa" });
+        const grande = svg.cloneNode(true); grande.removeAttribute("width"); grande.removeAttribute("height"); caixa.appendChild(grande);
+        ov.append(fechar, caixa); document.body.appendChild(ov); html.classList.add("loc-aberto"); fechar.focus({ preventScroll: true });
+        const fim = () => { document.removeEventListener("keydown", tecla, true); ov.remove(); html.classList.remove("loc-aberto"); if (foco && foco.isConnected) foco.focus({ preventScroll: true }); };
+        const tecla = e => { if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); fim(); } else if (e.key === "Tab") { e.preventDefault(); fechar.focus(); } };
+        fechar.addEventListener("click", fim); ov.addEventListener("click", e => { if (e.target === ov) fim(); }); document.addEventListener("keydown", tecla, true);
+      };
+      box.addEventListener("click", abrir);
+      box.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); abrir(); } });
+    });
+  }
+
   function videos() {
     document.querySelectorAll("button[data-yt]").forEach(btn => btn.addEventListener("click", () => {
       const f = el("iframe", { src: `https://www.youtube-nocookie.com/embed/${btn.dataset.yt}?autoplay=1&rel=0`, title: btn.dataset.titulo, allow: "autoplay; encrypted-media; picture-in-picture; fullscreen", allowfullscreen: "", referrerpolicy: "strict-origin-when-cross-origin" });
@@ -639,6 +659,6 @@ const BiomasUI = (() => {
     decorar(); addEventListener("biomas:carimbos", decorar);
   } else {
     const prox = document.getElementById("proximos"); if (prox) proximos(prox);   // só a página do Brasil termina com passaporte e cards
-    leitura(); videos(); quiz(); comparador(); chuvas(); carrosseis(); painelSecoes();
+    leitura(); videos(); quiz(); comparador(); chuvas(); carrosseis(); mapaAmpliavel(); painelSecoes();
   }
 })();

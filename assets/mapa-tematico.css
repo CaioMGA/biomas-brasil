@@ -105,3 +105,6 @@
 }
 @media (prefers-reduced-motion: reduce) { .mt-painel > summary::before { transition: none; } }
 @media (forced-colors: active) { .mt-uc-PI, .mt-uc-US { stroke: CanvasText; } .mt-regiao-borda { stroke: CanvasText; } }
+
+/* Os textos do mapa temático (rótulos, legenda e detalhes ao passar o mouse) não podem ser selecionados */
+.mt-vp, .mt-vp *, .mt-leg, .mt-leg *, .mt-info { -webkit-user-select: none; user-select: none; }

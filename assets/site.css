@@ -280,6 +280,18 @@ html { scroll-behavior: smooth; }
 @media (prefers-reduced-motion: reduce) { .pass-sem { animation: none; } }
 .cards { margin-top: 40px; }
 
+/* Mapa de localização: textos não selecionáveis e ampliação em overlay */
+.loc svg, .loc svg *, .loc-ov svg, .loc-ov svg * { -webkit-user-select: none; user-select: none; }
+.loc-zoom { cursor: zoom-in; }
+.loc-zoom:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+html.loc-aberto, html.loc-aberto body { overflow: hidden; }
+.loc-ov { position: fixed; inset: 0; z-index: 400; display: grid; place-items: center; background: rgba(2, 4, 3, .94); animation: cena-entra .2s ease both; }
+.loc-ov-mapa { width: min(calc(100vw - 24px), calc(100vh - 84px)); width: min(calc(100vw - 24px), calc(100dvh - 84px)); aspect-ratio: 1 / 1; margin-top: 60px; }
+.loc-ov-mapa svg { display: block; width: 100%; height: 100%; border: 1px solid var(--rule); }
+.loc-ov-fechar { position: absolute; top: 12px; right: 12px; padding: 10px 20px; cursor: pointer; font-size: 15px; font-weight: 600; color: #11160f; background: var(--ink); border: 0; border-radius: 999px; }
+.loc-ov-fechar:hover { filter: brightness(1.1); }
+@media (prefers-reduced-motion: reduce) { .loc-ov { animation: none; } }
+
 /* Compartilhado pelo painel do mapa e pelas páginas: gráfico de chuva e folha do passaporte. */
 .chuva { margin-top: 14px; }
 .chuva svg { display: block; width: 100%; height: auto; overflow: visible; }
