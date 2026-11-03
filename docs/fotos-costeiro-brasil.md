@@ -17,3 +17,7 @@ Branch `ajustes-site`. Fotos do Wikimedia Commons, com autor e licença vindos d
 | Sobre, capa | arara-azul-grande (*Anodorhynchus hyacinthinus*) em voo, Parque Estadual Encontro das Águas | Giles Laurent | CC BY-SA 4.0 | `object-position` 42% 50% (`pos` no JSON) |
 
 Pendências: teste visual no navegador; trocar os dois espécimes de museu se aparecer foto de licença livre dos animais vivos.
+
+## Pampas, vista aérea (hero)
+
+Trocada em 2026-11-03 a pedido do usuário (a anterior era a imagem orbital da Lagoa dos Patos). Agora: imagem de satélite do sul do Rio Grande do Sul, INPE (Coordenação-Geral de Observação da Terra), CC BY-SA 2.0, Commons `Coast of Rio Grande do Sul.jpg`, recortada na metade oeste (2000×1125) para mostrar os campos. **Não é foto de avião ou drone:** não achei vista aérea de licença livre dos campos do Pampa no Commons (buscas por drone, aérea, Bagé, Quaraí, Livramento etc.). Mostra campos verdes, a Lagoa Mirim e lavouras de arroz irrigado; a legenda diz isso.

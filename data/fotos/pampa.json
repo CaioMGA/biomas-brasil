@@ -89,15 +89,15 @@
  },
  "_vista_aerea": {
   "arquivo": "vista-aerea.jpg",
-  "w": 1600,
-  "h": 900,
-  "alt": "Vista de cima, a mais de 400 km de altitude, de uma grande lagoa alongada e clara, separada do oceano por uma faixa estreita de areia; à esquerda, o Rio Guaíba e a região de Porto Alegre.",
-  "legenda": "Vista orbital da Lagoa dos Patos e do Rio Guaíba, fotografada da Estação Espacial Internacional em 2019; o brilho do sol na água deixa a lagoa clara.",
-  "autor": "NASA",
-  "licenca": "domínio público (NASA)",
-  "licenca_url": "https://commons.wikimedia.org/wiki/Template:PD-USGov-NASA",
-  "fonte_url": "https://commons.wikimedia.org/wiki/File:Aerial_view_of_Lagoa_dos_Patos_and_Gua%C3%ADba_river_from_the_International_Space_Station,_in_2019.jpg",
-  "arquivo_commons": "Aerial view of Lagoa dos Patos and Guaíba river from the International Space Station, in 2019.jpg"
+  "w": 2000,
+  "h": 1125,
+  "alt": "Vista de cima, por satélite, de uma planície de campos verdes cortada por rios de mata ciliar escura e salpicada de lavouras retangulares; à direita, a Lagoa Mirim, comprida e arroxeada, e a faixa de areia que a separa do oceano.",
+  "legenda": "Imagem de satélite (INPE) do sul do Rio Grande do Sul: à esquerda, os campos do Pampa, verdes, com os rios cercados de mata; no centro, a Lagoa Mirim, e em volta dela, lavouras de arroz irrigado (os retângulos claros). Recorte da metade oeste da cena.",
+  "autor": "Coordenação-Geral de Observação da Terra/INPE",
+  "licenca": "CC BY-SA 2.0",
+  "licenca_url": "https://creativecommons.org/licenses/by-sa/2.0",
+  "fonte_url": "https://commons.wikimedia.org/wiki/File:Coast_of_Rio_Grande_do_Sul.jpg",
+  "arquivo_commons": "Coast of Rio Grande do Sul.jpg"
  },
  "_secoes": {
   "gente": {
