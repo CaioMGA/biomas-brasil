@@ -167,6 +167,7 @@
         fechar.addEventListener("click", fim); ov.addEventListener("click", e => { if (e.target === ov) fim(); }); document.addEventListener("keydown", tecla, true);
       };
       box.addEventListener("click", abrir);
+      const dica = box.closest(".hero-loc"); if (dica) dica.querySelectorAll(".loc-dica").forEach(b => b.addEventListener("click", abrir));   // "Mais detalhes" abre o mesmo mapa grande
       box.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); abrir(); } });
     });
   }

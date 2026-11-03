@@ -315,7 +315,8 @@ html { overflow-x: clip; }   /* o 100vw conta a barra de rolagem; sem isto a pá
 /* mini-mapa de localização no canto do hero, recolorido no tema escuro */
 .hero-loc { position: absolute; z-index: 1; top: 20px; right: 24px; width: 160px; }   /* canto superior direito do hero */
 .hero-loc:empty { display: none; }
-.hero .loc-dica { margin: 6px 0 0; font-size: 12px; line-height: 1.3; text-align: center; color: var(--ink); text-shadow: 0 1px 8px rgba(0,0,0,.7); }
+.hero .loc-dica { display: block; width: 100%; margin: 6px 0 0; padding: 2px 0; cursor: pointer; font-size: 13px; line-height: 1.3; text-align: center; color: var(--ink); background: none; border: 0; text-decoration: underline; text-underline-offset: 3px; text-shadow: 0 1px 8px rgba(0,0,0,.7); }
+.hero .loc-dica:hover { color: var(--accent); }
 .hero .loc { margin: 0; display: block; }
 .hero .loc-linha { display: block; }
 .hero .loc-mapa { width: 100%; }
