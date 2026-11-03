@@ -305,8 +305,8 @@ html { overflow-x: clip; }   /* o 100vw conta a barra de rolagem; sem isto a pá
 .hero-foto::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(to top, #0b100c, transparent 60%); }   /* o título fica legível sobre a foto */
 .hero-foto::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,.35)); }   /* vinheta */
 .hero-in { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 24px; width: min(1040px, 100%); margin: 0 auto; padding: 72px 24px 28px; }   /* título e mini-mapa lado a lado, os dois embaixo */
-.hero h1 { margin: 0; font: 400 clamp(60px, 9vw, 128px)/.92 var(--display); text-shadow: 0 2px 24px rgba(0,0,0,.45); }
-.hero .intro { max-width: 40ch; margin: 14px 0 0; font: italic 400 clamp(22px, 2.6vw, 30px)/1.25 var(--display); color: var(--ink); text-shadow: 0 1px 14px rgba(0,0,0,.6); }
+.hero h1 { margin: 0; font: 400 clamp(60px, 9vw, 128px)/.92 var(--display); text-shadow: 0 1px 2px rgba(0,0,0,.85), 0 3px 14px rgba(0,0,0,.75), 0 0 42px rgba(0,0,0,.65); }   /* sombra em camadas (contato, difusa e halo largo): legível sobre qualquer foto */
+.hero .intro { max-width: 40ch; margin: 14px 0 0; font: italic 400 clamp(22px, 2.6vw, 30px)/1.25 var(--display); color: var(--ink); text-shadow: 0 1px 2px rgba(0,0,0,.9), 0 2px 12px rgba(0,0,0,.8), 0 0 28px rgba(0,0,0,.6); }
 .hero-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; margin: 18px 0 0; }
 .hero .tm { font-size: 14px; color: var(--muted); }
 .hero-leg { max-width: 62ch; margin: 28px 0 0; font-size: 16px; color: var(--muted); }
@@ -353,3 +353,8 @@ html { overflow-x: clip; }   /* o 100vw conta a barra de rolagem; sem isto a pá
   .card-pass h3, .card-pass p, .card-pass .meta { grid-column: 2; }
   .card-pass h3 { align-self: end; } .card-pass .meta { align-self: start; margin-top: 0; }
 }
+
+/* kicker, tempo de leitura e legenda do hero também ganham sombra; o degradê inferior da foto fica um pouco mais forte */
+.hero-foto .kicker, .hero-foto .hero-meta .tm { text-shadow: 0 1px 2px rgba(0,0,0,.9), 0 0 14px rgba(0,0,0,.8); }
+.hero-foto .hero-leg, .hero-foto .hero-cred { text-shadow: 0 1px 2px rgba(0,0,0,.9), 0 0 10px rgba(0,0,0,.7); }
+.hero-foto::before { background: linear-gradient(to top, #0b100c 0%, rgba(11,16,12,.55) 38%, transparent 70%); }
