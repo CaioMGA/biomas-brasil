@@ -94,9 +94,9 @@ def referencias_loc(P, S, vx, vy):
     out += [T(P(-79.6, 0)[0], P(0, -41)[1], "Oceano Pacífico", "loc-t-mar", f' text-anchor="middle" transform="rotate(-72 {P(-79.6, 0)[0]} {P(0, -41)[1]})"', round(F * 1.15)),
             T(P(-40, 0)[0], P(0, -39)[1], "Oceano Atlântico", "loc-t-mar", ' text-anchor="middle"', round(F * 1.15))]
     nx, ny = x1 - F * 3, y0 + F * 4.4   # seta do norte no canto superior direito (Atlântico)
-    h = lambda v: f"{v:.0f}"   # seta bicolor: metade esquerda preta, metade direita só contorno fino (mesmo desenho de docs/seta-norte.svg)
+    h = lambda v: f"{v:.0f}"   # seta bicolor: metade direita preta, metade esquerda só contorno fino (mesmo desenho de docs/seta-norte.svg)
     esq = f"M0 {h(-F * 1.5)}L{h(-F * .65)} {h(F * .8)} 0 {h(F * .3)}z"; dir = f"M0 {h(-F * 1.5)}L{h(F * .65)} {h(F * .8)} 0 {h(F * .3)}z"
-    out.append(f'<g transform="translate({nx} {ny})"><path d="{esq}" fill="#000" stroke="#000" stroke-width="{F * .07:.1f}" stroke-linejoin="miter"/><path d="{dir}" fill="none" stroke="#000" stroke-width="{F * .07:.1f}" stroke-linejoin="miter"/>{T(0, -F * 1.8, "N", "loc-t-norte", " text-anchor=\"middle\" font-weight=\"700\"")}</g>')
+    out.append(f'<g transform="translate({nx} {ny})"><path d="{esq}" fill="none" stroke="#000" stroke-width="{F * .07:.1f}" stroke-linejoin="miter"/><path d="{dir}" fill="#000" stroke="#000" stroke-width="{F * .07:.1f}" stroke-linejoin="miter"/>{T(0, -F * 1.8, "N", "loc-t-norte", " text-anchor=\"middle\" font-weight=\"700\"")}</g>')
     return "".join(out)
 
 
