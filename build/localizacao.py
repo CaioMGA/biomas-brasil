@@ -60,7 +60,8 @@ def bioma(id, root):
     out = os.path.join(root, "data", "localizacao", id + ".json")
     fontes = m.get("fontes", {}); f = fontes.get(m.get("limite_fonte", "resolve")) or next(iter(fontes.values()), {})   # fonte do limite do bioma
     fonte = {"nome": f.get("titulo", "").split(" (")[0].split(", ")[0], "url": f.get("url", ""), "licenca": f.get("licenca", "")}
-    json.dump({"rings": [[[round(x, 2), round(y, 2)] for x, y in r] for r in simp], "contorno": contorno, "paises": sorted(set(tocados)), "fonte": fonte}, open(out, "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"))
+    extra = {k: m[k] for k in ("nome_exibido", "plural") if k in m}   # opcional: nome e número gramatical a mostrar no lugar do nome da página (ex.: "Pampas", plural)
+    json.dump({"rings": [[[round(x, 2), round(y, 2)] for x, y in r] for r in simp], "contorno": contorno, "paises": sorted(set(tocados)), "fonte": fonte, **extra}, open(out, "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"))
     print(out, os.path.getsize(out) // 1024, "KB; países:", sorted(set(tocados)))
 
 
@@ -69,6 +70,7 @@ def figura(root, id, nome):
     pc, pb = (os.path.join(root, "data", "localizacao", f) for f in ("america-do-sul.json", id + ".json"))
     if not (os.path.exists(pc) and os.path.exists(pb)): return ""
     ctx, b = json.load(open(pc, encoding="utf-8")), json.load(open(pb, encoding="utf-8"))
+    nome = b.get("nome_exibido", nome); pl = b.get("plural", False); o_, do_, cp = ("os", "dos", "contornados e pintados") if pl else ("o", "do", "contornado e pintado")
     P = mapas.Proj(ctx["bbox"], pad=0)
     br = [p for p in ctx["paises"] if p["iso"] == "BRA"]; resto = [p for p in ctx["paises"] if p["iso"] != "BRA"]
     cam = lambda aneis: mapas.caminho(P, aneis, True)
@@ -76,9 +78,9 @@ def figura(root, id, nome):
     estados = cam(ctx["estados"]); biom = cam(b["rings"])
     borda = mapas.caminho(P, b["contorno"], False) if b.get("contorno") else biom   # só o contorno externo, sem as divisas internas entre peças do bioma
     paises = b["paises"]; lista = ", ".join(paises[:-1]) + " e " + paises[-1] if len(paises) > 1 else (paises[0] if paises else "")
-    desc = f"Mapa da América do Sul: o Brasil e seus estados contornados, e o {nome} contornado e pintado na cor de destaque"
+    desc = f"Mapa da América do Sul: o Brasil e seus estados contornados, e {o_} {nome} {cp} na cor de destaque"
     desc += f", ocupando partes de {lista}." if len(paises) > 1 else "."
-    cap = f"Localização do {E(nome)} na América do Sul" + (f": o bioma se estende por {E(lista)}." if len(paises) > 1 else ".")
+    cap = f"Localização {do_} {E(nome)} na América do Sul" + (f": o bioma se estende por {E(lista)}." if len(paises) > 1 else ".")
     fb = b.get("fonte") or {}
     lic = f' ({E(fb["licenca"])})' if fb.get("licenca") else ""
     bio = (f'contorno do bioma: <a href="{E(fb["url"])}" target="_blank" rel="noopener">{E(fb["nome"])}</a>{lic}' if fb.get("url") else "")

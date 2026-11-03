@@ -2,7 +2,8 @@
 Lê as bases já descompactadas e devolve o dicionário de data/mapas/pampa.json.
 
 Pasta de entrada (`raw`):
-  resolve_pa/eco_574.json   RESOLVE Ecoregions 2017, ecorregião "Uruguayan savanna" (ECO_ID 574; GeoJSON do FeatureServer, maxAllowableOffset=0.003)
+  resolve_pa/eco_574.json   RESOLVE Ecoregions 2017, ecorregião "Uruguayan savanna" (ECO_ID 574; GeoJSON do FeatureServer, maxAllowableOffset=0.003): Brasil e Uruguai
+  resolve_pa/eco_576.json   RESOLVE Ecoregions 2017, ecorregião "Humid Pampas" (ECO_ID 576, mesmos parâmetros): a parte argentina do Pampa (Buenos Aires, Córdoba, Santa Fe, Entre Ríos, La Pampa)
   biomas/                   IBGE, Biomas 1:250 000 (2025)           lml_bioma_e250k_v20250911_A.*   (limite oficial)
   bc250/                    IBGE, BC250 versão 2025                 hid_trecho_drenagem_l.{shp,shx,dbf,cpg} (rios nomeados) e hid_massa_dagua_a.{shp,dbf,cpg} (lagoas)
   cnuc/                     MMA, CNUC edição 2025-08                cnuc_2025_08.*
@@ -11,7 +12,8 @@ Pasta de entrada (`raw`):
 Por que só uma ecorregião: medido por amostragem (3.000 pontos, semente fixa) dentro do polígono do Pampa do IBGE, contra 10 ecorregiões RESOLVE da região:
 ~87% cai na "Uruguayan savanna", ~5% nas florestas do Alto Paraná, ~1% nas restingas da costa atlântica, ~0,6% nas florestas de araucária e da Serra do Mar,
 e ~6% em nenhuma (167 dos 175 pontos desses 6% estão dentro do polígono da Lagoa dos Patos no BC250). Por isso o limite é a ecorregião dominante inteira, com o
-limite do IBGE por cima (que cobre as bordas com a Mata Atlântica), como no Cerrado, e não há camada de ecorregiões. Por amostragem (4.000 pontos), a "Uruguayan
+limite do IBGE por cima (que cobre as bordas com a Mata Atlântica), como no Cerrado, e não há camada de ecorregiões. A extensão completa do Pampa inclui a parte argentina: o limite é a "Uruguayan savanna" mais a "Humid Pampas"
+(~35 + ~40 Mha por área aproximada dos polígonos, contra 83,8 Mha de Pampa trinacional no MapBiomas, que usa a Província Fitogeográfica Pampeana na Argentina, 46,7 Mha). Por amostragem (4.000 pontos), a "Uruguayan
 savanna" tem ~47% da área no Brasil, ~53% no Uruguai e 0% na Argentina.
 
 UCs: entram as unidades que o CNUC marca com área no Pampa (campo `pampa` do cadastro, numérico: a área da unidade dentro do bioma; vazio = sem área no Pampa).
@@ -24,7 +26,7 @@ from mapas_dados import dp, dp_ring, inside, dist_borda, r3, recorta_anel, corta
 
 PUB = "dado público do IBGE (termo de licença não localizado)"
 FONTES = {
-    "resolve": {"titulo": "RESOLVE Ecoregions 2017 (Dinerstein et al., 2017, BioScience), ecorregião Uruguayan savanna: limite do bioma, com a parte no Uruguai",
+    "resolve": {"titulo": "RESOLVE Ecoregions 2017 (Dinerstein et al., 2017, BioScience), ecorregiões Uruguayan savanna (Brasil e Uruguai) e Humid Pampas (Argentina): extensão completa do Pampa",
                 "url": "https://ecoregions.appspot.com/", "data": "2017", "licenca": "CC BY 4.0"},
     "biomas": {"titulo": "IBGE, Biomas e Sistema Costeiro-Marinho do Brasil 1:250 000 (2025): limite oficial do Pampa",
                "url": "https://geoftp.ibge.gov.br/informacoes_ambientais/estudos_ambientais/biomas/vetores/2025_Biomas-e-Sistema-Costeiro-Marinho-do-Brasil-1-250000_shp.zip", "data": "2025-09", "licenca": PUB},
@@ -37,8 +39,9 @@ FONTES = {
 }
 PAISES = {"BRA", "URY", "ARG", "PRY"}
 # províncias e departamentos que só aparecem como fatias nos cantos do mapa, sem relação com o bioma: ficam de fora (as divisas dos vizinhos continuam desenhadas por eles).
-# Todo o Paraguai (só pintura de país, sem departamentos) e quatro províncias argentinas.
-SEM_ESTADO = {"Formosa", "Chaco", "Santa Fe", "Ciudad de Buenos Aires"}
+# Todo o Paraguai (só pintura de país, sem departamentos) e seis províncias argentinas dos cantos.
+SEM_ESTADO = {"Formosa", "Chaco", "Catamarca", "La Rioja", "Tucumán", "Santiago del Estero"}
+SEM_ESTADO_ARG_APENAS = {"Río Negro"}   # a província argentina; o departamento uruguaio de mesmo nome fica
 SEM_ESTADO_PAIS = {"PRY"}
 ESFERAS = {"Federal": "federais", "Estadual": "estaduais", "Municipal": "municipais"}
 
@@ -103,10 +106,12 @@ def tipo_massa(a):
 
 
 def receita(raw):
-    # ---- a região: ecorregião RESOLVE "Uruguayan savanna" + limite oficial do IBGE por cima
-    g = json.load(open(f"{raw}/resolve_pa/eco_574.json", encoding="utf-8"))["features"][0]["geometry"]
-    polis = g["coordinates"] if g["type"] == "MultiPolygon" else [g["coordinates"]]
-    res_aneis = [[tuple(p) for p in pol[0]] for pol in polis]
+    # ---- a região: ecorregiões RESOLVE "Uruguayan savanna" (Brasil e Uruguai) e "Humid Pampas" (Argentina) + limite oficial do IBGE por cima
+    res_aneis = []
+    for eco in ("eco_574", "eco_576"):
+        g = json.load(open(f"{raw}/resolve_pa/{eco}.json", encoding="utf-8"))["features"][0]["geometry"]
+        polis = g["coordinates"] if g["type"] == "MultiPolygon" else [g["coordinates"]]
+        res_aneis += [[tuple(p) for p in pol[0]] for pol in polis]
     ibge = [r for a, gm in shp.read(f"{raw}/biomas/lml_bioma_e250k_v20250911_A") if a["NM_BIOMA"] == "Pampa" for r in gm]
     xs, ys = [p[0] for r in res_aneis + ibge for p in r], [p[1] for r in res_aneis + ibge for p in r]
     reg = (min(xs), min(ys), max(xs), max(ys))
@@ -114,7 +119,6 @@ def receita(raw):
     bbox = (reg[0] - P, reg[1] - P, reg[2] + P, reg[3] + P); box = (bbox[0] - .3, bbox[1] - .3, bbox[2] + .3, bbox[3] + .3)
     dx, dy = (bbox[2] - bbox[0]) * .05 + .2, (bbox[3] - bbox[1]) * .05 + .2
     vbox = (bbox[0] - dx, bbox[1] - dy, bbox[2] + dx, bbox[3] + dy)   # a terra é recortada numa caixa maior que a moldura (sem faixas vazias)
-    mask = Mascara(res_aneis + ibge, reg, .01)
     limite = [r3(q) for q in (dp_ring(list(r), .02) for r in res_aneis) if q]
     oficial = [r3(q) for q in (dp_ring(list(r), .01) for r in ibge) if q]
     camadas = []
@@ -131,7 +135,7 @@ def receita(raw):
                     "nota": "Países vizinhos com seu nome e uma cor para cada um; as fronteiras vêm do Natural Earth (escala 1:10 milhões) e podem divergir em detalhe dos limites oficiais.",
                     "itens": paises, "fronteiras": fronteiras})
     for a, gm in shp.read(f"{raw}/ne_10m_admin_1_states_provinces/ne_10m_admin_1_states_provinces", vbox):
-        if a["adm0_a3"] not in PAISES or a["adm0_a3"] in SEM_ESTADO_PAIS or a["name"] in SEM_ESTADO: continue
+        if a["adm0_a3"] not in PAISES or a["adm0_a3"] in SEM_ESTADO_PAIS or a["name"] in SEM_ESTADO or (a["adm0_a3"] == "ARG" and a["name"] in SEM_ESTADO_ARG_APENAS): continue
         if not any(recorta_anel(r, box) for r in gm): continue
         rings = [q for q in (recorta_anel(r, vbox) for r in gm) if q]
         if not rings: continue
@@ -188,7 +192,7 @@ def receita(raw):
     rios.sort(key=lambda r_: -r_["km"])
     for r_ in rios[:7]:   # rótulos: só os 7 maiores (o bioma é pequeno e os textos não podem se sobrepor)
         ls = max((l for l in [[tuple(p) for p in l] for l in r_["linhas"]]), key=len); m = ls[len(ls) // 2]; r_["rotulo"] = [round(m[0], 3), round(m[1], 3)]
-    camadas.append({"id": "rios", "titulo": "Rios do Pampa", "tipo": "linha", "fonte": "bc250", "ligada": True, "por_rio": True, "lista": True, "lista_titulo": "Rios",
+    camadas.append({"id": "rios", "titulo": "Rios dos Pampas (Brasil)", "tipo": "linha", "fonte": "bc250", "ligada": True, "por_rio": True, "lista": True, "lista_titulo": "Rios",
                     "nota": f"Os {len(rios)} principais rios que correm pelo Pampa gaúcho, da drenagem do IBGE, só no trecho que aparece no mapa. O filtro separa os rios pela bacia hidrográfica do Rio Grande do Sul; a bacia de cada rio vem do conhecimento geral (não de uma base de dados), e as caixas de coordenadas que isolam cada rio (há homônimos em outras regiões) foram conferidas contra a base. Toque num rio para ver por quais países e estados ele passa (limites do Natural Earth, aproximados).",
                     "itens": rios})
 
@@ -216,12 +220,14 @@ def receita(raw):
         {"id": "grupo", "titulo": "Proteção", "camada": "ucs", "campo": "grupo", "opcoes": [["", "Todas"], ["PI", "Proteção integral"], ["US", "Uso sustentável"]]},
         {"id": "esfera", "titulo": "Esfera", "camada": "ucs", "campo": "esfera", "opcoes": [["", "Todas"], ["Federal", "Federal"], ["Estadual", "Estadual"], ["Municipal", "Municipal"]]},
     ]
-    return {"id": "pampa", "oceano": True, "titulo": "Mapa do Pampa: lagoas, rios e unidades de conservação",
-            "aviso_escopo": "O limite do bioma é a ecorregião RESOLVE \"Uruguayan savanna\" (que segue pelo Uruguai: ~47% da área está no Brasil e ~53% no Uruguai) com o limite oficial do IBGE por cima; os dois vêm de bases diferentes e não coincidem exatamente. As camadas detalhadas (lagoas, rios, unidades de conservação) existem só para o lado brasileiro.",
-            "bbox": [round(v, 3) for v in bbox], "limite": limite, "limite_nome": "Pampa (ecorregião, RESOLVE 2017)",
-            "limite_oficial": oficial, "limite_oficial_nome": "Limite oficial no Brasil (IBGE 2025)",
+    return {"id": "pampa", "oceano": True, "titulo": "Mapa dos Pampas: lagoas, rios e unidades de conservação",
+            "nome_exibido": "Pampas", "plural": True,
+            "aviso_escopo": "O limite do bioma mostra a extensão completa do Pampa: a ecorregião RESOLVE \"Uruguayan savanna\" (Rio Grande do Sul e Uruguai) mais a \"Humid Pampas\" (Argentina), com o limite oficial do IBGE por cima na parte brasileira; os dois vêm de bases diferentes e não coincidem exatamente. As camadas detalhadas (lagoas, rios, unidades de conservação) existem só para o lado brasileiro.",
+            "bbox": [round(v, 3) for v in bbox], "limite": limite, "limite_nome": "Pampas (ecorregiões, RESOLVE 2017)",
+            "limite_oficial": oficial, "limite_oficial_nome": "Pampa no Brasil (limite oficial, IBGE 2025)",
             "camadas": camadas, "filtros": filtros,
             "lacunas": ["Cidades: não incluídas por escolha do projeto.",
+                        "Parte argentina: desenhada com a ecorregião RESOLVE \"Humid Pampas\" (~40 Mha por área aproximada). O MapBiomas usa outro limite para o Pampa na Argentina (Província Fitogeográfica Pampeana, 46,7 Mha), maior que esse; a extensão argentina muda conforme a fonte. Nenhuma camada detalhada (rios, lagoas, unidades de conservação) cobre a Argentina nem o Uruguai.",
                         "Ecorregiões: a RESOLVE tem uma ecorregião dominante sobre o Pampa brasileiro (Uruguayan savanna, ~87% da área do IBGE em amostragem); o resto é Alto Paraná (~5%), restingas (~1%), araucária e Serra do Mar (<1%) e Lagoa dos Patos (~6%, sem ecorregião). Por isso não há camada de ecorregiões; as bordas com a Mata Atlântica ficam cobertas só pelo limite oficial do IBGE.",
                         "Unidades de conservação no Uruguai e na Argentina: a base mundial (WDPA) não permite redistribuição.",
                         f"Os rios são uma seleção dos principais ({len(rios)}), não toda a rede de drenagem; a bacia de cada um vem do conhecimento geral (bacias do Rio Grande do Sul), não de uma base de dados. A Lagoa Mirim aparece só no lado brasileiro (o BC250 cobre só o Brasil).",
