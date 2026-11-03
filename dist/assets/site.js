@@ -395,6 +395,8 @@ const BiomasUI = (() => {
 
 /* Interatividade das páginas estáticas: progresso, quiz, vídeos, comparador, passaporte e sugestões. */
 (() => {
+  // altura real do header (o menu pode quebrar de linha no celular): a barra de leitura gruda logo abaixo dele
+  const topoEl = document.querySelector(".topo"); if (topoEl && window.ResizeObserver) new ResizeObserver(() => document.documentElement.style.setProperty("--topo-h", topoEl.offsetHeight + "px")).observe(topoEl);
   const D = (() => { try { return JSON.parse(document.getElementById("dados").textContent); } catch (e) { return null; } })();
   const el = (tag, attrs = {}, text) => {
     const e = document.createElement(tag);
@@ -556,12 +558,14 @@ const BiomasUI = (() => {
         const ov = el("div", { class: "loc-ov", role: "dialog", "aria-modal": "true", "aria-label": "Mapa ampliado" });
         const fechar = el("button", { type: "button", class: "loc-ov-fechar" }, "Fechar"), caixa = el("div", { class: "loc-ov-mapa" });
         const grande = svg.cloneNode(true); grande.removeAttribute("width"); grande.removeAttribute("height"); caixa.appendChild(grande);
-        ov.append(fechar, caixa); document.body.appendChild(ov); html.classList.add("loc-aberto"); fechar.focus({ preventScroll: true });
+        const fonte = document.querySelector(".loc-fonte"), fontes = fonte && el("p", { class: "loc-ov-fonte" }); if (fontes) fontes.innerHTML = fonte.innerHTML;   // as fontes do mapa, abaixo dele
+        ov.append(fechar, caixa); if (fontes) ov.append(fontes); document.body.appendChild(ov); html.classList.add("loc-aberto"); fechar.focus({ preventScroll: true });
         const fim = () => { document.removeEventListener("keydown", tecla, true); ov.remove(); html.classList.remove("loc-aberto"); if (foco && foco.isConnected) foco.focus({ preventScroll: true }); };
         const tecla = e => { if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); fim(); } else if (e.key === "Tab") { e.preventDefault(); fechar.focus(); } };
         fechar.addEventListener("click", fim); ov.addEventListener("click", e => { if (e.target === ov) fim(); }); document.addEventListener("keydown", tecla, true);
       };
       box.addEventListener("click", abrir);
+      const dica = box.closest(".hero-loc"); if (dica) dica.querySelectorAll(".loc-dica").forEach(b => b.addEventListener("click", abrir));   // "Mais detalhes" abre o mesmo mapa grande
       box.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); abrir(); } });
     });
   }
@@ -649,7 +653,12 @@ const BiomasUI = (() => {
   document.querySelectorAll('a[href="#sec-creditos"]').forEach(a => a.addEventListener("click", () => { const d = document.querySelector("#sec-creditos details"); if (d) d.open = true; }));
 
   if (D.id === "hub" || D.id === "jornada") {
-    passaporte(document.getElementById("passaporte"));
+    if (D.id === "jornada") passaporte(document.getElementById("passaporte"));
+    else {   // hub: o card do passaporte mostra só a folha com os carimbos aceitos, sem aviso, botões nem animação
+      const slot = document.getElementById("card-folha");
+      const folha = () => { const cs = BiomasUI.carimbos(), ac = {}; for (const k in cs) if (cs[k].aceito) ac[k] = cs[k].em; slot.replaceChildren(BiomasUI.folha(D.passaporte, ac)); };
+      folha(); addEventListener("biomas:carimbos", folha);
+    }
     if (D.id === "jornada") tocarAnimacoes(document.getElementById("tocar"));
     const decorar = () => document.querySelectorAll("a.card").forEach(a => {
       const r = regioes.find(x => x.id === a.dataset.id); if (!r) return;

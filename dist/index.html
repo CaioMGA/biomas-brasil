@@ -47,7 +47,7 @@ main { position: relative; z-index: 1; }
 .sitenav a { padding: 3px 10px; font-size: 12px; line-height: 1.2; text-decoration: none; color: var(--muted); border-bottom: 2px solid transparent; }
 .sitenav a:hover { color: var(--ink); }
 .sitenav a[aria-current="page"] { color: var(--ink); border-bottom-color: var(--ink); }
-@media (max-width: 860px) { .sitenav { position: relative; right: auto; top: auto; z-index: 6; width: max-content; margin: 8px auto 0; padding: 3px; background: none; } .sitenav a { padding: 5px 14px; font-size: 13px; } }
+@media (max-width: 860px) { .sitenav { position: relative; right: auto; top: auto; z-index: 6; width: max-content; max-width: 100%; flex-wrap: wrap; justify-content: center; margin: 8px auto 0; padding: 3px; background: none; } .sitenav a, .sitenav button { padding: 5px 8px; font-size: 13px; } }
 html.navhide .sitenav { opacity: 0; pointer-events: none; }
 html.nav-in .sitenav { animation: bin .4s cubic-bezier(.2,.8,.3,1) backwards; }
 .brand { position: absolute; left: 24px; top: 22px; pointer-events: none; isolation: isolate; }
@@ -366,7 +366,7 @@ html.nav-in .tools, html.nav-in .navstack .pill, html.nav-in .compass, html.nav-
 </style>
 </head>
 <body>
-<nav class="sitenav" aria-label="Site"><a href="/" aria-current="page">Mapa</a><a href="/biomas/">Biomas</a><a href="/sobre/">Sobre</a><button type="button" id="tutBtn">Tutorial</button></nav>
+<nav class="sitenav" aria-label="Site"><a href="/" aria-current="page">Mapa interativo</a><a href="/biomas/">Biomas</a><a href="/biomas/jornada/">Passaporte</a><a href="/sobre/">Sobre</a><button type="button" id="tutBtn">Tutorial</button></nav>
 <div id="loader" role="status" aria-live="polite" aria-label="Carregando o mapa">
   <svg viewBox="-8 -8 333 341" aria-hidden="true">
     <defs><path id="ldBase" d="M109,1L113,1L112,6L115,7L117,11L113,20L115,28L123,35L127,31L129,32L135,28L146,29L147,28L145,25L146,24L154,23L160,27L164,25L171,26L182,10L182,7L185,10L185,16L188,25L191,26L195,30L195,36L193,38L196,42L198,41L200,45L205,47L206,46L210,50L212,49L219,50L221,52L222,51L224,53L225,52L228,53L231,56L232,55L233,57L234,56L236,58L237,57L241,65L244,65L246,63L255,67L261,67L263,69L276,68L287,75L299,86L300,85L302,87L311,87L314,91L317,102L317,111L313,121L305,131L299,135L292,148L283,155L284,156L283,159L284,160L283,162L284,178L281,187L282,192L279,194L277,198L278,205L277,207L274,210L272,216L267,221L267,227L262,229L259,232L260,234L259,235L248,235L247,236L243,235L242,237L238,236L237,237L238,238L236,238L231,242L226,242L225,244L220,245L214,250L205,261L206,262L205,271L207,275L205,277L204,282L195,290L190,301L175,314L173,320L169,324L167,325L166,321L170,317L165,314L165,312L158,306L152,304L150,301L146,303L146,301L139,294L134,296L149,279L165,269L165,262L163,257L161,256L158,257L161,247L157,242L153,244L151,243L149,236L150,233L147,229L130,228L132,219L129,212L131,211L130,207L133,202L132,201L133,198L135,196L132,190L131,189L130,190L127,187L126,185L127,181L123,179L113,179L112,173L110,171L112,169L112,166L109,158L105,156L102,157L98,156L96,153L93,153L88,149L83,147L79,148L75,144L73,144L71,140L72,135L70,132L71,131L70,124L61,126L51,133L49,132L45,136L42,135L30,136L28,135L29,125L27,123L23,127L16,127L14,123L8,122L9,119L1,107L3,105L3,101L8,98L7,94L9,92L10,87L18,82L25,81L27,79L30,79L33,81L34,80L38,53L36,48L33,46L33,40L40,38L39,35L35,34L34,35L34,30L46,30L47,28L49,29L54,26L57,35L58,34L62,38L65,38L67,36L71,37L72,35L79,32L81,28L87,26L86,23L81,23L82,22L80,18L81,16L75,9L80,10L82,12L86,11L90,14L93,10L98,10L105,7L109,3Z" pathLength="1" fill="none"/></defs>
@@ -974,6 +974,7 @@ function select(id, fromHash) {
   renderPanel();
   document.querySelectorAll(".chip").forEach(c => c.setAttribute("aria-pressed", String(c.dataset.id === (id || "brasil"))));
   onSelect(id);
+  if (fromHash && id) frameRegion(byId[id].n);   // chegou por #bioma: além de selecionar, posiciona a câmera (mesma função do botão de mira)
   if (!fromHash) { try { history.replaceState(null, "", id ? "#" + id : location.pathname + location.search); } catch (e) {} }
 }
 const toggle = id => select(current === id ? null : id);
@@ -2301,6 +2302,7 @@ async function init3d() {
   gl3 = true;
   ldp(.97);
   onSelect(current);  // aplica a seleção que veio do #hash antes do 3D carregar
+  if (current) frameRegion(byId[current].n);   // e posiciona a câmera nele, como o botão de mira
   requestAnimationFrame(() => requestAnimationFrame(() => revealSite()));   // 1º quadro já renderizado: pode revelar
 }
 
@@ -2401,7 +2403,7 @@ function drawFx(dt) {
     { sel: "#exag", title: "Escala vertical", text: "Exagera a altura do relevo. Arraste para ajustar; 1× é a escala real do terreno." },
     { sel: "#panel", title: "Painel de informações", text: "Números, clima, chuvas e a espécie mais emblemática do bioma selecionado. O botão Mergulhar abre a página de leitura completa." },
     { sel: "#tools", title: "Controles e screenshot", text: "Oculte os controles para ver só o mapa, ou gere um screenshot dele com o título do site. O texto de ajuda não entra na imagem." },
-    { sel: ".sitenav", title: "Navegação do site", text: "Biomas reúne os textos, vídeos e quizzes de cada bioma sem precisar do mapa. Sobre conta como o site foi feito e como falar com o autor." }
+    { sel: ".sitenav", title: "Navegação do site", text: "Biomas reúne os textos, vídeos e quizzes de cada bioma sem precisar do mapa. Passaporte guarda os carimbos que você ganha nos quizzes. Sobre conta como o site foi feito e como falar com o autor." }
   ];
   let tut = null;
   function startTutorial() {
