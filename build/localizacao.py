@@ -14,7 +14,7 @@ import mapas
 
 E = lambda s: html.escape(str(s), quote=True)
 BBOX = (-82.0, -56.5, -34.0, 13.5)   # América do Sul continental (sem as ilhas oceânicas distantes)
-SUL = {"ARG", "BOL", "BRA", "CHL", "COL", "ECU", "GUY", "PRY", "PER", "SUR", "URY", "VEN", "FRA"}   # FRA: só a Guiana Francesa
+SUL = {"ARG", "BOL", "BRA", "CHL", "COL", "ECU", "GUY", "PRY", "PER", "SUR", "URY", "VEN", "FRA", "PAN", "CRI", "NIC", "HND"}   # FRA: só a Guiana Francesa; PAN, CRI, NIC e HND: a ponta da América Central que cai no recorte (a moldura não muda)
 EPS_PAIS = .12   # graus; ~1 px a 400 px de largura
 
 
