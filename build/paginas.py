@@ -390,13 +390,11 @@ class Site:
     def jornada(self):
         """Página depois do último bioma: passaporte (com botões para tocar as animações de carimbo) e os cards de todas as regiões."""
         corpo = f"""<div class="hub">
-<div class="hub-topo">
-<div>
+<div class="jornada-topo">
 <p class="kicker">Fim da jornada</p>
 <h1>Seu passaporte</h1>
 <p class="intro">Aqui ficam os carimbos que você reuniu. Vença o quiz dos biomas para ganhar o carimbo daquele bioma. Você consegue completar seu passaporte?</p>
-</div>
-<div><div class="pass-bloco" id="passaporte"></div><div class="pass-tocar" id="tocar"></div></div>
+<div class="jornada-pass"><div class="pass-bloco" id="passaporte"></div><div class="pass-tocar" id="tocar"></div></div>
 </div>
 <ul class="cards">{"".join(self.cartao(r) for r in self.regioes)}</ul>
 </div>

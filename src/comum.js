@@ -381,5 +381,14 @@ const BiomasUI = (() => {
     else { const antes = {}; bio.slice(0, 2).forEach(r => { antes[r.id] = todos[r.id]; }); const ids = bio.slice(2, 4).map(r => r.id), depois = { ...antes }; ids.forEach(i => { depois[i] = todos[i]; }); cena(P, "bioma", ids, { antes, depois, anim: A }); }
   }
 
-  return { jpegAte, MAX_IMAGEM, ANIM_PADRAO, animAtual, demo, simular, graficoChuva, folha, passaporte, carimbos, carimbado, registrarGanho, todosCarimbados: P => { const c = aceitos(); return P.regs.filter(r => r.id !== "brasil").every(r => c[r.id] != null); } };
+  /* Refaz a animação com todos os carimbos já aceitos pelo visitante (nada é gravado). Devolve false se ele ainda não tem nenhum. */
+  function rever(P) {
+    const c = aceitos(), ids = P.regs.map(r => r.id).filter(id => c[id] != null);
+    if (!ids.length && c.completa == null) return false;
+    if (c.completa != null) cena(P, "completa", ["completa"], { antes: {}, depois: c, anim: animAtual() });
+    else cena(P, "bioma", ids, { antes: {}, depois: c, anim: animAtual() });
+    return true;
+  }
+
+  return { rever, temPendentes: P => pendentes(P.regs.map(r => r.id)).length > 0 || completaPendente(), jpegAte, MAX_IMAGEM, ANIM_PADRAO, animAtual, demo, simular, graficoChuva, folha, passaporte, carimbos, carimbado, registrarGanho, todosCarimbados: P => { const c = aceitos(); return P.regs.filter(r => r.id !== "brasil").every(r => c[r.id] != null); } };
 })();

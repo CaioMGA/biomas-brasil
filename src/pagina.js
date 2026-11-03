@@ -139,11 +139,16 @@
     }));
   }
 
-  // ---- página final da jornada: toca as animações de carimbo (simuladas: nada é gravado no navegador) ----
+  // ---- página final da jornada: "Ver carimbos" refaz a animação com os carimbos que o visitante já recebeu ----
   function tocarAnimacoes(box) {
-    const bt = (txt, tipo) => { const b = el("button", { type: "button", class: "pass-btn" }, txt); b.addEventListener("click", () => BiomasUI.simular(D.passaporte, tipo)); return b; };
-    box.append(el("p", { class: "cap" }, "Veja de novo como os carimbos batem no passaporte. É uma demonstração: seus carimbos reais não mudam."),
-      bt("Ver carimbos", "bioma"));
+    const b = el("button", { type: "button", class: "pass-btn" }, "\u25B6 Ver carimbos"), msg = el("span", { class: "pass-sem", role: "status" });
+    const primeiro = regioes.find(r => r.id !== "brasil");
+    b.addEventListener("click", () => {
+      if (BiomasUI.rever(D.passaporte)) { msg.replaceChildren(); return; }
+      if (BiomasUI.temPendentes(D.passaporte)) { msg.replaceChildren(document.createTextNode("Você tem carimbos esperando para entrar no passaporte. Aceite-os no aviso sobre a folha.")); return; }
+      msg.replaceChildren(document.createTextNode("Você ainda não venceu nenhum quiz. "), el("a", { href: primeiro.url }, `Comece pelo bioma ${primeiro.nome}`), document.createTextNode("."));
+    });
+    box.append(b, msg);
   }
 
   function videos() {

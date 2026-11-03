@@ -262,3 +262,15 @@ html { scroll-behavior: smooth; }
 .prox-topo .prox-rotulo { font-size: 12px; }
 .prox-topo b { font-weight: 600; }
 @media (max-width: 860px) { .prox-topo { padding: 10px 16px 0; } }
+
+/* Página final: passaporte centralizado */
+.jornada-topo { text-align: center; }
+.jornada-topo .intro { max-width: 60ch; margin-left: auto; margin-right: auto; }
+.jornada-pass { max-width: 560px; margin: 28px auto 0; }
+.jornada-pass .pass-bloco { margin-top: 0; }
+.jornada-pass .folha { margin-left: auto; margin-right: auto; }
+.jornada-pass .pass-fim { text-align: left; }
+.jornada-pass .pass-tocar { justify-content: center; align-items: center; max-width: none; }
+.pass-sem { font-size: 14px; color: var(--muted); }
+.pass-sem a { color: var(--ink); text-underline-offset: 3px; }
+.cards { margin-top: 40px; }
