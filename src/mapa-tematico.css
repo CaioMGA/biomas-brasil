@@ -74,7 +74,7 @@
 .mt-norte-e { fill: #000; }
 .mt-norte-d { fill: #fff; }
 .mt-norte-halo { fill: #fff; stroke: #fff; stroke-width: 4px; stroke-linejoin: round; }   /* contorno branco ao redor da seta inteira */
-.mt-rot-norte { fill: #000; font-weight: 700; }
+.mt-rot-norte { fill: #000; font-weight: 700; stroke: #fff; stroke-width: 4.5px; }   /* "N" contornado de branco */
 
 .mt-fonte-curta { display: block; margin-top: 4px; font-size: 12px; }
 .mt-leg { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 10px; font-size: 13px; color: var(--muted); }
