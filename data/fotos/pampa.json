@@ -1,0 +1,102 @@
+{
+ "Vanellus chilensis": {
+  "arquivo": "vanellus-chilensis.jpg",
+  "w": 1200,
+  "h": 800,
+  "alt": "Quero-quero de frente, com fina crista na nuca, face e peito pretos e mancha vermelha ao redor do olho, de pé no capim seco (fotografado em Aquidauana, MS).",
+  "autor": "Charles J. Sharp",
+  "licenca": "CC BY-SA 4.0",
+  "licenca_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "fonte_url": "https://commons.wikimedia.org/wiki/File:Southern_lapwing_(Vanellus_chilenis_lampronotus).JPG",
+  "arquivo_commons": "Southern lapwing (Vanellus chilenis lampronotus).JPG"
+ },
+ "Rhea americana": {
+  "arquivo": "rhea-americana.jpg",
+  "w": 1200,
+  "h": 800,
+  "alt": "Ema adulta caminhando num campo aberto de capim seco, com árvores floridas ao fundo (fotografada no Parque Estadual Encontro das Águas, MT, Pantanal).",
+  "autor": "Giles Laurent",
+  "licenca": "CC BY-SA 4.0",
+  "licenca_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "fonte_url": "https://commons.wikimedia.org/wiki/File:179_Greater_rhea_in_Encontro_das_%C3%81guas_State_Park_Photo_by_Giles_Laurent.jpg",
+  "arquivo_commons": "179 Greater rhea in Encontro das Águas State Park Photo by Giles Laurent.jpg"
+ },
+ "Ozotoceros bezoarticus": {
+  "arquivo": "ozotoceros-bezoarticus.jpg",
+  "w": 1200,
+  "h": 800,
+  "alt": "Veado-campeiro de pelagem castanho-clara e orelhas grandes, olhando para a câmera, num campo com pedras (fotografado no Uruguai).",
+  "autor": "Enrique González",
+  "licenca": "CC BY 4.0",
+  "licenca_url": "https://creativecommons.org/licenses/by/4.0",
+  "fonte_url": "https://commons.wikimedia.org/wiki/File:Venado_de_campo_(Ozotoceros_bezoarticus),_Uruguay,_2018.jpg",
+  "arquivo_commons": "Venado de campo (Ozotoceros bezoarticus), Uruguay, 2018.jpg"
+ },
+ "Lycalopex gymnocercus": {
+  "arquivo": "lycalopex-gymnocercus.jpg",
+  "w": 1200,
+  "h": 800,
+  "alt": "Graxaim-do-campo de pelagem alaranjada e cinza, caminhando de lado em solo arenoso (fotografado no Rio Grande do Sul).",
+  "autor": "Cláudio Dias Timm from Rio Grande do Sul",
+  "licenca": "CC BY-SA 2.0",
+  "licenca_url": "https://creativecommons.org/licenses/by-sa/2.0",
+  "fonte_url": "https://commons.wikimedia.org/wiki/File:Lycalopex_gymnocercus.jpg",
+  "arquivo_commons": "Lycalopex gymnocercus.jpg"
+ },
+ "Gubernatrix cristata": {
+  "arquivo": "gubernatrix-cristata.jpg",
+  "w": 1200,
+  "h": 800,
+  "alt": "Cardeal-amarelo macho, de face e peito amarelos, crista e máscara pretas, pousado num galho (fotografado na Argentina).",
+  "autor": "Hector Bottai",
+  "licenca": "CC BY-SA 4.0",
+  "licenca_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "fonte_url": "https://commons.wikimedia.org/wiki/File:Gubernatrix_cristata_-_Yellow_cardinal_(male);_Iber%C3%A1_marshes,_Corrientes,_Argentina.jpg",
+  "arquivo_commons": "Gubernatrix cristata - Yellow cardinal (male); Iberá marshes, Corrientes, Argentina.jpg"
+ },
+ "Butia odorata": {
+  "arquivo": "butia-odorata.jpg",
+  "w": 1200,
+  "h": 800,
+  "alt": "Butiá em primeiro plano e, ao fundo, um butiazal: palmeiras espalhadas pelo campo até a margem de uma lagoa (fotografado no Uruguai).",
+  "autor": "Rafael Tosi",
+  "licenca": "CC BY 4.0",
+  "licenca_url": "https://creativecommons.org/licenses/by/4.0",
+  "fonte_url": "https://commons.wikimedia.org/wiki/File:Butia_odorata_253485524.jpg",
+  "arquivo_commons": "Butia odorata 253485524.jpg"
+ },
+ "Paspalum notatum": {
+  "arquivo": "paspalum-notatum.jpg",
+  "w": 1200,
+  "h": 800,
+  "alt": "Capim-forquilha em touceira baixa, com hastes finas que terminam em espigas em forquilha, contra o céu azul (fotografado na Austrália, onde a espécie é introduzida).",
+  "autor": "Harry Rose from South West Rocks, Australia",
+  "licenca": "CC BY 2.0",
+  "licenca_url": "https://creativecommons.org/licenses/by/2.0",
+  "fonte_url": "https://commons.wikimedia.org/wiki/File:Paspalum_notatum_habit11_(7391320546).jpg",
+  "arquivo_commons": "Paspalum notatum habit11 (7391320546).jpg"
+ },
+ "Erythrina crista-galli": {
+  "arquivo": "erythrina-crista-galli.jpg",
+  "w": 1200,
+  "h": 800,
+  "alt": "Cachos de flores vermelhas e alongadas da corticeira-do-banhado em galhos sem folhas (fotografada no Jardim Botânico de Porto Alegre).",
+  "autor": "Otávio Astor Vaz Costa",
+  "licenca": "CC0",
+  "licenca_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+  "fonte_url": "https://commons.wikimedia.org/wiki/File:Erythrina_crista-galli_no_Jardim_Bot%C3%A2nico_de_Porto_Alegre.jpg",
+  "arquivo_commons": "Erythrina crista-galli no Jardim Botânico de Porto Alegre.jpg"
+ },
+ "_vista_aerea": {
+  "arquivo": "vista-aerea.jpg",
+  "w": 1600,
+  "h": 900,
+  "alt": "Vista de cima, a mais de 400 km de altitude, de uma grande lagoa alongada e clara, separada do oceano por uma faixa estreita de areia; à esquerda, o Rio Guaíba e a região de Porto Alegre.",
+  "legenda": "Vista orbital da Lagoa dos Patos e do Rio Guaíba, fotografada da Estação Espacial Internacional em 2019; o brilho do sol na água deixa a lagoa clara.",
+  "autor": "NASA",
+  "licenca": "domínio público (NASA)",
+  "licenca_url": "https://commons.wikimedia.org/wiki/Template:PD-USGov-NASA",
+  "fonte_url": "https://commons.wikimedia.org/wiki/File:Aerial_view_of_Lagoa_dos_Patos_and_Gua%C3%ADba_river_from_the_International_Space_Station,_in_2019.jpg",
+  "arquivo_commons": "Aerial view of Lagoa dos Patos and Guaíba river from the International Space Station, in 2019.jpg"
+ }
+}
