@@ -138,7 +138,7 @@ class Site:
         self.fotos = {i: f for i, f in ((i, self.carregar_fotos(i)) for i in self.C) if f}   # fotos das espécies (opcional): data/fotos/<id>.json, por nome científico
         self.plan = {i: plano(i, self.C[i], self.mapas.get(i)) for i in self.C}
         self.total = {i: sum(s["min"] for s in p) for i, p in self.plan.items()}
-        self.regioes = [self.regiao(i) for i in ["brasil"] + ORDEM if i in self.C]
+        self.regioes = [self.regiao(i) for i in ORDEM + ["brasil"] if i in self.C]   # o Brasil vem por último: é o "Quiz final"
         self.P = passaporte(root, br_path)
 
     # ---- dados de cada região ----
@@ -223,6 +223,35 @@ class Site:
         pad = max(x1 - x0, y1 - y0) * .04
         return f'<svg viewBox="{x0 - pad:.0f} {y0 - pad:.0f} {x1 - x0 + 2 * pad:.0f} {y1 - y0 + 2 * pad:.0f}" aria-hidden="true" preserveAspectRatio="xMidYMid meet"><path d="{d}"/></svg>'
 
+    def silhueta_card(self, id):
+        """Silhueta do card, com tamanho visual parecido entre as regiões: as de área visual pequena ganham altura (quando a altura é o limite) ou traço (quando é a largura)."""
+        svg = self.silhueta(id)
+        if not hasattr(self, "_sil_ref"):
+            vis = {}
+            for i in self.C:
+                m = re.search(r'viewBox="([-\d. ]+)".*?<path d="([^"]+)"', self.silhueta(i), re.S)
+                if not m:
+                    continue
+                vb = [float(v) for v in m.group(1).split()]
+                area = 0.0
+                for sub in re.findall(r"M([^M]+)", m.group(2)):
+                    pts = [tuple(float(v) for v in q.split(",")) for q in re.findall(r"-?[\d.]+,-?[\d.]+", sub)]
+                    area += abs(sum(pts[k][0] * pts[(k + 1) % len(pts)][1] - pts[(k + 1) % len(pts)][0] * pts[k][1] for k in range(len(pts)))) / 2 if len(pts) > 2 else 0
+                k = min(220 / vb[2], 110 / vb[3])   # escala com que a silhueta cabe na caixa de 220 x 110 do card
+                vis[i] = (area * k * k, 220 / vb[2] < 110 / vb[3])   # (área visual na caixa, limitada pela largura?)
+            ordem = sorted(v[0] for v in vis.values())
+            self._sil_ref = (ordem[len(ordem) // 2] if ordem else 1, vis)
+        ref, vis = self._sil_ref
+        if id not in vis or not vis[id][0]:
+            return svg
+        a, larg = vis[id]
+        if a >= ref * .85:
+            return svg
+        if larg:   # cabe pela largura: não adianta aumentar a caixa, então engrossa o traço
+            return svg.replace("<svg ", '<svg class="sil-fino" ', 1)
+        h = min(150, round(110 * (ref / a) ** .5))
+        return svg.replace("<svg ", f'<svg style="height:{h}px" ', 1)
+
     # ---- peças de HTML ----
     def casca(self, titulo, descricao, corpo, ativo, accent="var(--ink)", dados=None, extra_body="", extra_head="", classe=""):
         nav = "".join(f'<a class="nav" href="{h}"{" aria-current=\"page\"" if k == ativo else ""}>{t}</a>'
@@ -250,7 +279,11 @@ class Site:
 """
 
     def foot(self):
-        return (f'<div class="brfoot"><span>Site criado por Caio Amaral</span>'
+        bio = "".join(f'<li><a href="{r["url"]}">{E(r["nome"])}</a></li>' for r in self.regioes)
+        return (f'<nav class="rodape-links" aria-label="Rodapé"><div><h2>Biomas</h2><ul>{bio}</ul></div>'
+                f'<div><h2>Site</h2><ul><li><a href="/biomas/jornada/">Passaporte</a></li><li><a href="/biomas/#sec-creditos">Créditos e fontes</a></li><li><a href="/sobre/">Sobre</a></li></ul>'
+                f'<p>Fotos de licença livre do Wikimedia Commons: autor, licença e fonte aparecem junto de cada foto.</p></div></nav>'
+                f'<div class="brfoot"><span>Site criado por Caio Amaral</span>'
                 f'<img class="brchad" src="{self.brchad}" width="80" height="15" alt="brchad 2026"></div>')
 
     @staticmethod
@@ -352,31 +385,40 @@ class Site:
         return self.casca(f"{nome} — Biomas do Brasil", desc, corpo, "biomas" if id != "brasil" else "biomas", self.cor(id), dados,
                           extra_body='<script src="/assets/mapa-tematico.js" defer></script>\n' if mt else "", extra_head='<link rel="stylesheet" href="/assets/mapa-tematico.css">\n' if mt else "", classe="pg-brasil" if id == "brasil" else "")
 
+    def link_proximo(self, rotulo, nome, intro, href, cor, sil, extra=""):
+        return (f'<nav class="prox-nav" aria-label="{rotulo}"{extra}><a class="prox-link" href="{href}" style="--col:{cor}">{sil}'
+                f'<span class="prox-txt"><span class="prox-rotulo">{rotulo}</span><span class="prox-nome">{E(nome)}</span>'
+                f'<span class="prox-intro">{E(intro)}</span></span><span class="prox-seta" aria-hidden="true">→</span></a></nav>')
+
     def bloco_proximo(self, id):
-        """Fim da página: Brasil mantém passaporte e cards (preenchidos pelo JS); cada bioma aponta sempre para o próximo da ORDEM, e o último, para a página final da jornada."""
+        """Fim da página. Cada bioma aponta para o próximo da ORDEM e o último (Costeiro) para o Brasil (Quiz final).
+        No Brasil, o JS mostra o primeiro bioma sem carimbo (Amazônia por padrão, no HTML estático) e, se todos já têm, o link para /biomas/;
+        o passaporte e os cards dos outros biomas ficam abaixo."""
         if id not in ORDEM:
-            return '<section class="prox" id="proximos" aria-label="Continue explorando"></section>'
+            alvos = "".join(self.link_proximo("Próximo bioma", r["nome"], r["intro"], r["url"], r["cor"], self.silhueta(r["id"]),
+                                              f' data-prox="{r["id"]}"' + ("" if r["id"] == ORDEM[0] else " hidden")) for r in (self.regiao(i) for i in ORDEM if i in self.C))
+            fim = self.link_proximo("Continue explorando", "Biomas", "Revisite qualquer bioma e veja seu passaporte.", "/biomas/", "var(--ink)", "", ' data-prox="hub" hidden')
+            return f'<section class="prox" id="proximos" aria-label="Continue explorando"><div id="prox-dinamico">{alvos}{fim}</div></section>'
         i = ORDEM.index(id)
         if i + 1 < len(ORDEM):
             r = self.regiao(ORDEM[i + 1])
             rotulo, nome, intro, href, cor, sil = "Próximo bioma", r["nome"], r["intro"], r["url"], r["cor"], self.silhueta(r["id"])
         else:
-            rotulo, nome, href, cor, sil = "Fim da jornada", "Seu passaporte", "/biomas/jornada/", "var(--ink)", ""
-            intro = "Veja os carimbos que você reuniu e revisite qualquer bioma."
-        return (f'<nav class="prox-nav" aria-label="{rotulo}"><a class="prox-link" href="{href}" style="--col:{cor}">{sil}'
-                f'<span class="prox-txt"><span class="prox-rotulo">{rotulo}</span><span class="prox-nome">{E(nome)}</span>'
-                f'<span class="prox-intro">{E(intro)}</span></span><span class="prox-seta" aria-hidden="true">→</span></a></nav>')
+            r = self.regiao("brasil")
+            rotulo, nome, intro, href, cor, sil = "Quiz final", r["nome"], "Relembre o que você aprendeu em todos os biomas e ganhe o último carimbo do passaporte.", r["url"], r["cor"], self.silhueta("brasil")
+        return self.link_proximo(rotulo, nome, intro, href, cor, sil)
 
     def cartao(self, r):
-        return (f'<li><a class="card" href="{r["url"]}" data-id="{r["id"]}" style="--col:{r["cor"]}">{self.silhueta(r["id"])}'
-                f'<h3>{E(r["nome"])}</h3><p>{E(r["intro"])}</p>'
+        final = '<span class="tag-final">Quiz final</span>' if r["id"] == "brasil" else ""
+        return (f'<li><a class="card" href="{r["url"]}" data-id="{r["id"]}" style="--col:{r["cor"]}">{self.silhueta_card(r["id"])}'
+                f'<h3>{E(r["nome"])}</h3>{final}<p>{E(r["intro"])}</p>'
                 f'<span class="meta"><span class="estado"></span></span></a></li>')
 
     def cartao_passaporte(self):
         """Card do passaporte entre os cards dos biomas: mostra a folha com os carimbos do visitante (só leitura, o JS preenche #card-folha) e leva à página do passaporte."""
         return ('<li class="card-pass-li"><a class="card card-pass" href="/biomas/jornada/" style="--col:var(--ink)">'
                 '<div class="card-folha" id="card-folha" aria-hidden="true"></div>'
-                '<h3>Passaporte</h3><p>Cada quiz de bioma vencido rende um carimbo. Reúna os sete e complete sua jornada pelos Biomas do Brasil.</p>'
+                '<h3>Passaporte</h3><p>Cada quiz de bioma vencido rende um carimbo. Reúna os oito carimbos, o último no Quiz final do Brasil, e complete sua jornada pelos Biomas do Brasil.</p>'
                 '<span class="meta">Abrir o passaporte →</span></a></li>')
 
     def hub(self):
@@ -400,8 +442,8 @@ class Site:
 <div class="jornada-topo">
 <p class="kicker">Fim da jornada</p>
 <h1>Seu passaporte</h1>
-<p class="intro">Aqui ficam os carimbos que você reuniu. Vença o quiz dos biomas para ganhar o carimbo daquele bioma. Você consegue completar seu passaporte?</p>
-<div class="jornada-pass"><div class="pass-bloco" id="passaporte"></div><div class="pass-tocar" id="tocar"></div></div>
+<p class="intro" id="jornada-intro">Aqui ficam os carimbos que você reuniu. Vença o quiz de cada bioma, e o Quiz final do Brasil, para completar seu passaporte. Você consegue?</p>
+<div class="jornada-pass"><div class="pass-bloco" id="passaporte"></div></div>
 </div>
 <ul class="cards">{"".join(self.cartao(r) for r in self.regioes)}</ul>
 </div>

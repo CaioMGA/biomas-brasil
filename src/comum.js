@@ -164,39 +164,49 @@ const BiomasUI = (() => {
     return blob(c, .5);
   }
 
-  /* Imagem do passaporte para compartilhar: a folha (SVG) sobre fundo escuro, com título e endereço do site. */
-  async function imagemPassaporte(P, c) {
+  /* Imagem do passaporte para compartilhar: a folha (SVG) sobre fundo escuro, com título e endereço do site.
+     formato: "quadrado" (1080x1080), "stories" (1080x1920) ou "paisagem" (1600 de largura, altura pela folha). */
+  let FORMATO = null;   // lido do localStorage só quando precisa (ler é declarado mais abaixo)
+  const formatoAtual = () => FORMATO || (FORMATO = (v => ["quadrado", "stories", "paisagem"].includes(v) ? v : "quadrado")(ler("biomas:formato", "quadrado")));
+  async function imagemPassaporte(P, c, formato = formatoAtual()) {
     const svg = svgFolha(P, c, true), [, , vw, vh] = P.vb;
     const img = await new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = URL.createObjectURL(new Blob([svg], { type: "image/svg+xml" })); });
-    const reg = P.regs.filter(r => r.id !== "brasil"), n = reg.filter(r => c[r.id] != null).length, completo = c.completa != null;   // "completa" só existe depois de aceito
-    const W = 1600, m = 70, sw = W - 2 * m, sh = Math.round(sw * vh / vw), top = 170, H = top + sh + 130;
+    const n = P.regs.filter(r => c[r.id] != null).length, completo = c.completa != null;   // "completa" só existe depois de ganho
+    const paisagem = formato === "paisagem", W = paisagem ? 1600 : 1080, m = paisagem ? 70 : 60;
+    const titulo = paisagem ? ["Meu passaporte dos Biomas do Brasil"] : ["Meu passaporte dos", "Biomas do Brasil"], fs = paisagem ? 64 : 68, cab = paisagem ? 170 : (formato === "stories" ? 330 : 40 + titulo.length * 76 + 30), rod = paisagem ? 130 : (formato === "stories" ? 330 : 110);
+    let sw = W - 2 * m, sh = Math.round(sw * vh / vw), H, top;
+    if (paisagem) { H = cab + sh + rod; top = cab; }
+    else { H = formato === "stories" ? 1920 : 1080; const livre = H - cab - rod; if (sh > livre) { sh = livre; sw = Math.round(sh * vw / vh); } top = cab + Math.round((livre - sh) / 2); }
+    const sx = Math.round((W - sw) / 2);
     const cv = document.createElement("canvas"); cv.width = W; cv.height = H; const x = cv.getContext("2d");
     x.fillStyle = "#0b100c"; x.fillRect(0, 0, W, H);
-    x.fillStyle = "#ece6d4"; x.textBaseline = "alphabetic";
-    x.font = '400 64px "Instrument Serif", Georgia, serif'; x.fillText("Meu passaporte dos Biomas do Brasil", m, 112);
-    x.save(); x.shadowColor = "rgba(0,0,0,.7)"; x.shadowBlur = 50; x.shadowOffsetY = 18; x.drawImage(img, m, top, sw, sh); x.restore();
+    x.fillStyle = "#ece6d4"; x.textBaseline = "alphabetic"; x.font = `400 ${fs}px "Instrument Serif", Georgia, serif`;
+    const y0 = paisagem ? 112 : (formato === "stories" ? 200 : 40 + fs);
+    titulo.forEach((t, i) => { if (paisagem) x.fillText(t, m, y0); else { x.textAlign = "center"; x.fillText(t, W / 2, y0 + i * 76); } });
+    x.textAlign = "left";
+    x.save(); x.shadowColor = "rgba(0,0,0,.7)"; x.shadowBlur = 50; x.shadowOffsetY = 18; x.drawImage(img, sx, top, sw, sh); x.restore();
     {   // papel timbrado (o SVG isolado não enxerga as fontes da página, então ele é desenhado aqui)
-      const k = sw / vw, rx = m + sw - TIMBRE.dir * k, by = top + sh - TIMBRE.base * k;
+      const k = sw / vw, rx = sx + sw - TIMBRE.dir * k, by = top + sh - TIMBRE.base * k;
       x.save(); x.fillStyle = "#23241f"; x.textAlign = "right"; x.font = `400 ${TIMBRE.fs * k}px "Instrument Serif", Georgia, serif`;
       const natural = x.measureText("Biomas do Brasil").width;   // o canvas só encolhe com maxWidth: aqui o texto é ajustado ao comprimento exato da barra, como o textLength do SVG
       x.translate(rx, by); x.scale(TIMBRE.larg * k / natural, 1); x.fillText("Biomas do Brasil", 0, 0);
       x.restore();
     }
-    const yRodape = top + sh + 70;
-    x.font = '500 30px "Instrument Sans", system-ui, sans-serif';
+    const yRodape = top + sh + (paisagem ? 70 : (formato === "stories" ? 110 : 62));
+    x.font = '500 30px "Instrument Sans", system-ui, sans-serif'; x.textAlign = "left";
     if (completo) {   // cores da bandeira: a frase em amarelo e "completa" em verde (um peso acima)
       const frase = "Jornada pelos Biomas do Brasil ";
-      x.fillStyle = "#ffdf00"; x.fillText(frase, m, yRodape);
+      x.fillStyle = "#ffdf00"; x.fillText(frase, sx, yRodape);
       const larg = x.measureText(frase).width;
-      x.font = '600 30px "Instrument Sans", system-ui, sans-serif'; x.fillStyle = "#009c3b"; x.fillText("completa", m + larg, yRodape);
+      x.font = '600 30px "Instrument Sans", system-ui, sans-serif'; x.fillStyle = "#009c3b"; x.fillText("completa", sx + larg, yRodape);
       x.font = '500 30px "Instrument Sans", system-ui, sans-serif';
-    } else { x.fillStyle = "#b6bba4"; x.fillText(`${n} de ${reg.length} biomas carimbados`, m, yRodape); }
-    x.fillStyle = "#ece6d4"; x.textAlign = "right"; x.fillText(location.host, W - m, yRodape);
+    } else { x.fillStyle = "#b6bba4"; x.fillText(`${n} de ${P.regs.length} carimbos`, sx, yRodape); }
+    x.fillStyle = "#ece6d4"; x.textAlign = "right"; x.fillText(location.host, sx + sw, yRodape);
     URL.revokeObjectURL(img.src);
     return jpegAte(cv, MAX_IMAGEM);
   }
   async function compartilhar(P, c, btn) {
-    const lbl = btn.textContent; btn.disabled = true; btn.textContent = "Gerando imagem…";
+    const sp = btn.querySelector("span") || btn, lbl = sp.textContent; btn.disabled = true; sp.textContent = "Gerando imagem…";
     try {
       const blob = await imagemPassaporte(P, c), file = new File([blob], "passaporte-biomas-do-brasil.jpg", { type: "image/jpeg" });
       const completo = c.completa != null;
@@ -204,34 +214,45 @@ const BiomasUI = (() => {
       let enviado = false;
       if (navigator.canShare && navigator.canShare(dados)) { try { await navigator.share(dados); enviado = true; } catch (e) { if (e && e.name === "AbortError") enviado = true; } }
       if (!enviado) { const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = file.name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 5000); }
-    } catch (e) { console.error(e); btn.textContent = "Não foi possível gerar"; setTimeout(() => { btn.textContent = lbl; btn.disabled = false; }, 2500); return; }
-    btn.textContent = lbl; btn.disabled = false;
+    } catch (e) { console.error(e); sp.textContent = "Não foi possível gerar"; setTimeout(() => { sp.textContent = lbl; btn.disabled = false; }, 2500); return; }
+    sp.textContent = lbl; btn.disabled = false;
   }
 
   /* ---------- Estado dos carimbos (localStorage) ----------
-     biomas:carimbos = { <bioma | "completa">: { em: "AAAA-MM-DD", aceito: true | false } }
-     bioma: em = dia em que o quiz foi vencido. completa: em = dia do último carimbo de bioma, e só existe depois que os 7 biomas foram aceitos.
-     Todo carimbo só entra na folha depois que o visitante aceita. */
-  const BIOMAS = ["amazonia", "cerrado", "mata-atlantica", "caatinga", "pampa", "pantanal", "costeiro"];   // os 7 que contam para a jornada
+     biomas:carimbos = { <bioma | "completa">: { em: "AAAA-MM-DD", ts: milissegundos, visto: true | false } }
+     bioma: em = dia em que o quiz foi vencido. completa: em = dia do último carimbo, e só existe depois que os 8 carimbos (7 biomas + Quiz final do Brasil) foram ganhos.
+     Todo carimbo entra direto na folha. "visto" só diz se a cena do overlay já foi mostrada para ele (false = a cena ainda vai acontecer). */
+  const BIOMAS = ["amazonia", "cerrado", "mata-atlantica", "caatinga", "pampa", "pantanal", "costeiro", "brasil"];   // os 8 carimbos que levam ao de jornada completa
   const ler = (k, d, area = localStorage) => { try { const v = area.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } };
   const gravar = (k, v, area = localStorage) => { try { area.setItem(k, JSON.stringify(v)); } catch (e) {} };
   const hoje = () => new Date().toLocaleDateString("sv-SE");
-  const KC = "biomas:carimbos", KP = "biomas:prog", KA = "biomas:adiado";
+  const KC = "biomas:carimbos", KP = "biomas:prog";
   const avisar = () => dispatchEvent(new CustomEvent("biomas:carimbos"));
-  function carimbos() {   // sincroniza com os quizzes já vencidos e cria o carimbo de jornada completa quando os 7 biomas estão aceitos
+  function carimbos() {   // sincroniza com os quizzes já vencidos e cria o carimbo de jornada completa quando os 8 foram ganhos
     const c = ler(KC, {}), prog = ler(KP, {}); let mudou = false;
-    for (const id in prog) { const q = prog[id] && prog[id].quiz; if (q && q.ok / q.n >= .6 && !c[id]) { c[id] = { em: q.em || hoje(), aceito: false }; mudou = true; } }
-    if (!c.completa && BIOMAS.every(id => c[id] && c[id].aceito)) { c.completa = { em: BIOMAS.map(id => c[id].em).sort().pop(), aceito: false }; mudou = true; }
+    for (const k in c) {   // formato antigo ({ aceito }): carimbo aceito ou pendente vira carimbo já visto; a "completa" nunca aceita some (agora ela exige os 8)
+      if (c[k].visto !== undefined) continue;
+      if (k === "completa" && !c[k].aceito) delete c[k]; else { c[k].visto = true; delete c[k].aceito; }
+      mudou = true;
+    }
+    for (const id in prog) { const q = prog[id] && prog[id].quiz; if (q && q.ok / q.n >= .6 && !c[id]) { c[id] = { em: q.em || hoje(), ts: Date.now(), visto: false }; mudou = true; } }
+    if (!c.completa && BIOMAS.every(id => c[id])) { c.completa = { em: BIOMAS.map(id => c[id].em).sort().pop(), ts: Date.now(), visto: false }; mudou = true; }
     if (mudou) gravar(KC, c);
     return c;
   }
-  function registrarGanho(id) { const c = carimbos(); if (!c[id]) { c[id] = { em: hoje(), aceito: false }; gravar(KC, c); } avisar(); }   // chamado quando o visitante vence o quiz
-  const carimbado = id => !!(carimbos()[id] && carimbos()[id].aceito);
-  const aceitos = () => { const o = {}, c = carimbos(); for (const id in c) if (c[id].aceito) o[id] = c[id].em; return o; };
-  const pendentes = ids => { const c = carimbos(); return ids.filter(id => c[id] && !c[id].aceito); };
-  const completaPendente = () => { const x = carimbos().completa; return !!x && !x.aceito; };
-  function marcar(ids) { const c = carimbos(); ids.forEach(id => { if (c[id]) c[id].aceito = true; }); gravar(KC, c); avisar(); }
-  function adiar(ids) { gravar(KA, [...new Set([...ler(KA, [], sessionStorage), ...ids])], sessionStorage); avisar(); }   // "Depois": não pergunta de novo nesta sessão
+  let PG = null, emCena = false;   // PG = dados do passaporte da página (definidos em iniciar)
+  function registrarGanho(id) { const c = carimbos(); if (!c[id]) { c[id] = { em: hoje(), ts: Date.now(), visto: false }; gravar(KC, c); } avisar(); verificar(); }   // chamado quando o visitante vence o quiz
+  const carimbado = id => !!carimbos()[id];
+  const aceitos = () => { const o = {}, c = carimbos(); for (const id in c) o[id] = c[id].em; return o; };
+  function marcarVistos(ids) { const c = carimbos(); ids.forEach(id => { if (c[id]) c[id].visto = true; }); gravar(KC, c); }
+  /* Abre a cena do overlay quando há carimbo ainda não visto: em qualquer página, ao carregar ou logo depois de vencer um quiz. */
+  function verificar() {
+    if (!PG || emCena || /^\/lab-carimbo/.test(location.pathname)) return;
+    const c = carimbos(), novos = BIOMAS.filter(id => c[id] && !c[id].visto);
+    if (c.completa && !c.completa.visto) cena(PG, "completa", novos);
+    else if (novos.length) cena(PG, "bioma", novos);
+  }
+  function iniciar(P) { PG = P; const ir = () => verificar(); if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", ir); else setTimeout(ir, 0); }
 
   /* ---------- Parâmetros da animação (ajustáveis no lab-carimbo; o lab grava em localStorage "biomas:anim") ---------- */
   const ANIM_PADRAO = {
@@ -271,12 +292,15 @@ const BiomasUI = (() => {
      A cena da jornada completa refaz todos os carimbos em sequência e, depois de mais 2 s, bate o carimbo vermelho, com um tremor bem mais forte. */
   function cena(P, tipo, ids, sim) {   // sim: { antes, depois, anim } roda a cena sem tocar no armazenamento (lab)
     const mk = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
-    const nomeDe = id => P.regs.find(r => r.id === id).nome, regsBio = P.regs.filter(r => r.id !== "brasil");
+    const nomeDe = id => id === "brasil" ? "Brasil (Quiz final)" : P.regs.find(r => r.id === id).nome;
     const lista = a => a.length > 1 ? a.slice(0, -1).join(", ") + " e " + a[a.length - 1] : a[0];
     const A = sim ? sim.anim : animAtual();
     let antes, depois;
     if (sim) { antes = sim.antes; depois = sim.depois; }
-    else { antes = aceitos(); marcar(ids); depois = aceitos(); }   // aceita já: se a página for fechada no meio da cena, nada se perde
+    else {   // marca como visto já: se a página for fechada no meio da cena, ela não se repete
+      depois = aceitos(); antes = { ...depois }; ids.forEach(i => { delete antes[i]; }); if (tipo === "completa") delete antes.completa;
+      marcarVistos(tipo === "completa" ? [...ids, "completa"] : ids); emCena = true;
+    }
     const foco = document.activeElement, root = document.documentElement;
     const ov = mk("div", "cena"), flash = mk("div", "cena-flash"), papel = mk("div", "cena-papel"), fol = wrap("folha", ""), msg = mk("div", "cena-msg"), bt = mk("div", "cena-bt"), pul = mk("button", "cena-pular", "Pular");
     ov.setAttribute("role", "dialog"); ov.setAttribute("aria-modal", "true"); ov.setAttribute("aria-label", tipo === "completa" ? "Carimbo de jornada completa" : "Carimbando o passaporte");
@@ -295,26 +319,30 @@ const BiomasUI = (() => {
       }, A.impacto);
     }
     const botao = (txt, cls, fn) => { const b = mk("button", cls, txt); b.type = "button"; b.addEventListener("click", fn); bt.appendChild(b); return b; };
-    function fechar() { document.removeEventListener("keydown", tecla, true); ov.remove(); root.classList.remove("cena-aberta"); novos = new Set(); if (foco && foco.isConnected) foco.focus({ preventScroll: true }); if (!sim) avisar(); }
+    function fechar() { document.removeEventListener("keydown", tecla, true); ov.remove(); root.classList.remove("cena-aberta"); novos = new Set(); if (foco && foco.isConnected) foco.focus({ preventScroll: true }); if (!sim) { emCena = false; avisar(); } }
     function mostrar(titulo, linhas, final) {
       fim = true; pul.remove(); msg.classList.toggle("final", !!final);
       msg.append(mk("strong", "", titulo), ...linhas.map(t => mk("p", "", t)), bt); msg.classList.add("visivel");
     }
     function msgBioma() {
-      const rec = ids.length, bio = ids.filter(i => i !== "brasil").map(nomeDe), faltam = regsBio.filter(r => depois[r.id] == null).length;
-      const quem = bio.length ? `${bio.length > 1 ? "Biomas" : "Bioma"}: ${lista(bio)}${ids.includes("brasil") ? " e o carimbo do Brasil" : ""}.` : "O carimbo do Brasil.";
-      const resto = faltam > 1 ? `Faltam ${faltam} carimbos de biomas para completar a jornada.` : faltam === 1 ? "Falta 1 carimbo de bioma para completar a jornada." : "Você reuniu os carimbos de todos os biomas! Falta só carimbar a jornada completa.";
+      const rec = ids.length, faltam = P.regs.filter(r => depois[r.id] == null).length;
+      const quem = `${rec > 1 ? "Carimbos" : "Carimbo"}: ${lista(ids.map(nomeDe))}.`;
+      const resto = faltam > 1 ? `Faltam ${faltam} carimbos para completar a jornada.` : faltam === 1 ? "Falta 1 carimbo para completar a jornada." : "Você reuniu todos os carimbos!";
       mostrar(rec > 1 ? `Você recebeu ${rec} carimbos!` : "Você recebeu 1 carimbo!", [quem, resto]);
       botao("Continuar", "sim", fechar).focus({ preventScroll: true });
     }
     function msgFinal(c) {
-      mostrar("Você carimbou todos os biomas!", ["Você completou sua jornada pelos Biomas do Brasil, parabéns!"], true);
+      mostrar("Jornada completa!", ["Você reuniu os oito carimbos e completou sua jornada pelos Biomas do Brasil, parabéns!"], true);
       botao("Compartilhar passaporte", "sim", ev => compartilhar(P, c, ev.currentTarget)); botao("Fechar", "", fechar).focus({ preventScroll: true });
     }
     async function roteiro() {
       if (tipo === "completa") {
         const c = {}; pintar(c); await esperar(A.pausaInicioFinal);
-        for (const r of P.regs.filter(r => depois[r.id] != null)) { c[r.id] = depois[r.id]; pintar(c, r.id); batida(false); await esperar(A.intervaloFinal); }
+        // ordem: os carimbos mais antigos, o último vencido como penúltimo e o de jornada completa por último
+        const todos = P.regs.map(r => r.id).filter(id => depois[id] != null), novos2 = ids.filter(id => id !== "completa" && depois[id] != null);
+        const velhos = todos.filter(id => !novos2.includes(id)).sort((x, y) => depois[x] < depois[y] ? -1 : depois[x] > depois[y] ? 1 : 0);
+        const ultimos = novos2.sort((x, y) => depois[x] < depois[y] ? -1 : depois[x] > depois[y] ? 1 : 0);
+        for (const id of [...velhos, ...ultimos]) { c[id] = depois[id]; pintar(c, id); batida(false); await esperar(A.intervaloFinal); }
         await esperar(A.suspenseVermelho);            // suspense antes do carimbo de jornada completa
         c.completa = depois.completa; pintar(c, "completa"); batida(true); await esperar(A.pausaMsgFinal);
         msgFinal(c);
@@ -333,40 +361,77 @@ const BiomasUI = (() => {
     roteiro();
   }
 
-  /* Pergunta sobre a folha: aparece quando há carimbos ganhos e ainda não aceitos (e, depois de todos os biomas, o de jornada completa). */
-  function aviso(P, tipo, pend, nomeDe) {
-    let t;
-    if (tipo === "completa") t = "Você coletou os carimbos de todos os biomas! Deseja carimbar sua jornada como COMPLETA agora?";
-    else {
-      const bi = pend.filter(i => i !== "brasil").map(nomeDe), br = pend.includes("brasil");
-      const lista = a => a.length > 1 ? a.slice(0, -1).join(", ") + " e " + a[a.length - 1] : a[0];
-      t = "Você recebeu ";
-      if (!bi.length) t += "o carimbo do Brasil";
-      else t += `${bi.length > 1 ? "os carimbos dos biomas" : "o carimbo do bioma"} ${lista(bi)}${br ? " e o carimbo do Brasil" : ""}`;
-      t += ". Deseja carimbar seu passaporte agora?";
+  const ICO = {
+    compartilhar: '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.5l6.8-4M8.6 13.5l6.8 4"/></svg>',
+    tocar: '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="currentColor"><path d="M7 4.5v15a1 1 0 0 0 1.5.9l12-7.5a1 1 0 0 0 0-1.8l-12-7.5A1 1 0 0 0 7 4.5z"/></svg>'
+  };
+  const reduzido = () => matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const botaoIcone = (cls, icone, txt) => { const b = document.createElement("button"); b.type = "button"; b.className = cls; b.innerHTML = ICO[icone]; const t = document.createElement("span"); t.textContent = txt; b.appendChild(t); return b; };
+
+  /* Confete (folhas e papéis nas cores dos biomas) que cai uma única vez sobre o selo de jornada completa. */
+  function confete(alvo) {
+    if (reduzido() || !alvo.animate) return;
+    const cores = Object.values(COR), caixa = document.createElement("div"); caixa.className = "pass-confete"; caixa.setAttribute("aria-hidden", "true"); alvo.appendChild(caixa);
+    for (let i = 0; i < 26; i++) {
+      const e = document.createElement("i"), x = Math.random() * 100, r = (Math.random() - .5) * 720, dx = (Math.random() - .5) * 90, dur = 2200 + Math.random() * 1800, atraso = Math.random() * 700;
+      e.style.cssText = `left:${x}%;background:${cores[i % cores.length]};border-radius:${i % 3 ? "2px" : "50% 0 50% 0"}`; caixa.appendChild(e);
+      e.animate([{ transform: "translate(0,-10px) rotate(0)", opacity: 0 }, { opacity: 1, offset: .12 }, { transform: `translate(${dx}px,${alvo.offsetHeight + 40}px) rotate(${r}deg)`, opacity: 0 }], { duration: dur, delay: atraso, easing: "ease-in", fill: "both" });
     }
-    const box = document.createElement("div"); box.className = "folha-aviso"; box.setAttribute("role", "alertdialog"); box.setAttribute("aria-label", tipo === "completa" ? "Carimbo de jornada completa" : "Carimbos recebidos");
-    const p = document.createElement("p"); p.textContent = t;
-    const bs = document.createElement("div"); bs.className = "folha-aviso-bt";
-    const sim = document.createElement("button"), dep = document.createElement("button"); sim.type = dep.type = "button"; sim.className = "sim"; sim.textContent = "Sim"; dep.textContent = "Depois";
-    sim.addEventListener("click", () => cena(P, tipo, pend)); dep.addEventListener("click", () => adiar(pend));
-    bs.append(sim, dep); box.append(p, bs); return box;
+    setTimeout(() => caixa.remove(), 5000);
   }
 
-  /* Bloco do passaporte: texto de progresso (ou a mensagem de jornada completa), a folha com os carimbos aceitos, a pergunta sobre os pendentes e o botão de compartilhar. */
-  function passaporte(P) {
-    const box = document.createElement("div"), ids = P.regs.map(r => r.id), nomeDe = id => P.regs.find(r => r.id === id).nome;
-    const mk = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; e.textContent = txt; return e; };
+  /* Na primeira vez que o passaporte aparece na sessão, os carimbos que o visitante já tem caem em sequência (rápido; desligado com prefers-reduced-motion). */
+  function entrada(box) {
+    if (reduzido() || ler("biomas:entrou", false, sessionStorage)) return;
+    const f = box.querySelector(".folha"); if (!f || !f.querySelector(".marca") || !f.animate || !("IntersectionObserver" in window)) return;
+    const io = new IntersectionObserver(es => {
+      if (!es.some(e => e.isIntersecting)) return;
+      io.disconnect(); gravar("biomas:entrou", true, sessionStorage);
+      f.querySelectorAll(".marca").forEach((m, i) => m.animate([{ transform: `scale(1.4) rotate(${((Math.random() - .5) * 12).toFixed(1)}deg)`, opacity: 0 }, { opacity: .9, offset: .6 }, { transform: "scale(1) rotate(0)", opacity: .9 }], { duration: 260, delay: i * 120, easing: "cubic-bezier(.2,.9,.3,1.1)", fill: "backwards" }));
+    }, { threshold: .4 });
+    io.observe(f);
+  }
+
+  /* Bloco do passaporte: progresso (ou a tela de conquista), a folha com todos os carimbos e os botões.
+     opts: { kicker: false tira o rótulo "Passaporte"; proximo(c) => {nome, href} sugere o próximo bioma; extra: botões ao lado do compartilhar; depois: nós abaixo dos botões } */
+  function passaporte(P, opts = {}) {
+    const box = document.createElement("div");
+    const mk = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
+    let confetiFeito = false, anterior = null;
     function desenhar() {
-      const c = aceitos(), reg = P.regs.filter(r => r.id !== "brasil"), n = reg.filter(r => c[r.id] != null).length, completo = c.completa != null;
-      box.replaceChildren(mk("p", "kicker", "Passaporte"));
-      if (completo) { const m = mk("div", "pass-fim"); m.append(mk("strong", "", "Você carimbou todos os biomas!"), mk("span", "", "Você completou sua jornada pelos Biomas do Brasil, parabéns!")); box.appendChild(m); }
-      else box.appendChild(mk("p", "lead", `${n} de ${reg.length} biomas carimbados. Acerte o quiz de um bioma para ganhar o carimbo dele.`));
-      const f = folha(P, c), pend = pendentes(ids), adiados = ler(KA, [], sessionStorage);
-      if (pend.length) { if (pend.some(id => !adiados.includes(id))) f.appendChild(aviso(P, "bioma", pend, nomeDe)); }
-      else if (completaPendente() && !adiados.includes("completa")) f.appendChild(aviso(P, "completa", ["completa"], nomeDe));   // a jornada completa só é carimbada quando não há carimbo de bioma pendente
-      box.appendChild(f);
-      if (n || c.brasil != null) { const b = mk("button", "pass-btn", "Compartilhar passaporte"); b.type = "button"; b.addEventListener("click", () => compartilhar(P, c, b)); box.appendChild(b); }
+      const c = aceitos(), tot = P.regs.length, n = P.regs.filter(r => c[r.id] != null).length, completo = c.completa != null;
+      box.replaceChildren();
+      if (opts.kicker !== false) box.appendChild(mk("p", "kicker", "Passaporte"));
+      if (completo) {
+        const m = mk("div", "pass-fim"); m.append(mk("span", "pass-selo", "Jornada completa"), mk("strong", "", "Você completou a jornada!"), mk("span", "pass-fim-txt", "Os oito carimbos estão no seu passaporte. Parabéns!"));
+        box.appendChild(m); if (!confetiFeito) { confetiFeito = true; confete(m); }
+      } else {
+        const pg = mk("div", "pass-prog"), barra = mk("div", "pass-barra"), i = document.createElement("i"); i.style.width = (n / tot * 100) + "%";
+        barra.setAttribute("role", "progressbar"); barra.setAttribute("aria-valuemin", "0"); barra.setAttribute("aria-valuemax", String(tot)); barra.setAttribute("aria-valuenow", String(n)); barra.setAttribute("aria-label", "Carimbos do passaporte"); barra.appendChild(i);
+        pg.append(mk("p", "lead", `${n} de ${tot} carimbos`), barra);
+        const prox = opts.proximo && opts.proximo(c);
+        if (prox) { const pp = mk("p", "pass-prox", "Próximo carimbo: "), a = mk("a", "", prox.nome); a.href = prox.href; pp.appendChild(a); pg.appendChild(pp); }
+        else if (!opts.proximo) pg.appendChild(mk("p", "pass-prox", "Acerte o quiz de um bioma para ganhar o carimbo dele."));
+        box.appendChild(pg);
+      }
+      box.appendChild(folha(P, c));
+      const ac = mk("div", "pass-acoes");
+      if (n) { const b = botaoIcone("pass-btn principal", "compartilhar", "Compartilhar passaporte"); b.addEventListener("click", () => compartilhar(P, aceitos(), b)); ac.appendChild(b); }
+      (opts.extra || []).forEach(x => ac.appendChild(x));
+      if (ac.children.length) box.appendChild(ac);
+      if (n) {
+        const fm = mk("div", "pass-formato"); fm.setAttribute("role", "group"); fm.setAttribute("aria-label", "Formato da imagem de compartilhar");
+        fm.appendChild(mk("span", "", "Imagem:"));
+        [["quadrado", "Quadrada"], ["stories", "Stories"], ["paisagem", "Horizontal"]].forEach(([k, t]) => {
+          const x = mk("button", "", t); x.type = "button"; x.setAttribute("aria-pressed", String(formatoAtual() === k));
+          x.addEventListener("click", () => { FORMATO = k; gravar("biomas:formato", k); fm.querySelectorAll("button").forEach(y => y.setAttribute("aria-pressed", String(y === x))); });
+          fm.appendChild(x);
+        });
+        box.appendChild(fm);
+      }
+      (opts.depois || []).forEach(x => box.appendChild(x));
+      if (anterior === null) setTimeout(() => entrada(box), 0);
+      anterior = n;
     }
     const on = () => { if (box.__visto && !box.isConnected) { removeEventListener("biomas:carimbos", on); return; } if (box.isConnected) box.__visto = true; desenhar(); };
     addEventListener("biomas:carimbos", on); desenhar();
@@ -390,5 +455,5 @@ const BiomasUI = (() => {
     return true;
   }
 
-  return { rever, temPendentes: P => pendentes(P.regs.map(r => r.id)).length > 0 || completaPendente(), jpegAte, MAX_IMAGEM, ANIM_PADRAO, animAtual, demo, simular, graficoChuva, folha, passaporte, carimbos, carimbado, registrarGanho, todosCarimbados: P => { const c = aceitos(); return P.regs.filter(r => r.id !== "brasil").every(r => c[r.id] != null); } };
+  return { rever, iniciar, verificar, jpegAte, MAX_IMAGEM, ANIM_PADRAO, animAtual, demo, simular, graficoChuva, folha, passaporte, botaoIcone, carimbos, carimbado, registrarGanho, todosCarimbados: P => { const c = aceitos(); return P.regs.every(r => c[r.id] != null); } };
 })();

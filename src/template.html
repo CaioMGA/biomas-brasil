@@ -553,6 +553,7 @@ const BIOME_UFS = [null,
 
 __COMUM__
 const PASSAPORTE = __PASSAPORTE__;   // contorno do Brasil e posição dos carimbos (build/paginas.py)
+BiomasUI.iniciar(PASSAPORTE);   // se há carimbo novo ou a jornada completou, a cena do overlay abre também no mapa
 
 /* ---------- Dados ---------- */
 const B = [
@@ -832,7 +833,7 @@ function mergulharBtn(id) {
 }
 function passaporte() {
   const sec = el("div", { class: "rain" });
-  sec.appendChild(BiomasUI.passaporte(PASSAPORTE));   // progresso ou mensagem de jornada completa, folha, pergunta sobre carimbos pendentes e compartilhar
+  sec.appendChild(BiomasUI.passaporte(PASSAPORTE));   // progresso ou mensagem de jornada completa, folha e compartilhar
   return sec;
 }
 
