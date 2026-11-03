@@ -16,7 +16,7 @@ Terrain Tiles da AWS (SRTM, GMTED e ETOPO1), reamostrados para a grade do mapa.
 Biomas, estados e áreas do IBGE (via geobr/Ipea); rios e cidades do Natural Earth 1:10m; chuva do WorldClim 2.1.
 
 ### Mapas dos biomas
-Mapas planos, em SVG e JavaScript puro, com camadas e filtros. Os dados vêm do IBGE (Biomas e Base Cartográfica Contínua, 2025), do CNUC/MMA, da ANA, do RESOLVE Ecoregions 2017 e do Natural Earth, conforme o bioma. As fontes ficam na legenda de cada mapa.
+Mapas planos, em SVG e JavaScript puro, com camadas e filtros. Os dados vêm do IBGE (Biomas e Base Cartográfica Contínua, 2025), do CNUC/MMA, da ANA, do RESOLVE Ecoregions 2017, do Global Mangrove Watch e do Natural Earth, conforme o bioma. As fontes ficam na legenda de cada mapa.
 
 ### Fotos
 Fotos de licença livre do Wikimedia Commons. Autor, licença e link da fonte aparecem junto de cada foto.

@@ -4,7 +4,7 @@
     { "t": "Mapa 3D", "d": "three.js e shaders próprios, com relevo real e um efeito de fundo para cada bioma." },
     { "t": "Relevo", "d": "Terrain Tiles da AWS (SRTM, GMTED e ETOPO1), reamostrados para a grade do mapa." },
     { "t": "Dados geográficos", "d": "Biomas, estados e áreas do IBGE (via geobr/Ipea); rios e cidades do Natural Earth 1:10m; chuva do WorldClim 2.1." },
-    { "t": "Mapas dos biomas", "d": "Mapas planos, em SVG e JavaScript puro, com camadas e filtros. Os dados vêm do IBGE (Biomas e Base Cartográfica Contínua, 2025), do CNUC/MMA, da ANA, do RESOLVE Ecoregions 2017 e do Natural Earth, conforme o bioma. As fontes ficam na legenda de cada mapa." },
+    { "t": "Mapas dos biomas", "d": "Mapas planos, em SVG e JavaScript puro, com camadas e filtros. Os dados vêm do IBGE (Biomas e Base Cartográfica Contínua, 2025), do CNUC/MMA, da ANA, do RESOLVE Ecoregions 2017, do Global Mangrove Watch e do Natural Earth, conforme o bioma. As fontes ficam na legenda de cada mapa." },
     { "t": "Fotos", "d": "Fotos de licença livre do Wikimedia Commons. Autor, licença e link da fonte aparecem junto de cada foto." },
     { "t": "Passaporte", "d": "Cada quiz de bioma vencido rende um carimbo. Os carimbos e o progresso de leitura ficam guardados só no seu navegador." },
     { "t": "Build", "d": "Python gera o mapa e estas páginas estáticas a partir de um template e dos dados em JSON." },

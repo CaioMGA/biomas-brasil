@@ -185,8 +185,7 @@ body.pg-brasil { --linha: linear-gradient(90deg, #009c3b, #ffdf00 33.33%, #00277
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 html { scroll-behavior: smooth; }
 
-.hub-topo { display: grid; grid-template-columns: minmax(0, 1fr) minmax(300px, 460px); gap: 40px; align-items: start; }
-.hub-topo .pass-bloco { margin-top: 0; }
+.hub-topo { display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px; align-items: start; }
 @media (max-width: 860px) { .hub-topo { grid-template-columns: minmax(0, 1fr); gap: 24px; } }
 .grupo-titulo { margin: 30px 0 0; font: 500 12px var(--body); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
 .grupo-titulo + .cards { margin-top: 10px; }
@@ -342,10 +341,15 @@ html { overflow-x: clip; }   /* o 100vw conta a barra de rolagem; sem isto a pá
 .foto-sec figcaption { margin-top: 8px; }
 .foto-sec .fig-leg { font-size: 17px; }
 
-/* card do passaporte no hub: ocupa duas colunas, com a folha dos carimbos (só leitura) */
-.card-pass-li { grid-column: span 2; }
+/* card do passaporte no hub: ocupa a linha toda; a folha dos carimbos (só leitura) fica ao lado do texto quando há espaço */
+.card-pass-li { grid-column: 1 / -1; }
 .card-pass .card-folha .folha { margin: 0; max-width: none; transform: none; box-shadow: 0 2px 3px rgba(0,0,0,.4), 0 8px 16px rgba(0,0,0,.4); }
 .card .card-folha { margin-bottom: 8px; pointer-events: none; }
 .card .card-folha svg { height: auto; fill: initial; fill-rule: nonzero; margin: 0; }
 .card-pass .meta { color: var(--ink); font-weight: 600; }
-@media (max-width: 620px) { .card-pass-li { grid-column: auto; } }
+@media (min-width: 621px) {
+  .card-pass { display: grid; grid-template-columns: minmax(0, 440px) minmax(0, 1fr); column-gap: 28px; align-content: center; align-items: start; }
+  .card-pass .card-folha { grid-column: 1; grid-row: 1 / 4; margin-bottom: 0; }
+  .card-pass h3, .card-pass p, .card-pass .meta { grid-column: 2; }
+  .card-pass h3 { align-self: end; } .card-pass .meta { align-self: start; margin-top: 0; }
+}

@@ -10,7 +10,7 @@ Além disso, o limite do sistema vem de data/biomes_2019_simplified.gpkg (IBGE, 
 Escolhas e limites (também escritos em `lacunas`):
 - Manguezais: só os que caem dentro do Brasil (máscara do Natural Earth); polígonos menores que ~1 km de lado são descartados para o arquivo não crescer (a área somada antes e depois do corte
   está na nota da camada).
-- Ilhas: só as de `tipoilha` = "Marítima" no BC250 (a classificação do IBGE inclui ilhas do estuário do Amazonas, como Marajó), com nome e ao menos 40 km² (somando as peças do mesmo nome),
+- Ilhas: só as de `tipoilha` = "Marítima" no BC250 (a classificação do IBGE inclui ilhas do estuário do Amazonas, como Marajó), com nome e ao menos 40 km² (somando as peças do mesmo nome a menos de 0,3° uma da outra),
   mais as ilhas e arquipélagos oceânicos de qualquer tamanho.
 """
 import json, math, os, re, sqlite3, struct, sys
@@ -147,16 +147,27 @@ def receita(raw):
         por_nome.setdefault((a["nome"], oce), []).append(gm)
     ilhas = []
     for (nome, oce), grupos in por_nome.items():
-        rings = [r for gm in grupos for r in gm]; ar = area_km2(rings)
-        if ar < MIN_ILHA_KM2 and not oce: continue
-        maior = max(rings, key=len)
-        q = [dp_ring(r, .002) or (r[:-1] if r[0] == r[-1] else r) for r in rings]
-        xs_, ys_ = [p[0] for r in rings for p in r], [p[1] for r in rings for p in r]
-        ilhas.append({"nome": nome, "posicao": "oceanica" if oce else "costeira", "km2": round(ar, 2), "rings": [r3(x) for x in q if x and len(x) >= 3],
-                      "rotulo": [round((min(xs_) + max(xs_)) / 2, 3), round((min(ys_) + max(ys_)) / 2, 3)]})
+        # nomes repetidos ("Ilhota", "Ilha Grande"…) valem para ilhas distantes: só se somam as peças a menos de 0,3° uma da outra (single linkage pelo centro do envelope)
+        cent = [((min(p[0] for r in gm for p in r) + max(p[0] for r in gm for p in r)) / 2, (min(p[1] for r in gm for p in r) + max(p[1] for r in gm for p in r)) / 2) for gm in grupos]
+        pai = list(range(len(grupos)))
+        def raiz(i):
+            while pai[i] != i: pai[i] = pai[pai[i]]; i = pai[i]
+            return i
+        for i in range(len(grupos)):
+            for j in range(i):
+                if math.hypot(cent[i][0] - cent[j][0], cent[i][1] - cent[j][1]) < .3: pai[raiz(i)] = raiz(j)
+        cl = {}
+        for i, gm in enumerate(grupos): cl.setdefault(raiz(i), []).append(gm)
+        for pecas in cl.values():
+            rings = [r for gm in pecas for r in gm]; ar = area_km2(rings)
+            if ar < MIN_ILHA_KM2 and not oce: continue
+            q = [dp_ring(r, .002) or (r[:-1] if r[0] == r[-1] else r) for r in rings]
+            xs_, ys_ = [p[0] for r in rings for p in r], [p[1] for r in rings for p in r]
+            ilhas.append({"nome": nome, "posicao": "oceanica" if oce else "costeira", "km2": round(ar, 2), "rings": [r3(x) for x in q if x and len(x) >= 3],
+                          "rotulo": [round((min(xs_) + max(xs_)) / 2, 3), round((min(ys_) + max(ys_)) / 2, 3)]})
     ilhas.sort(key=lambda i: -i["km2"])
     camadas.append({"id": "ilhas", "titulo": "Ilhas", "tipo": "poligono", "fonte": "bc250", "ligada": True, "lista": True,
-                    "nota": f"{len(ilhas)} ilhas e arquipélagos que o IBGE classifica como marítimos (BC250), com nome e ao menos {MIN_ILHA_KM2} km² (as peças de um mesmo arquipélago são somadas), mais as ilhas oceânicas de qualquer tamanho: Fernando de Noronha, Atol das Rocas, "
+                    "nota": f"{len(ilhas)} ilhas e arquipélagos que o IBGE classifica como marítimos (BC250), com nome e ao menos {MIN_ILHA_KM2} km² (as peças de um mesmo nome só são somadas quando estão a menos de 0,3° uma da outra), mais as ilhas oceânicas de qualquer tamanho: Fernando de Noronha, Atol das Rocas, "
                             "São Pedro e São Paulo, Trindade e Martim Vaz. A classificação do IBGE inclui ilhas do estuário do Amazonas, como Marajó. As áreas são aproximadas (calculadas sobre os polígonos simplificados).",
                     "itens": ilhas})
 

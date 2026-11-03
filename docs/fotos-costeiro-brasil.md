@@ -13,7 +13,7 @@ Branch `ajustes-site`. Fotos do Wikimedia Commons, com autor e licença vindos d
 | Costeiro, mangue-vermelho | raízes, Prado (BA) | Jonathan Wilkins | CC BY-SA 3.0 | |
 | Costeiro, coral-cérebro | **espécime de museu** (Museu Nacional/UFRJ), recortado 3:2 | Dornicke | CC BY-SA 4.0 | declarado no `alt` |
 | Costeiro, hero | **vista orbital** do Atol das Rocas (ISS, NASA) | NASA | domínio público | não é foto de avião; sem vista aérea livre melhor |
-| Brasil, hero | **imagem de satélite** da América do Sul, Brasil no centro (NASA/Goddard) | NASA/Goddard, derivado de Pbsouthwood | domínio público | única que representa o país todo; a abertura do Brasil continua sem foto de seção |
+| Brasil, hero | **imagem de satélite** da América do Sul, Brasil no centro (NASA/Goddard) | NASA/Goddard, derivado de Pbsouthwood | domínio público | única que representa o país todo. **Composição**: recorte do original (4560×3040) estendido com o oceano liso da própria imagem (RGB 11,10,50) até 2,7:1, com `pos` 67% 50%, para o Brasil caber inteiro na faixa larga do hero; a borda inferior (meio da Argentina) tem fade. A abertura do Brasil continua sem foto de seção: não achei foto que represente o país todo |
 | Sobre, capa | arara-azul-grande (*Anodorhynchus hyacinthinus*) em voo, Parque Estadual Encontro das Águas | Giles Laurent | CC BY-SA 4.0 | `object-position` 42% 50% (`pos` no JSON) |
 
 Pendências: teste visual no navegador; trocar os dois espécimes de museu se aparecer foto de licença livre dos animais vivos.

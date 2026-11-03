@@ -1,14 +1,15 @@
 {
  "_vista_aerea": {
   "arquivo": "vista-aerea.jpg",
-  "w": 1600,
-  "h": 900,
-  "alt": "Imagem de satélite da América do Sul sobre o oceano escuro: o Brasil ocupa o centro, verde-escuro ao norte e mais claro, entre verde e marrom, ao leste e ao sul; a cordilheira dos Andes aparece à esquerda.",
-  "legenda": "Imagem de satélite da América do Sul, com o Brasil no centro; o verde-escuro da Amazônia dá lugar ao marrom-claro do Nordeste e do Brasil central.",
+  "w": 2400,
+  "h": 889,
+  "alt": "Imagem de satélite da América do Sul sobre o oceano azul-marinho: o Brasil aparece inteiro, verde-escuro ao norte e mais claro, entre verde e marrom, ao leste e ao sul; a cordilheira dos Andes aparece à esquerda dele.",
+  "legenda": "Imagem de satélite da América do Sul, com o Brasil no centro; o verde-escuro da Amazônia dá lugar ao marrom-claro do Nordeste e do Brasil central. Recortada e estendida com fundo liso para caber na faixa larga.",
   "autor": "NASA/Goddard Space Flight Center. Derivative work by User:Pbsouthwood",
   "licenca": "domínio público (NASA)",
   "licenca_url": "https://commons.wikimedia.org/wiki/Template:PD-USGov-NASA",
   "fonte_url": "https://commons.wikimedia.org/wiki/File:South_America_topic_image_Satellite_image.jpg",
-  "arquivo_commons": "South America topic image Satellite image.jpg"
+  "arquivo_commons": "South America topic image Satellite image.jpg",
+  "pos": "67% 50%"
  }
 }
