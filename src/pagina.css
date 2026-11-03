@@ -313,7 +313,7 @@ html { overflow-x: clip; }   /* o 100vw conta a barra de rolagem; sem isto a pá
 .voltar:hover { background: rgba(255,255,255,.12); }
 .voltar svg { flex: none; }
 /* mini-mapa de localização no canto do hero, recolorido no tema escuro */
-.hero-loc { width: 160px; margin-bottom: 4px; }
+.hero-loc { position: absolute; z-index: 1; top: 20px; right: 24px; width: 160px; }   /* canto superior direito do hero */
 .hero-loc:empty { display: none; }
 .hero .loc { margin: 0; display: block; }
 .hero .loc-linha { display: block; }
@@ -323,7 +323,7 @@ html { overflow-x: clip; }   /* o 100vw conta a barra de rolagem; sem isto a pá
 .hero .loc-front, .hero .loc-uf { stroke: rgba(236, 230, 212, .22); } .hero .loc-br-borda { stroke: rgba(236, 230, 212, .55); } .hero .loc-bioma-borda { stroke: none; }
 .hero .loc-grade, .hero .loc-ref, .hero .loc-t { display: none; }
 @media (max-width: 860px) {
-  .hero-in { grid-template-columns: minmax(0, 1fr); padding: 120px 16px 24px; }
-  .hero-loc { order: -1; width: 104px; margin: 0 0 4px; }
+  .hero-in { padding: 160px 16px 24px; }
+  .hero-loc { top: 14px; right: 14px; width: 112px; }
 }
 @media (max-width: 860px) { .rd-wrap { padding-top: 8px; } }
