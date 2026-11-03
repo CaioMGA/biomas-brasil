@@ -272,8 +272,8 @@ html { scroll-behavior: smooth; }
 .loc-zoom { cursor: zoom-in; }
 .loc-zoom:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
 html.loc-aberto, html.loc-aberto body { overflow: hidden; }
-.loc-ov { position: fixed; inset: 0; z-index: 400; display: grid; place-items: center; background: rgba(2, 4, 3, .94); animation: cena-entra .2s ease both; }
-.loc-ov-mapa { width: min(calc(100vw - 24px), calc(100vh - 84px)); width: min(calc(100vw - 24px), calc(100dvh - 84px)); aspect-ratio: 1 / 1; margin-top: 60px; }
+.loc-ov { position: fixed; inset: 0; z-index: 400; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; background: rgba(2, 4, 3, .94); animation: cena-entra .2s ease both; }
+.loc-ov-mapa { width: min(calc(100vw - 24px), calc(100vh - 150px)); width: min(calc(100vw - 24px), calc(100dvh - 150px)); aspect-ratio: 1 / 1; margin-top: 60px; }
 .loc-ov-mapa svg { display: block; width: 100%; height: 100%; border: 1px solid var(--rule); }
 .loc-ov-fechar { position: absolute; top: 12px; right: 12px; padding: 10px 20px; cursor: pointer; font-size: 15px; font-weight: 600; color: #11160f; background: var(--ink); border: 0; border-radius: 999px; }
 .loc-ov-fechar:hover { filter: brightness(1.1); }
@@ -329,6 +329,8 @@ html { overflow-x: clip; }   /* o 100vw conta a barra de rolagem; sem isto a pá
   .hero-loc { top: 14px; right: 14px; width: 112px; }
 }
 @media (max-width: 860px) { .rd-wrap { padding-top: 8px; } }
+.loc-ov-fonte { width: min(calc(100vw - 24px), 720px); margin: 0; font-size: 13px; line-height: 1.45; text-align: center; color: var(--muted); }
+.loc-ov-fonte a { text-decoration: underline; text-underline-offset: 2px; }
 
 /* Compartilhado pelo painel do mapa e pelas páginas: gráfico de chuva e folha do passaporte. */
 .chuva { margin-top: 14px; }

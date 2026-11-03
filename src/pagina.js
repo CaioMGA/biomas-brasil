@@ -161,7 +161,8 @@
         const ov = el("div", { class: "loc-ov", role: "dialog", "aria-modal": "true", "aria-label": "Mapa ampliado" });
         const fechar = el("button", { type: "button", class: "loc-ov-fechar" }, "Fechar"), caixa = el("div", { class: "loc-ov-mapa" });
         const grande = svg.cloneNode(true); grande.removeAttribute("width"); grande.removeAttribute("height"); caixa.appendChild(grande);
-        ov.append(fechar, caixa); document.body.appendChild(ov); html.classList.add("loc-aberto"); fechar.focus({ preventScroll: true });
+        const fonte = document.querySelector(".loc-fonte"), fontes = fonte && el("p", { class: "loc-ov-fonte" }); if (fontes) fontes.innerHTML = fonte.innerHTML;   // as fontes do mapa, abaixo dele
+        ov.append(fechar, caixa); if (fontes) ov.append(fontes); document.body.appendChild(ov); html.classList.add("loc-aberto"); fechar.focus({ preventScroll: true });
         const fim = () => { document.removeEventListener("keydown", tecla, true); ov.remove(); html.classList.remove("loc-aberto"); if (foco && foco.isConnected) foco.focus({ preventScroll: true }); };
         const tecla = e => { if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); fim(); } else if (e.key === "Tab") { e.preventDefault(); fechar.focus(); } };
         fechar.addEventListener("click", fim); ov.addEventListener("click", e => { if (e.target === ov) fim(); }); document.addEventListener("keydown", tecla, true);
