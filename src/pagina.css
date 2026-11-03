@@ -364,6 +364,16 @@ html { overflow-x: clip; }   /* o 100vw conta a barra de rolagem; sem isto a pá
 .jornada-pass .pass-prog, .jornada-pass .pass-fim, .jornada-pass .pass-acoes, .jornada-pass .pass-formato { margin-left: auto; margin-right: auto; max-width: 560px; }
 .jornada-pass .pass-prog { text-align: left; }
 .jornada-pass .folha { max-width: 560px; margin-top: 22px; transform: rotate(-2deg); box-shadow: 0 3px 4px rgba(0,0,0,.45), 0 20px 40px rgba(0,0,0,.5); }
+/* passaporte fechado: livreto com capa de couro que gira na lombada (esquerda) e revela a folha */
+.livreto { position: relative; max-width: 560px; margin: 22px auto 0; perspective: 1800px; transform: rotate(-2deg); border-radius: 3px; box-shadow: 0 3px 4px rgba(0,0,0,.45), 0 20px 40px rgba(0,0,0,.5); }
+.jornada-pass .livreto .folha { position: absolute; inset: 0; margin: 0; max-width: none; transform: none; box-shadow: none; }
+.livreto .capa { position: absolute; inset: 0; z-index: 2; padding: 0; border: 0; border-radius: 3px; cursor: pointer; background: none; transform-origin: left center; transition: transform 1s cubic-bezier(.5, 0, .2, 1), box-shadow 1s; backface-visibility: hidden; -webkit-backface-visibility: hidden; box-shadow: 0 0 0 rgba(0,0,0,0); }
+.livreto .capa svg { display: block; width: 100%; height: 100%; }
+.livreto .capa:hover:not([disabled]), .livreto .capa:focus-visible { transform: rotateY(-7deg); box-shadow: 8px 6px 18px rgba(0,0,0,.4); }
+.livreto .capa:focus-visible { outline: 3px solid var(--ink); outline-offset: 4px; }
+.livreto.aberto .capa { transform: rotateY(-172deg); pointer-events: none; }
+@media (prefers-reduced-motion: reduce) { .livreto .capa { transition: none; } }
+@media (max-width: 860px) { .livreto { transform: rotate(-1deg); } }
 .jornada-pass .pass-acoes { justify-content: center; }
 .jornada-pass .pass-formato { justify-content: center; }
 .jornada-pass .pass-sem { margin-top: 12px; }
@@ -405,3 +415,18 @@ html { overflow-x: clip; }   /* o 100vw conta a barra de rolagem; sem isto a pá
 .rodape-links a { display: inline-block; padding: 6px 0; font-size: 15px; color: var(--ink); text-underline-offset: 3px; }
 .rodape-links p { margin: 10px 0 0; font-size: 13px; line-height: 1.45; color: var(--muted); }
 @media (min-width: 861px) { .rodape-links ul { grid-template-columns: repeat(2, max-content); gap: 2px 28px; } }
+
+/* checklist dos 8 carimbos, abaixo do passaporte */
+.pass-lista { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; max-width: 760px; margin: 28px auto 0; padding: 0; list-style: none; text-align: left; }
+@media (min-width: 700px) { .pass-lista { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.pass-slot { display: flex; align-items: center; gap: 10px; height: 100%; min-height: 64px; padding: 10px 12px; text-decoration: none; color: var(--ink); border: 1px solid var(--col); background: color-mix(in srgb, var(--col) 12%, transparent); transition: background .18s, transform .18s; }
+.pass-slot:hover, .pass-slot:focus-visible { background: color-mix(in srgb, var(--col) 24%, transparent); transform: translateY(-2px); }
+.pass-slot:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+.pass-slot.vazio { border: 1px dashed var(--rule); background: transparent; color: var(--muted); }
+.pass-slot.vazio:hover { border-color: var(--col); color: var(--ink); }
+.pass-slot-ico { flex: none; display: grid; place-items: center; width: 34px; height: 34px; font: 800 15px/1 var(--body); color: var(--col); border: 2px solid var(--col); border-radius: 50%; transform: rotate(-8deg); }
+.pass-slot.vazio .pass-slot-ico { border-style: dashed; color: var(--muted); }
+.pass-slot-txt { display: grid; gap: 1px; min-width: 0; }
+.pass-slot-txt b { font-weight: 600; font-size: 14px; overflow-wrap: anywhere; }
+.pass-slot-txt small { font-size: 12px; color: var(--muted); }
+@media (prefers-reduced-motion: reduce) { .pass-slot { transition: none; } .pass-slot:hover, .pass-slot:focus-visible { transform: none; } }

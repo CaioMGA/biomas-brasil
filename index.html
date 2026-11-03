@@ -1027,12 +1027,28 @@ const BiomasUI = (() => {
     io.observe(f);
   }
 
+  /* Capa do passaporte: couro verde com friso e emblema dourados (o losango e o círculo do ícone do site), do mesmo tamanho da folha. */
+  function capaSvg(P, completo) {
+    const [, , vw, vh] = P.vb, W = 100, H = +(100 * vh / vw).toFixed(2), cx = W / 2, cy = +(H * .42).toFixed(2), ouro = "url(#ouro)";
+    return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true" focusable="false"><defs>
+<linearGradient id="couro" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1a5a3c"/><stop offset=".55" stop-color="#0f3d2a"/><stop offset="1" stop-color="#0a2b1d"/></linearGradient>
+<linearGradient id="ouro" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f3dc8f"/><stop offset=".5" stop-color="#c9a24a"/><stop offset="1" stop-color="#e8cb7c"/></linearGradient>
+<linearGradient id="lombada" x1="0" x2="1"><stop offset="0" stop-color="#000" stop-opacity=".5"/><stop offset=".07" stop-color="#000" stop-opacity=".12"/><stop offset=".12" stop-color="#fff" stop-opacity=".08"/><stop offset=".2" stop-color="#000" stop-opacity="0"/></linearGradient>
+<filter id="grao" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="3" seed="5" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  .0 .0 .0 .5 -.12"/></filter>
+<filter id="relevo" x="-5%" y="-5%" width="110%" height="110%"><feGaussianBlur in="SourceAlpha" stdDeviation=".12" result="b"/><feOffset in="b" dx=".15" dy=".25" result="o"/><feComponentTransfer in="o" result="s"><feFuncA type="linear" slope=".7"/></feComponentTransfer><feMerge><feMergeNode in="s"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+<rect width="${W}" height="${H}" rx="2" fill="url(#couro)"/><rect width="${W}" height="${H}" rx="2" filter="url(#grao)"/><rect width="${W}" height="${H}" rx="2" fill="url(#lombada)"/>
+<g fill="none" stroke="${ouro}" filter="url(#relevo)"><rect x="5" y="5" width="${W - 10}" height="${H - 10}" rx="1" stroke-width=".7"/><rect x="7" y="7" width="${W - 14}" height="${H - 14}" stroke-width=".25"/>
+<g transform="translate(${cx} ${cy})"><polygon points="0,-17 24,0 0,17 -24,0" stroke-width=".7"/><polygon points="0,-13.5 19,0 0,13.5 -19,0" stroke-width=".25"/><circle r="9.5" stroke-width=".7"/><path d="M-9 1.5Q0 -3.2 9 2.6" stroke-width="1.4" stroke-linecap="round"/>${completo ? '<path d="M0-5.2l1.5 3.1 3.4.5-2.5 2.4.6 3.4L0 2.5-3 4.2l.6-3.4-2.5-2.4 3.4-.5z" fill="' + ouro + '" stroke="none" transform="translate(0 -8) scale(.7)"/>' : ""}</g></g>
+<g fill="${ouro}" text-anchor="middle" filter="url(#relevo)"><text x="${cx}" y="${(H * .72).toFixed(2)}" font-family="'Instrument Serif',Georgia,serif" font-size="9.2" letter-spacing="1.2">PASSAPORTE</text>
+<text x="${cx}" y="${(H * .8).toFixed(2)}" font-family="'Instrument Sans',system-ui,sans-serif" font-weight="600" font-size="3" letter-spacing="1.6">BIOMAS DO BRASIL</text></g></svg>`;
+  }
+
   /* Bloco do passaporte: progresso (ou a tela de conquista), a folha com todos os carimbos e os botões.
-     opts: { kicker: false tira o rótulo "Passaporte"; proximo(c) => {nome, href} sugere o próximo bioma; extra: botões ao lado do compartilhar; depois: nós abaixo dos botões } */
+     opts: { capa: true mostra o passaporte fechado, com capa que abre (clique, teclado ou ao rolar até ele); kicker: false tira o rótulo "Passaporte"; proximo(c) => {nome, href} sugere o próximo bioma; extra: botões ao lado do compartilhar; depois: nós abaixo dos botões } */
   function passaporte(P, opts = {}) {
     const box = document.createElement("div");
     const mk = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
-    let confetiFeito = false, anterior = null;
+    let confetiFeito = false, anterior = null, aberta = !opts.capa || !!ler("biomas:capa", false, sessionStorage);
     function desenhar() {
       const c = aceitos(), tot = P.regs.length, n = P.regs.filter(r => c[r.id] != null).length, completo = c.completa != null;
       box.replaceChildren();
@@ -1049,7 +1065,18 @@ const BiomasUI = (() => {
         else if (!opts.proximo) pg.appendChild(mk("p", "pass-prox", "Acerte o quiz de um bioma para ganhar o carimbo dele."));
         box.appendChild(pg);
       }
-      box.appendChild(folha(P, c));
+      const fo = folha(P, c);
+      if (opts.capa) {
+        const lv = mk("div", "livreto" + (aberta ? " aberto" : "")), cv = mk("button", "capa"); lv.style.aspectRatio = `${P.vb[2]} / ${P.vb[3]}`;
+        cv.type = "button"; cv.setAttribute("aria-label", "Abrir o passaporte"); cv.innerHTML = capaSvg(P, completo); if (aberta) cv.hidden = true;
+        const abrir = () => {
+          if (aberta) return; aberta = true; gravar("biomas:capa", true, sessionStorage); lv.classList.add("aberto");
+          setTimeout(() => { cv.hidden = true; entrada(box); }, reduzido() ? 0 : 1000);
+        };
+        cv.addEventListener("click", abrir);
+        if (!aberta && "IntersectionObserver" in window) { let t = 0; const io = new IntersectionObserver(es => { if (aberta) { io.disconnect(); return; } if (es.some(e => e.isIntersecting)) { clearTimeout(t); t = setTimeout(abrir, 1400); } else clearTimeout(t); }, { threshold: .7 }); io.observe(lv); }
+        lv.append(fo, cv); box.appendChild(lv);
+      } else box.appendChild(fo);
       const ac = mk("div", "pass-acoes");
       if (n) { const b = botaoIcone("pass-btn principal", "compartilhar", "Compartilhar passaporte"); b.addEventListener("click", () => compartilhar(P, aceitos(), b)); ac.appendChild(b); }
       (opts.extra || []).forEach(x => ac.appendChild(x));
@@ -1065,7 +1092,7 @@ const BiomasUI = (() => {
         box.appendChild(fm);
       }
       (opts.depois || []).forEach(x => box.appendChild(x));
-      if (anterior === null) setTimeout(() => entrada(box), 0);
+      if (anterior === null && aberta) setTimeout(() => entrada(box), 0);
       anterior = n;
     }
     const on = () => { if (box.__visto && !box.isConnected) { removeEventListener("biomas:carimbos", on); return; } if (box.isConnected) box.__visto = true; desenhar(); };
