@@ -131,10 +131,10 @@ def figura(root, id, nome):
     fonte = ('<span class="loc-fonte">Fontes: países e estados do Brasil: <a href="https://www.naturalearthdata.com/" target="_blank" rel="noopener">Natural Earth</a> (domínio público)' + ("; " + bio if bio else "") + ".</span>")
     S = max(P.w, P.h); vx, vy = -(S - P.w) // 2, -(S - P.h) // 2   # moldura quadrada: o continente fica centralizado, com oceano nas sobras
     ref = referencias_loc(P, S, vx, vy)
-    return (f'<figure class="loc"><div class="loc-mapa"><svg viewBox="{vx} {vy} {S} {S}" role="img" aria-label="{E(desc)}" preserveAspectRatio="xMidYMid meet">'
+    return (f'<figure class="loc"><div class="loc-linha"><div class="loc-mapa"><svg viewBox="{vx} {vy} {S} {S}" role="img" aria-label="{E(desc)}" preserveAspectRatio="xMidYMid meet">'
             f'<rect class="loc-mar" x="{vx}" y="{vy}" width="{S}" height="{S}"/><path class="loc-terra" d="{terra}"/><path class="loc-br" d="{brasil}"/>{mascara}{borda}{biom}'
             f'<path class="loc-front" d="{terra}"/><path class="loc-uf" d="{estados}"/><path class="loc-br-borda" d="{brasil}"/>{ref}</svg>'
-            f'</div><figcaption>{fonte}</figcaption></figure>')
+            f'</div><span class="loc-leg"><i class="loc-sw loc-sw-bioma"></i>{E(nome)}</span></div><figcaption>{fonte}</figcaption></figure>')
 
 
 if __name__ == "__main__":

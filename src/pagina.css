@@ -52,8 +52,10 @@ a { color: inherit; }
 .sp p { margin: 0; font-size: 16px; line-height: 1.55; }
 /* Mapa de localização (América do Sul): oceano azul, continente amarelo (uma cor só, Brasil incluído; só os contornos o destacam), bioma na cor de destaque */
 .loc { margin: 22px 0 0; display: flex; flex-direction: column; gap: 12px; align-items: center; }   /* mapa centralizado, com as fontes na área de legenda logo abaixo */
-.loc-mapa { flex: none; width: min(380px, 100%); }
-.loc figcaption { max-width: 52ch; text-align: center; }
+.loc-linha { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 16px; width: 100%; }   /* mapa no centro; a legenda à direita */
+.loc-mapa { grid-column: 2; width: min(380px, 100vw - 32px); }
+.loc-leg { grid-column: 3; justify-self: start; }
+.loc figcaption { width: min(380px, 100vw - 32px); text-align: center; }   /* as fontes têm a mesma largura do mapa, sem contar a legenda */
 .loc svg { display: block; width: 100%; height: auto; aspect-ratio: 1 / 1; border: 1px solid var(--rule); }
 .rd-main .loc-mini { margin: 6px 0 0; font-size: 13px; line-height: 1.35; color: var(--muted); text-align: center; }
 .loc-mar { fill: #a9d1ec; }
@@ -80,7 +82,7 @@ a { color: inherit; }
 .loc-leg { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; }
 .loc-sw { display: inline-block; width: 14px; height: 14px; margin-right: 6px; vertical-align: -2px; border: 1px solid #8c8c8c; }
 .loc-sw-bioma { background: var(--accent); }
-@media (max-width: 700px) { .loc-mapa { width: min(100%, 360px); } }
+@media (max-width: 700px) { .loc-linha { grid-template-columns: minmax(0, 1fr); justify-items: center; } .loc-mapa, .loc-leg { grid-column: 1; } .loc-leg { justify-self: center; } .loc-mapa, .loc figcaption { width: min(360px, 100%); } }
 
 /* Vista aérea do bioma, na abertura da seção Paisagem e clima */
 .vista { margin: 22px 0 0; }
