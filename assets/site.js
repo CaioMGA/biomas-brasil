@@ -384,14 +384,18 @@ const BiomasUI = (() => {
     setTimeout(() => caixa.remove(), 5000);
   }
 
-  /* Na primeira vez que o passaporte aparece na sessão, os carimbos que o visitante já tem caem em sequência (rápido; desligado com prefers-reduced-motion). */
+  /* Os carimbos que o visitante tem caem em sequência na folha (rápido; desligado com prefers-reduced-motion). */
+  function cairCarimbos(f, atraso = 0) {
+    if (reduzido() || !f || !f.animate) return;
+    f.querySelectorAll(".marca").forEach((m, i) => m.animate([{ transform: `scale(1.4) rotate(${((Math.random() - .5) * 12).toFixed(1)}deg)`, opacity: 0 }, { opacity: .9, offset: .6 }, { transform: "scale(1) rotate(0)", opacity: .9 }], { duration: 260, delay: atraso + i * 120, easing: "cubic-bezier(.2,.9,.3,1.1)", fill: "backwards" }));
+  }
+  /* Sem capa: na primeira vez que o passaporte aparece na sessão, os carimbos já ganhos caem em sequência (quando ele fica visível). */
   function entrada(box) {
     if (reduzido() || ler("biomas:entrou", false, sessionStorage)) return;
     const f = box.querySelector(".folha"); if (!f || !f.querySelector(".marca") || !f.animate || !("IntersectionObserver" in window)) return;
     const io = new IntersectionObserver(es => {
       if (!es.some(e => e.isIntersecting)) return;
-      io.disconnect(); gravar("biomas:entrou", true, sessionStorage);
-      f.querySelectorAll(".marca").forEach((m, i) => m.animate([{ transform: `scale(1.4) rotate(${((Math.random() - .5) * 12).toFixed(1)}deg)`, opacity: 0 }, { opacity: .9, offset: .6 }, { transform: "scale(1) rotate(0)", opacity: .9 }], { duration: 260, delay: i * 120, easing: "cubic-bezier(.2,.9,.3,1.1)", fill: "backwards" }));
+      io.disconnect(); gravar("biomas:entrou", true, sessionStorage); cairCarimbos(f);
     }, { threshold: .4 });
     io.observe(f);
   }
@@ -462,7 +466,8 @@ const BiomasUI = (() => {
         let timer = 0;
         const abrir = () => {
           if (aberta) return; aberta = true; lv.classList.add("aberto"); fo.tabIndex = 0; fo.setAttribute("role", "button"); fo.setAttribute("aria-label", "Fechar o passaporte");
-          clearTimeout(timer); timer = setTimeout(() => { cv.hidden = true; entrada(box); }, reduzido() ? 0 : 1000);
+          cairCarimbos(fo, 450);   // os carimbos caem um a um assim que a capa já girou o bastante para mostrar a folha
+          clearTimeout(timer); timer = setTimeout(() => { cv.hidden = true; }, reduzido() ? 0 : 1000);
         };
         const fechar = () => {   // clicar no passaporte aberto devolve a capa
           if (!aberta) return; aberta = false; clearTimeout(timer); fo.removeAttribute("tabindex"); fo.removeAttribute("role"); fo.removeAttribute("aria-label");
@@ -478,7 +483,7 @@ const BiomasUI = (() => {
       (opts.extra || []).forEach(x => ac.appendChild(x));
       if (ac.children.length) box.appendChild(ac);
       (opts.depois || []).forEach(x => box.appendChild(x));
-      if (anterior === null && aberta) setTimeout(() => entrada(box), 0);
+      if (anterior === null && aberta && !opts.capa) setTimeout(() => entrada(box), 0);
       anterior = n;
     }
     const on = () => { if (box.__visto && !box.isConnected) { removeEventListener("biomas:carimbos", on); return; } if (box.isConnected) box.__visto = true; desenhar(); };
