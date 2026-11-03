@@ -1,5 +1,7 @@
 """Busca e baixa fotos de licença livre do Wikimedia Commons para as seções das páginas.
   python3 build/fotos_commons.py buscar "consulta" [n]      -> lista candidatos (só CC BY, CC BY-SA, CC0 e domínio público; largura >= 1200)
+  python3 build/fotos_commons.py especie <bioma> "<nome científico>" "File:Nome.jpg" "texto alternativo" [x [y]]   -> grava data/fotos/<bioma>/<slug>.jpg (3:2, 1200 px, recorte em torno de x,y em 0-1) e a chave <nome científico> em data/fotos/<bioma>.json
+  python3 build/fotos_commons.py aerea <bioma> "File:Nome.jpg" "legenda" "texto alternativo" [x [y]]   -> grava data/fotos/<bioma>/vista-aerea.jpg (16:9, até 1600 px) e a chave _vista_aerea
   python3 build/fotos_commons.py baixar <bioma> <secao> "File:Nome.jpg" "legenda" "texto alternativo"   -> grava data/fotos/<bioma>/secao-<secao>.jpg e a chave _secoes.<secao> em data/fotos/<bioma>.json
 Autor, licença e links vêm da API do Commons (extmetadata); nada é digitado à mão."""
 import json, os, re, sys, time, urllib.error, urllib.parse, urllib.request, io
@@ -61,6 +63,44 @@ def baixar(bioma, secao, titulo, legenda, alt, raiz=os.path.join(os.path.dirname
     print("ok", bioma, secao, titulo, lic, reg["autor"])
 
 
+def _reg(bioma, raiz, chave, arq, img, titulo, ii, m, extra):
+    lic = txt(m["LicenseShortName"]["value"]); url = txt(m.get("LicenseUrl", {}).get("value", "")) or ("https://creativecommons.org/publicdomain/zero/1.0/" if lic.upper().startswith("CC0") else "")
+    reg = dict(arquivo=arq, w=img.size[0], h=img.size[1], **extra, autor=txt(m.get("Artist", {}).get("value", "")) or "autor não informado", licenca=lic, licenca_url=url,
+               fonte_url=ii["descriptionurl"], arquivo_commons=titulo[5:])
+    jp = os.path.join(raiz, "data/fotos", bioma + ".json"); J = json.load(open(jp, encoding="utf-8")) if os.path.exists(jp) else {}
+    J[chave] = reg
+    json.dump(J, open(jp, "w", encoding="utf-8"), ensure_ascii=False, indent=1); open(jp, "a").write("\n")
+    print("ok", bioma, chave, titulo, lic, reg["autor"], img.size)
+
+
+def _recorte(img, prop, larg, x, y):
+    """Recorta na proporção `prop` (largura/altura) em torno do ponto (x, y) em 0-1 e reduz para no máximo `larg` px de largura."""
+    W, H = img.size
+    w, h = (W, round(W / prop)) if W / H < prop else (round(H * prop), H)
+    l = min(max(round(x * W - w / 2), 0), W - w); t = min(max(round(y * H - h / 2), 0), H - h)
+    img = img.crop((l, t, l + w, t + h))
+    return img.resize((larg, round(larg / prop)), Image.LANCZOS) if img.size[0] > larg else img
+
+
+def _baixar_img(titulo):
+    p = info([titulo])[titulo]; ii = p["imageinfo"][0]; m = ii["extmetadata"]
+    assert lic_ok(m), "licença não aceita: " + txt(m.get("LicenseShortName", {}).get("value", ""))
+    return Image.open(io.BytesIO(abrir(urllib.request.Request(ii["thumburl"], headers=UA), 90).read())).convert("RGB"), ii, m
+
+
+def especie(bioma, cientifico, titulo, alt, x=.5, y=.5, raiz=os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")):
+    img, ii, m = _baixar_img(titulo); img = _recorte(img, 3 / 2, 1200, float(x), float(y))
+    arq = re.sub(r"[^a-z0-9]+", "-", cientifico.lower()).strip("-") + ".jpg"
+    d = os.path.join(raiz, "data/fotos", bioma); os.makedirs(d, exist_ok=True); img.save(os.path.join(d, arq), quality=84, optimize=True, progressive=True)
+    _reg(bioma, raiz, cientifico, arq, img, titulo, ii, m, {"alt": alt})
+
+
+def aerea(bioma, titulo, legenda, alt, x=.5, y=.5, raiz=os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")):
+    img, ii, m = _baixar_img(titulo); img = _recorte(img, 16 / 9, 1600, float(x), float(y))
+    d = os.path.join(raiz, "data/fotos", bioma); os.makedirs(d, exist_ok=True); img.save(os.path.join(d, "vista-aerea.jpg"), quality=84, optimize=True, progressive=True)
+    _reg(bioma, raiz, "_vista_aerea", "vista-aerea.jpg", img, titulo, ii, m, {"alt": alt, "legenda": legenda})
+
+
 if __name__ == "__main__":
     if sys.argv[1] == "buscar":
         n = int(sys.argv[3]) if len(sys.argv) > 3 else 8
@@ -68,5 +108,9 @@ if __name__ == "__main__":
             print("##", q.strip())
             for t in buscar(q.strip(), n): print(" | ".join(map(str, t)))
             time.sleep(3)
+    elif sys.argv[1] == "especie":
+        especie(*sys.argv[2:])
+    elif sys.argv[1] == "aerea":
+        aerea(*sys.argv[2:])
     else:
         baixar(*sys.argv[2:7])

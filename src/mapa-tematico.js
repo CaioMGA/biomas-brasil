@@ -45,7 +45,7 @@
 
     // ---- a região (o bioma inteiro) e a água
     if (d.limite_oficial) svg.append(sv("path", { d: d.limite_oficial, class: "mt-regiao" }));   // a parte brasileira (IBGE) também é preenchida; as duas bases não coincidem exatamente
-    svg.append(sv("path", { d: d.limite, class: "mt-regiao" }));
+    svg.append(sv("path", { d: d.limite, class: d.sem_preench ? "mt-regiao mt-sem-preench" : "mt-regiao" }));   // sistema marinho: só o contorno, para o azul continuar sendo só da água
     const cm = por("massas");
     if (cm) { const g = sv("g", { class: "mt-cam-massas" }); cm.grupos.filter(x => x.d).forEach(x => g.append(item("massas", sv("path", { d: x.d, class: "mt-agua", "fill-rule": "evenodd", "data-tipo": x.tipo })))); svg.append(g); add("massas", g); }
     const rioCamadas = ["amazonas", "rios"].map(k => [k, por(k)]).filter(([, c]) => c);   // "amazonas": o canal principal (fixo, sem caixa de seleção); "rios": os afluentes
@@ -81,6 +81,30 @@
       svg.append(g); add("ucs", g); fig._ucs = ucPorEl;
     }
 
+    // ---- litoral (Sistema Costeiro-Marinho): manguezais (um caminho só), recifes e ilhas (contorno realçado, para aparecerem mesmo pequenos)
+    const cmg = por("manguezais");
+    if (cmg) { const g = sv("g", { class: "mt-cam-mangue" }); g.append(sv("path", { d: cmg.d, class: "mt-mangue", "fill-rule": "evenodd" })); svg.append(g); add("manguezais", g); }
+    const crc = por("recifes");
+    if (crc) {
+      const g = sv("g", { class: "mt-cam-recifes" });
+      crc.itens.forEach(u => {
+        const p = item("recifes", sv("path", { d: u.d, class: "mt-recife", "fill-rule": "evenodd", "data-tipo": u.tipo, "vector-effect": "non-scaling-stroke" }));
+        const t = `Recife${u.nome ? " " + u.nome : ""} — ${u.tipo === "Tipo não informado" ? "tipo não informado na base" : "recife " + u.tipo.toLowerCase()} (IBGE, BC250).`;
+        p.addEventListener("pointerenter", () => mostrar(t, p)); p.addEventListener("click", () => mostrar(t, p)); g.append(p);
+      });
+      svg.append(g); add("recifes", g);
+    }
+    const cil = por("ilhas");
+    if (cil) {
+      const g = sv("g", { class: "mt-cam-ilhas" });
+      cil.itens.forEach(u => {
+        const p = item("ilhas", sv("path", { d: u.d, class: "mt-ilha", "fill-rule": "evenodd", "data-posicao": u.posicao, "vector-effect": "non-scaling-stroke" }));
+        const t = `${u.nome} — ${u.posicao === "oceanica" ? "ilha oceânica" : "ilha costeira"}, cerca de ${fmt(u.km2)} km² (IBGE, BC250).`;
+        p.addEventListener("pointerenter", () => mostrar(t, p)); p.addEventListener("click", () => mostrar(t, p)); g.append(p);
+      });
+      svg.append(g); add("ilhas", g);
+    }
+
     // ---- divisas (estados e departamentos) e fronteiras entre países, por cima da água e das UCs
     const ce = por("estados");
     if (ce && ce.front) { const g = sv("g", { class: "mt-cam-estados" }); g.append(sv("path", { d: ce.front, class: "mt-uf", "vector-effect": "non-scaling-stroke" })); svg.append(g); add("estados", g); }
@@ -92,6 +116,13 @@
 
     // ---- rótulos e marcadores (px), do mais ao menos prioritário para a colisão
     for (const [kr, cr] of rioCamadas) for (const r of cr.rotulos || []) { const p = pino(kr, r.p[0], r.p[1], rotulo(r.nome, "mt-rot-rio", { "text-anchor": "middle" })); if (r.attrs) Object.assign(p.dataset, r.attrs); else p.dataset[r.campo || "navegavel"] = r.v ?? r.navegavel; if (r.fixo) p.dataset.fixo = "1"; item(kr, p); pins.push({ pin: p, rot: p.firstChild, camada: kr, centro: true }); }
+    if (cil) for (const u of cil.itens) {   // nomes das ilhas (as maiores primeiro: a lista já vem ordenada por área); as oceânicas ganham um ponto, porque o polígono é minúsculo
+      if (!u.p) continue;
+      const kids = [rotulo(u.nome, "mt-rot-ilha", { x: 8, y: 4 })]; if (u.posicao === "oceanica") kids.unshift(sv("circle", { r: 3.5, class: "mt-pt mt-pt-ilha" }));
+      const p = pino("ilhas", u.p[0], u.p[1], ...kids); p.dataset.posicao = u.posicao; item("ilhas", p);
+      const t = `${u.nome} — ${u.posicao === "oceanica" ? "ilha oceânica" : "ilha costeira"}, cerca de ${fmt(u.km2)} km² (IBGE, BC250).`;
+      p.addEventListener("pointerenter", () => mostrar(t, p)); p.addEventListener("click", () => mostrar(t, p)); pins.push({ pin: p, rot: p.lastChild, camada: "ilhas" });
+    }
     const ccid = por("cidades");
     if (ccid) for (const it of ccid.itens) {
       const p = pino("cidades", it.p[0], it.p[1], sv("circle", { r: 4.5, class: "mt-pt mt-pt-cid" }), rotulo(it.nome, "mt-rot-cid", { x: 8, y: 4 }));
@@ -127,7 +158,7 @@
     const tem = (e, c) => e.classList.contains(c);
     const mini = (...f) => sv("svg", { viewBox: "0 0 20 14", width: 22, height: 15, "aria-hidden": "true" }, ...f);
     const ret = c => sv("rect", { x: 1, y: 1, width: 18, height: 12, class: c });
-    const L = [li(mini(ret("mt-regiao mt-leg-reg")), d.limite_nome)];
+    const L = [li(mini(ret("mt-regiao mt-leg-reg" + (d.sem_preench ? " mt-sem-preench" : ""))), d.limite_nome)];
     if (d.limite_oficial) L.push(li(mini(sv("path", { d: "M1 7h18", class: "mt-oficial" })), d.limite_oficial_nome || "limite oficial"));
     L.push(li(mini(ret("mt-agua")), "água permanente", () => ativa("massas") && vis("massas")),
       li(mini(sv("path", { d: "M1 11C7 11 8 3 19 3", class: "mt-rio", "data-margem": "principal", fill: "none" })), "Rio Amazonas (canal principal)", () => ativa("amazonas")),
@@ -135,6 +166,10 @@
       li(mini(sv("path", { d: "M1 11C7 11 8 3 19 3", class: "mt-rio", "data-regime": "perene", fill: "none" })), "sem vazão nula estimada", () => ativa("rios") && vis("rios", e => e.dataset.regime === "perene")),
       li(mini(sv("path", { d: "M1 11C7 11 8 3 19 3", class: "mt-rio", "data-regime": "parcial", fill: "none" })), "vazão nula em parte do curso", () => ativa("rios") && vis("rios", e => e.dataset.regime === "parcial")),
       li(mini(sv("path", { d: "M1 11C7 11 8 3 19 3", class: "mt-rio", "data-regime": "seca", fill: "none" })), "vazão nula em quase todo o curso", () => ativa("rios") && vis("rios", e => e.dataset.regime === "seca")),
+      li(mini(ret("mt-mangue")), "manguezal", () => ativa("manguezais")),
+      li(mini(ret("mt-recife")), "recife", () => ativa("recifes") && vis("recifes")),
+      li(mini(sv("path", { d: "M3 10l2-6 6-1 5 4-2 6-7 1z", class: "mt-ilha" })), "ilha", () => ativa("ilhas") && vis("ilhas", e => tem(e, "mt-ilha"))),
+      li(mini(sv("circle", { cx: 10, cy: 7, r: 3.5, class: "mt-pt mt-pt-ilha" })), "ilha oceânica (o ponto destaca as muito pequenas)", () => ativa("ilhas") && vis("ilhas", e => e.dataset.posicao === "oceanica" && !tem(e, "mt-ilha"))),
       li(mini(ret("mt-ti")), "Terra Indígena", () => ativa("tis")),
       li(mini(ret("mt-uc mt-uc-PI")), "proteção integral (contorno contínuo)", () => ativa("ucs") && vis("ucs", e => tem(e, "mt-uc-PI"))),
       li(mini(ret("mt-uc mt-uc-US")), "uso sustentável (tracejado)", () => ativa("ucs") && vis("ucs", e => tem(e, "mt-uc-US"))),
@@ -175,7 +210,7 @@
     // ---- escala dos marcadores e rótulos em px; nenhum texto fica sobre outro (ordem de prioridade abaixo)
     const oculto = el => el.classList.contains("mt-oc") || el.classList.contains("mt-fil");
     const ctx = document.createElement("canvas").getContext("2d");
-    const PRIO = { paises: 1, amazonas: 2, rios: 2, cidades: 3, ecorregioes: 4, estados: 5, grade: 6 };
+    const PRIO = { paises: 1, amazonas: 2, rios: 2, cidades: 3, ilhas: 3, ecorregioes: 4, estados: 5, grade: 6 };
     const ANGULOS = [0, -15, 15, -30, 30, -45, 45, -60, 60, -75, 75, 90];
     const regiao = new Path2D((d.limite_oficial || "") + d.limite);   // o bioma (para os nomes dos países desviarem dele)
     const cache = {};   // encaixe dos nomes de países por escala (u arredondado): evita recalcular a cada redimensionamento mínimo
@@ -252,6 +287,6 @@
     }
     "ResizeObserver" in window ? new ResizeObserver(organizar).observe(svg) : addEventListener("resize", organizar);
     filtrar();
-    info.textContent = "Toque ou passe o mouse sobre uma unidade de conservação, sede ou localidade para ver os detalhes.";
+    info.textContent = d.dica || "Toque ou passe o mouse sobre uma unidade de conservação, sede ou localidade para ver os detalhes.";
   }
 })();

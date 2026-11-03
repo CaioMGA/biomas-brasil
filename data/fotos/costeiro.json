@@ -48,5 +48,105 @@
    "fonte_url": "https://commons.wikimedia.org/wiki/File:Parque_Nacional_dos_Len%C3%A7%C3%B3is_Maranhenses_Paulo_Cattelan_(03).jpg",
    "arquivo_commons": "Parque Nacional dos Lençóis Maranhenses Paulo Cattelan (03).jpg"
   }
+ },
+ "Trichechus manatus": {
+  "arquivo": "trichechus-manatus.jpg",
+  "w": 1200,
+  "h": 800,
+  "alt": "Focinho de peixe-boi-marinho, cinza-escuro, com as narinas e um olho pequeno, junto à superfície de uma água rasa e clara (foto no Rio Tatuamunha, perto de São Miguel dos Milagres).",
+  "autor": "Thomas Lehmann (Horizonterix)",
+  "licenca": "CC BY-SA 4.0",
+  "licenca_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "fonte_url": "https://commons.wikimedia.org/wiki/File:Peixe_Boi_no_rio_Tatuamunha.jpg",
+  "arquivo_commons": "Peixe Boi no rio Tatuamunha.jpg"
+ },
+ "Chelonia mydas": {
+  "arquivo": "chelonia-mydas.jpg",
+  "w": 1200,
+  "h": 800,
+  "alt": "Tartaruga-verde vista de cima, nadando sobre areia clara em água verde-turquesa (Praia de Lopes Mendes, Ilha Grande, Rio de Janeiro).",
+  "autor": "Juniorilhagrande",
+  "licenca": "CC BY-SA 4.0",
+  "licenca_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "fonte_url": "https://commons.wikimedia.org/wiki/File:Tartaruga_Verde_ou_Aruan%C3%A3_-_Praia_de_Lopes_Mendes_-_Ilha_Grande_-_RJ.jpg",
+  "arquivo_commons": "Tartaruga Verde ou Aruanã - Praia de Lopes Mendes - Ilha Grande - RJ.jpg"
+ },
+ "Megaptera novaeangliae": {
+  "arquivo": "megaptera-novaeangliae.jpg",
+  "w": 1200,
+  "h": 800,
+  "alt": "Filhote de baleia-jubarte ao lado da mãe, perto da superfície, em água azul (Parque Nacional Marinho dos Abrolhos).",
+  "autor": "Mia Morete",
+  "licenca": "CC BY-SA 3.0",
+  "licenca_url": "https://creativecommons.org/licenses/by-sa/3.0",
+  "fonte_url": "https://commons.wikimedia.org/wiki/File:Filhote_e_m%C3%A3e_jubarte_Abrolhos_por_Mia_Morete.jpg",
+  "arquivo_commons": "Filhote e mãe jubarte Abrolhos por Mia Morete.jpg"
+ },
+ "Stenella longirostris": {
+  "arquivo": "stenella-longirostris.jpg",
+  "w": 1200,
+  "h": 800,
+  "alt": "Golfinhos-rotadores vistos de cima, nadando em água azul-turquesa (Fernando de Noronha).",
+  "autor": "Rafael Nicolaidis",
+  "licenca": "CC BY-SA 4.0",
+  "licenca_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "fonte_url": "https://commons.wikimedia.org/wiki/File:Stenella_longirostris,_ou_golfinho_rotador,_em_Fernando_de_Noronha_(1).jpg",
+  "arquivo_commons": "Stenella longirostris, ou golfinho rotador, em Fernando de Noronha (1).jpg"
+ },
+ "Eudocimus ruber": {
+  "arquivo": "eudocimus-ruber.jpg",
+  "w": 1200,
+  "h": 800,
+  "alt": "Guará de plumagem vermelha, de pé sobre um toco, com o bico longo e curvo para baixo, diante de folhagem verde.",
+  "autor": "Renato Augusto Martins",
+  "licenca": "CC BY-SA 4.0",
+  "licenca_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "fonte_url": "https://commons.wikimedia.org/wiki/File:Guar%C3%A1_-_Eudocimus_ruber.jpg",
+  "arquivo_commons": "Guará - Eudocimus ruber.jpg"
+ },
+ "Ucides cordatus": {
+  "arquivo": "ucides-cordatus.jpg",
+  "w": 1200,
+  "h": 800,
+  "alt": "Caranguejo-uçá, espécime de coleção do Museu Nacional/UFRJ, de carapaça escura e garras grandes e serrilhadas, exposto sobre fundo claro.",
+  "autor": "Dornicke",
+  "licenca": "CC BY-SA 4.0",
+  "licenca_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "fonte_url": "https://commons.wikimedia.org/wiki/File:Ucides_cordatus_MN_01.jpg",
+  "arquivo_commons": "Ucides cordatus MN 01.jpg"
+ },
+ "Rhizophora mangle": {
+  "arquivo": "rhizophora-mangle.jpg",
+  "w": 1200,
+  "h": 800,
+  "alt": "Raízes-escora de mangue-vermelho, arqueadas sobre a água de um manguezal (Prado, Bahia).",
+  "autor": "Jonathan Wilkins",
+  "licenca": "CC BY-SA 3.0",
+  "licenca_url": "https://creativecommons.org/licenses/by-sa/3.0",
+  "fonte_url": "https://commons.wikimedia.org/wiki/File:Detail_of_mangrove_roots.jpg",
+  "arquivo_commons": "Detail of mangrove roots.jpg"
+ },
+ "Mussismilia braziliensis": {
+  "arquivo": "mussismilia-braziliensis.jpg",
+  "w": 1200,
+  "h": 800,
+  "alt": "Colônia de coral-cérebro-da-bahia em forma de bola, com a superfície cheia de cavidades, exposta sobre fundo claro (acervo do Museu Nacional/UFRJ).",
+  "autor": "Dornicke",
+  "licenca": "CC BY-SA 4.0",
+  "licenca_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "fonte_url": "https://commons.wikimedia.org/wiki/File:Coral_c%C3%A9rebro_da_Bahia_MN_01.jpg",
+  "arquivo_commons": "Coral cérebro da Bahia MN 01.jpg"
+ },
+ "_vista_aerea": {
+  "arquivo": "vista-aerea.jpg",
+  "w": 1500,
+  "h": 844,
+  "alt": "Vista de cima, a centenas de quilômetros de altitude, de um anel de recife claro e ovalado, o Atol das Rocas, cercado de água azul-escura.",
+  "legenda": "Vista orbital do Atol das Rocas (Brasil, Oceano Atlântico), em imagem de astronauta da NASA feita da Estação Espacial Internacional.",
+  "autor": "NASA",
+  "licenca": "domínio público (NASA)",
+  "licenca_url": "https://commons.wikimedia.org/wiki/Template:PD-USGov-NASA",
+  "fonte_url": "https://commons.wikimedia.org/wiki/File:Atol_das_Rocas_ISS007.jpg",
+  "arquivo_commons": "Atol das Rocas ISS007.jpg"
  }
 }

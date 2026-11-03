@@ -102,13 +102,13 @@ def dados_cliente(d):
             nav = lambda r: "sim" if tuple(r["rotulo"]) in {tuple(p) for l in r.get("nav", []) for p in l} else "nao"   # o rótulo segue o filtro da linha onde está
             o["rotulos"] = [{"nome": r["nome"], "p": list(P(*r["rotulo"])), "navegavel": nav(r)} for r in it if r.get("rotulo")]
         elif c["tipo"] == "poligono":
-            o["itens"] = [{**{k: i[k] for k in i if k != "rings"}, "d": caminho(P, i["rings"], True)} for i in it]
+            o["itens"] = [{**{k: i[k] for k in i if k not in ("rings", "rotulo")}, "d": caminho(P, i["rings"], True), **({"p": list(P(*i["rotulo"]))} if i.get("rotulo") else {})} for i in it]   # "rotulo" (lon, lat) vira "p" em unidades do mapa (nome da ilha, por exemplo)
         else:
             o["itens"] = [{**{k: i[k] for k in i if k != "pt"}, "p": list(P(*i["pt"]))} for i in it]
         cam.append(o)
     return {"w": P.w, "h": P.h, "upk": round(P.u_por_km, 3), "limite": caminho(P, aneis(d["limite"]), True),
             "contorno": caminho(P, d.get("limite_contorno", []), False),   # contorno externo do bioma (linhas abertas), quando o limite vem de várias peças
-            "limite_oficial": caminho(P, aneis(d.get("limite_oficial", [])), True), "oceano": bool(d.get("oceano")), "limite_nome": d.get("limite_nome", "Limite do bioma"),
+            "limite_oficial": caminho(P, aneis(d.get("limite_oficial", [])), True), "oceano": bool(d.get("oceano")), "sem_preench": bool(d.get("limite_so_contorno")), "dica": d.get("dica", ""), "limite_nome": d.get("limite_nome", "Limite do bioma"),
             "limite_oficial_nome": d.get("limite_oficial_nome", ""), "grade": grade(P), "camadas": cam, "filtros": d["filtros"]}
 
 
@@ -160,7 +160,11 @@ def secao_html(d, nome_bioma):
                 f'<tr data-margem="{E(i["attrs"]["margem"])}" data-origem="{E(i["attrs"]["origem"])}"><th scope="row">{E(i["nome"])}</th><td>{E(MARGEM.get(i["attrs"]["margem"], ""))}</td>'
                 f'<td>{E(TRECHO.get(i["attrs"]["origem"], ""))}</td><td>{E(", ".join(i.get("paises", [])))}</td><td>{E(", ".join(i.get("estados", [])))}</td></tr>'
                 for i in sorted(afl, key=lambda i: i["nome"])))
+    ilhas = por_id["ilhas"]["itens"] if "ilhas" in por_id else []
+    t_ilha = tabela("ilhas", ["Ilha ou arquipélago", "Posição", "Área aproximada (km²)"], "".join(
+        f'<tr data-posicao="{E(i["posicao"])}"><th scope="row">{E(i["nome"])}</th><td>{"Oceânica" if i["posicao"] == "oceanica" else "Costeira"}</td><td class="n">{E(f"{i["km2"]:,.1f}".replace(",", "_").replace(".", ",").replace("_", "."))}</td></tr>' for i in ilhas)) if ilhas else ""
     listas = ""
+    if ilhas: listas += '<details class="mt-det"><summary>Ilhas (%d) em lista</summary><p class="cap">A lista segue o filtro de ilhas do mapa.</p>%s</details>\n' % (len(ilhas), t_ilha)
     if afl: listas += '<details class="mt-det" open><summary>%s (%d) em lista</summary><p class="cap">A lista segue os filtros do mapa. Países e estados vêm dos limites do Natural Earth (aproximados).</p>%s</details>\n' % (por_id["rios"].get("lista_titulo", "Afluentes"), len(afl), t_afl)
     if ucs:
         nota = por_id["ucs"].get("nota_lista", "")
@@ -190,7 +194,7 @@ def secao_html(d, nome_bioma):
 <p class="mt-msg" role="status">Carregando o mapa…</p>
 </div>
 <div class="mt-leg" aria-hidden="true"></div>
-<p class="mt-info" role="status" aria-live="polite">Toque ou passe o mouse sobre uma unidade de conservação, sede ou localidade para ver os detalhes.</p>
+<p class="mt-info" role="status" aria-live="polite">{E(d.get("dica") or "Toque ou passe o mouse sobre uma unidade de conservação, sede ou localidade para ver os detalhes.")}</p>
 <figcaption class="cap">{E(d.get("titulo", ""))}. Mapa plano, sem zoom: use as camadas e os filtros. {E(d.get("aviso_escopo", ""))} <span class="mt-fonte-curta">{fontes_curtas}</span></figcaption>
 {listas}<details class="mt-det"><summary>Sobre os dados deste mapa</summary>
 <ul class="mt-fonte">{notas}</ul>
