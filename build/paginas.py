@@ -394,7 +394,7 @@ class Site:
 <div>
 <p class="kicker">Fim da jornada</p>
 <h1>Seu passaporte</h1>
-<p class="intro">Você chegou ao último bioma. Aqui ficam os carimbos que você reuniu; quem ainda não tem todos pode voltar a qualquer bioma pelos cartões abaixo.</p>
+<p class="intro">Aqui ficam os carimbos que você reuniu. Vença o quiz dos biomas para ganhar o carimbo daquele bioma. Você consegue completar seu passaporte?</p>
 </div>
 <div><div class="pass-bloco" id="passaporte"></div><div class="pass-tocar" id="tocar"></div></div>
 </div>
