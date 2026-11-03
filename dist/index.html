@@ -260,20 +260,7 @@ dd { margin: 0; }
 .chuva .ch-p { font: 400 8.6px var(--body); fill: var(--muted); }
 .folha svg { display: block; width: 100%; height: auto; }
 .selo { margin-left: 8px; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--col, var(--accent)); font-weight: 600; }
-.folha { position: relative; margin-top: 14px; max-width: 480px; transform: rotate(-.6deg); box-shadow: 0 2px 3px rgba(0,0,0,.45), 0 10px 18px rgba(0,0,0,.45), 0 26px 46px rgba(0,0,0,.5); }
-.pass-fim { margin-top: 10px; padding: 10px 14px; border-left: 4px solid #7fd18b; background: rgba(127, 209, 139, .12); }
-.pass-fim strong { display: block; font: 400 26px/1.1 var(--display); color: #7fd18b; }
-.pass-fim span { display: block; margin-top: 4px; font-size: 15px; line-height: 1.45; color: var(--ink); }
-.pass-btn { margin-top: 14px; padding: 8px 16px; font-size: 14px; cursor: pointer; color: var(--ink); background: transparent; border: 1px solid var(--rule); }
-.pass-btn:hover:not(:disabled) { background: rgba(255,255,255,.1); }
-.pass-btn:disabled { opacity: .6; cursor: progress; }
-.folha-aviso { position: absolute; inset: 0; z-index: 2; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 16px; padding: 20px; text-align: center; background: rgba(8, 12, 9, .8); backdrop-filter: blur(1.5px); }
-.folha-aviso p { margin: 0; max-width: 34ch; font: 400 22px/1.25 var(--display); color: var(--ink); }
-.folha-aviso-bt { display: flex; gap: 10px; }
-.folha-aviso-bt button { padding: 8px 20px; font-size: 15px; cursor: pointer; color: var(--ink); background: transparent; border: 1px solid var(--rule); }
-.folha-aviso-bt button:hover { background: rgba(255,255,255,.12); }
-.folha-aviso-bt .sim { color: #11160f; background: var(--ink); border-color: var(--ink); font-weight: 600; }
-.folha-aviso-bt .sim:hover { background: var(--ink); filter: brightness(1.1); }
+.folha { border-radius: 2% / var(--ry, 2.3%); position: relative; margin-top: 14px; max-width: 480px; transform: rotate(-.6deg); box-shadow: 0 2px 3px rgba(0,0,0,.45), 0 10px 18px rgba(0,0,0,.45), 0 26px 46px rgba(0,0,0,.5); }
 .folha svg, .folha svg * { -webkit-user-select: none; user-select: none; }   /* o texto dos carimbos e do papel timbrado não pode ser selecionado */
 
 /* ---------- A cena do carimbo: tela cheia escura, passaporte no centro, tremor a cada batida ---------- */
@@ -294,7 +281,30 @@ html.cena-aberta, html.cena-aberta body { overflow: hidden; }
 .cena-bt .sim { color: #11160f; background: var(--ink); border-color: var(--ink); font-weight: 600; }
 .cena-bt .sim:hover:not(:disabled) { background: var(--ink); filter: brightness(1.1); }
 .cena-pular { position: fixed; right: 22px; bottom: 18px; padding: 6px 0; font-size: 13px; cursor: pointer; color: var(--muted); background: none; border: 0; text-decoration: underline; text-underline-offset: 3px; }
-.folha svg .marca.novo { transform-box: fill-box; transform-origin: center; }   /* a queda do carimbo (escala) parte do centro dele */
+.folha svg .marca { transform-box: fill-box; transform-origin: center; }   /* a queda do carimbo (escala) parte do centro dele */
+
+/* ---------- Progresso, conquista e botões do passaporte ---------- */
+.pass-prog { margin-top: 10px; max-width: 480px; }
+.pass-prog .lead { margin: 0; font: 400 26px/1.1 var(--display); }
+.pass-barra { height: 8px; margin-top: 8px; overflow: hidden; background: rgba(255,255,255,.14); }
+.pass-barra i { display: block; height: 100%; background: linear-gradient(90deg, #009c3b, #ffdf00 55%, #5f96d2); transition: width .6s ease; }
+.pass-prox { margin: 8px 0 0; font-size: 15px; color: var(--muted); }
+.pass-prox a { color: var(--ink); font-weight: 600; text-underline-offset: 3px; }
+.pass-fim { position: relative; overflow: hidden; margin-top: 10px; padding: 18px 16px 14px; text-align: center; border: 1px solid rgba(127, 209, 139, .55); background: radial-gradient(ellipse at 50% 0%, rgba(127, 209, 139, .2), rgba(127, 209, 139, 0) 75%); }
+.pass-selo { display: inline-block; padding: 4px 14px; font: 800 12px/1.2 var(--body); letter-spacing: .22em; text-transform: uppercase; color: #7fd18b; border: 2px solid #7fd18b; border-radius: 3px; transform: rotate(-3deg); }
+.pass-fim strong { display: block; margin-top: 12px; font: 400 clamp(34px, 6vw, 52px)/1 var(--display); color: var(--ink); }
+.pass-fim-txt { display: block; margin-top: 6px; font-size: 15px; line-height: 1.45; color: var(--muted); }
+.pass-confete { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.pass-confete i { position: absolute; top: 0; width: 8px; height: 12px; opacity: 0; }
+.pass-acoes { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+.pass-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 8px 18px; font-size: 15px; cursor: pointer; color: var(--ink); background: transparent; border: 1px solid var(--rule); }
+.pass-btn:hover:not(:disabled) { background: rgba(255,255,255,.1); }
+.pass-btn:disabled { opacity: .6; cursor: progress; }
+.pass-btn.principal { color: #11160f; background: var(--ink); border-color: var(--ink); font-weight: 600; }
+.pass-btn.principal:hover:not(:disabled) { background: var(--ink); filter: brightness(1.1); }
+.pass-btn svg { flex: none; }
+@media (max-width: 520px) { .pass-acoes .pass-btn { flex: 1 1 0; padding-left: 10px; padding-right: 10px; } }
+@media (prefers-reduced-motion: reduce) { .pass-barra i { transition: none; } }
 
 .mergulhar { text-decoration: none; display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; margin: 20px 0 0; padding: 12px 16px; cursor: pointer; text-align: left; color: #11160f; background: var(--accent); border: 0; font-weight: 600; }
 .mergulhar small { display: block; font-weight: 400; font-size: 12px; opacity: .8; }
@@ -671,14 +681,17 @@ const BiomasUI = (() => {
     let marks = "";
     P.regs.forEach((rg, i) => { if (c[rg.id] == null) return; const k = carimbo(rg, i, rg.pos, P.r, c[rg.id]); defs += k.defs; marks += k.g; });
     if (c.completa != null) { const k = carimboCompleta(P, c); defs += k.defs; marks += k.g; }   // só depois que o visitante aceita o carimbo de jornada completa
-    return `<svg ${isolado ? `xmlns="http://www.w3.org/2000/svg" width="${vw * 4}" height="${vh * 4}" ` : ""}viewBox="${vx} ${vy} ${vw} ${vh}" role="img" aria-label="Folha do passaporte: contorno do Brasil e dos biomas e os carimbos dos biomas já completados" style="isolation:isolate"><defs>${defs}</defs>
+    return `<svg ${isolado ? `xmlns="http://www.w3.org/2000/svg" width="${vw * 4}" height="${vh * 4}" ` : ""}viewBox="${vx} ${vy} ${vw} ${vh}" role="img" aria-label="Folha do passaporte: contorno do Brasil e dos biomas e os carimbos dos biomas já completados" style="isolation:isolate"><defs>${defs}<clipPath id="cantos"><rect x="${vx}" y="${vy}" width="${vw}" height="${vh}" rx="${(vw * .02).toFixed(2)}"/></clipPath></defs><g clip-path="url(#cantos)">
 <rect x="${vx}" y="${vy}" width="${vw}" height="${vh}" fill="#f1ebda" filter="url(#papel)"/><rect x="${vx}" y="${vy}" width="${vw}" height="${vh}" fill="url(#vig)"/>
+<defs><linearGradient id="moldura" gradientUnits="userSpaceOnUse" x1="${vx}" y1="${vy}" x2="${vx + vw}" y2="${vy + vh}"><stop offset="0" stop-color="#9c7424"/><stop offset=".5" stop-color="#c9a24a"/><stop offset="1" stop-color="#8f6a1f"/></linearGradient></defs>
+<g fill="none" stroke="url(#moldura)" opacity=".85"><rect x="${vx + 5}" y="${vy + 5}" width="${vw - 10}" height="${vh - 10}" rx="2" stroke-width="1.6"/><rect x="${vx + 9}" y="${vy + 9}" width="${vw - 18}" height="${vh - 18}" rx="1" stroke-width=".55"/></g>
 <path d="${P.bio}" fill="none" stroke="#1c1c1c" stroke-width=".6" stroke-linejoin="round" stroke-dasharray="9 1.4 5 2.2 14 1 4 1.6 8 1.2 18 2.4" opacity=".8" filter="url(#falha)"/>
-<path d="${P.d}" fill="none" stroke="#161616" stroke-width=".9" stroke-linejoin="round" stroke-dasharray="13 1.6 7 2.4 19 1.2 5 2 10 1.4 25 2.8 8 1.8" filter="url(#falha)"/>${isolado ? "" : timbre(P)}${bar.el}${marks}</svg>`;
+<path d="${P.d}" fill="none" stroke="#161616" stroke-width=".9" stroke-linejoin="round" stroke-dasharray="13 1.6 7 2.4 19 1.2 5 2 10 1.4 25 2.8 8 1.8" filter="url(#falha)"/>${isolado ? "" : timbre(P)}${bar.el}${marks}</g></svg>`;
   }
 
   /* P = {vb, d, bio, r, regs: [{id, nome, pos}]}; carimbados = {id: "AAAA-MM-DD" | ""} (só os biomas que passaram no quiz) */
-  function folha(P, carimbados) { return wrap("folha", svgFolha(P, carimbados, false)); }
+  const raioY = P => (2 * P.vb[2] / P.vb[3]).toFixed(3) + "%";   // 2% da largura, em % da altura: o canto fica circular
+  function folha(P, carimbados) { const f = wrap("folha", svgFolha(P, carimbados, false)); f.style.setProperty("--ry", raioY(P)); return f; }
 
   /* JPEG com no máximo `max` bytes: baixa a qualidade aos poucos e, se ainda passar, reduz as dimensões. O canvas precisa estar opaco (JPEG não tem transparência). */
   const MAX_IMAGEM = 500000;
@@ -693,74 +706,95 @@ const BiomasUI = (() => {
     return blob(c, .5);
   }
 
-  /* Imagem do passaporte para compartilhar: a folha (SVG) sobre fundo escuro, com título e endereço do site. */
-  async function imagemPassaporte(P, c) {
+  /* Imagem do passaporte para compartilhar: a folha (SVG) sobre fundo escuro, com título e endereço do site.
+     formato: "quadrado" (1080x1080), "stories" (1080x1920) ou "paisagem" (1600 de largura, altura pela folha). */
+  let FORMATO = null;   // lido do localStorage só quando precisa (ler é declarado mais abaixo)
+  const formatoAtual = () => FORMATO || (FORMATO = (v => ["quadrado", "stories", "paisagem"].includes(v) ? v : "quadrado")(ler("biomas:formato", "quadrado")));
+  async function imagemPassaporte(P, c, formato = formatoAtual()) {
     const svg = svgFolha(P, c, true), [, , vw, vh] = P.vb;
     const img = await new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = URL.createObjectURL(new Blob([svg], { type: "image/svg+xml" })); });
-    const reg = P.regs.filter(r => r.id !== "brasil"), n = reg.filter(r => c[r.id] != null).length, completo = c.completa != null;   // "completa" só existe depois de aceito
-    const W = 1600, m = 70, sw = W - 2 * m, sh = Math.round(sw * vh / vw), top = 170, H = top + sh + 130;
+    const n = P.regs.filter(r => c[r.id] != null).length, completo = c.completa != null;   // "completa" só existe depois de ganho
+    const paisagem = formato === "paisagem", W = paisagem ? 1600 : 1080, m = paisagem ? 70 : 60;
+    const titulo = paisagem ? ["Meu passaporte dos Biomas do Brasil"] : ["Meu passaporte dos", "Biomas do Brasil"], fs = paisagem ? 64 : 68, cab = paisagem ? 170 : (formato === "stories" ? 330 : 40 + titulo.length * 76 + 30), rod = paisagem ? 130 : (formato === "stories" ? 330 : 110);
+    let sw = W - 2 * m, sh = Math.round(sw * vh / vw), H, top;
+    if (paisagem) { H = cab + sh + rod; top = cab; }
+    else { H = formato === "stories" ? 1920 : 1080; const livre = H - cab - rod; if (sh > livre) { sh = livre; sw = Math.round(sh * vw / vh); } top = cab + Math.round((livre - sh) / 2); }
+    const sx = Math.round((W - sw) / 2);
     const cv = document.createElement("canvas"); cv.width = W; cv.height = H; const x = cv.getContext("2d");
     x.fillStyle = "#0b100c"; x.fillRect(0, 0, W, H);
-    x.fillStyle = "#ece6d4"; x.textBaseline = "alphabetic";
-    x.font = '400 64px "Instrument Serif", Georgia, serif'; x.fillText("Meu passaporte dos Biomas do Brasil", m, 112);
-    x.save(); x.shadowColor = "rgba(0,0,0,.7)"; x.shadowBlur = 50; x.shadowOffsetY = 18; x.drawImage(img, m, top, sw, sh); x.restore();
+    x.fillStyle = "#ece6d4"; x.textBaseline = "alphabetic"; x.font = `400 ${fs}px "Instrument Serif", Georgia, serif`;
+    const y0 = paisagem ? 112 : (formato === "stories" ? 200 : 40 + fs);
+    titulo.forEach((t, i) => { if (paisagem) x.fillText(t, m, y0); else { x.textAlign = "center"; x.fillText(t, W / 2, y0 + i * 76); } });
+    x.textAlign = "left";
+    x.save(); x.shadowColor = "rgba(0,0,0,.7)"; x.shadowBlur = 50; x.shadowOffsetY = 18; x.drawImage(img, sx, top, sw, sh); x.restore();
     {   // papel timbrado (o SVG isolado não enxerga as fontes da página, então ele é desenhado aqui)
-      const k = sw / vw, rx = m + sw - TIMBRE.dir * k, by = top + sh - TIMBRE.base * k;
+      const k = sw / vw, rx = sx + sw - TIMBRE.dir * k, by = top + sh - TIMBRE.base * k;
       x.save(); x.fillStyle = "#23241f"; x.textAlign = "right"; x.font = `400 ${TIMBRE.fs * k}px "Instrument Serif", Georgia, serif`;
       const natural = x.measureText("Biomas do Brasil").width;   // o canvas só encolhe com maxWidth: aqui o texto é ajustado ao comprimento exato da barra, como o textLength do SVG
       x.translate(rx, by); x.scale(TIMBRE.larg * k / natural, 1); x.fillText("Biomas do Brasil", 0, 0);
       x.restore();
     }
-    const yRodape = top + sh + 70;
-    x.font = '500 30px "Instrument Sans", system-ui, sans-serif';
+    const yRodape = top + sh + (paisagem ? 70 : (formato === "stories" ? 110 : 62));
+    x.font = '500 30px "Instrument Sans", system-ui, sans-serif'; x.textAlign = "left";
     if (completo) {   // cores da bandeira: a frase em amarelo e "completa" em verde (um peso acima)
       const frase = "Jornada pelos Biomas do Brasil ";
-      x.fillStyle = "#ffdf00"; x.fillText(frase, m, yRodape);
+      x.fillStyle = "#ffdf00"; x.fillText(frase, sx, yRodape);
       const larg = x.measureText(frase).width;
-      x.font = '600 30px "Instrument Sans", system-ui, sans-serif'; x.fillStyle = "#009c3b"; x.fillText("completa", m + larg, yRodape);
+      x.font = '600 30px "Instrument Sans", system-ui, sans-serif'; x.fillStyle = "#009c3b"; x.fillText("completa", sx + larg, yRodape);
       x.font = '500 30px "Instrument Sans", system-ui, sans-serif';
-    } else { x.fillStyle = "#b6bba4"; x.fillText(`${n} de ${reg.length} biomas carimbados`, m, yRodape); }
-    x.fillStyle = "#ece6d4"; x.textAlign = "right"; x.fillText(location.host, W - m, yRodape);
+    } else { x.fillStyle = "#b6bba4"; x.fillText(`${n} de ${P.regs.length} carimbos`, sx, yRodape); }
+    x.fillStyle = "#ece6d4"; x.textAlign = "right"; x.fillText(location.host, sx + sw, yRodape);
     URL.revokeObjectURL(img.src);
     return jpegAte(cv, MAX_IMAGEM);
   }
-  async function compartilhar(P, c, btn) {
-    const lbl = btn.textContent; btn.disabled = true; btn.textContent = "Gerando imagem…";
+  async function compartilhar(P, c, btn, formato) {
+    const sp = btn.querySelector("span") || btn, lbl = sp.textContent; btn.disabled = true; sp.textContent = "Gerando imagem…";
     try {
-      const blob = await imagemPassaporte(P, c), file = new File([blob], "passaporte-biomas-do-brasil.jpg", { type: "image/jpeg" });
+      const blob = await imagemPassaporte(P, c, formato), file = new File([blob], "passaporte-biomas-do-brasil.jpg", { type: "image/jpeg" });
       const completo = c.completa != null;
       const dados = { files: [file], title: "Meu passaporte dos Biomas do Brasil", text: completo ? "Completei minha jornada pelos Biomas do Brasil!" : "Meu passaporte dos Biomas do Brasil" };
       let enviado = false;
       if (navigator.canShare && navigator.canShare(dados)) { try { await navigator.share(dados); enviado = true; } catch (e) { if (e && e.name === "AbortError") enviado = true; } }
       if (!enviado) { const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = file.name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 5000); }
-    } catch (e) { console.error(e); btn.textContent = "Não foi possível gerar"; setTimeout(() => { btn.textContent = lbl; btn.disabled = false; }, 2500); return; }
-    btn.textContent = lbl; btn.disabled = false;
+    } catch (e) { console.error(e); sp.textContent = "Não foi possível gerar"; setTimeout(() => { sp.textContent = lbl; btn.disabled = false; }, 2500); return; }
+    sp.textContent = lbl; btn.disabled = false;
   }
 
   /* ---------- Estado dos carimbos (localStorage) ----------
-     biomas:carimbos = { <bioma | "completa">: { em: "AAAA-MM-DD", aceito: true | false } }
-     bioma: em = dia em que o quiz foi vencido. completa: em = dia do último carimbo de bioma, e só existe depois que os 7 biomas foram aceitos.
-     Todo carimbo só entra na folha depois que o visitante aceita. */
-  const BIOMAS = ["amazonia", "cerrado", "mata-atlantica", "caatinga", "pampa", "pantanal", "costeiro"];   // os 7 que contam para a jornada
+     biomas:carimbos = { <bioma | "completa">: { em: "AAAA-MM-DD", ts: milissegundos, visto: true | false } }
+     bioma: em = dia em que o quiz foi vencido. completa: em = dia do último carimbo, e só existe depois que os 8 carimbos (7 biomas + Quiz final do Brasil) foram ganhos.
+     Todo carimbo entra direto na folha. "visto" só diz se a cena do overlay já foi mostrada para ele (false = a cena ainda vai acontecer). */
+  const BIOMAS = ["amazonia", "cerrado", "mata-atlantica", "caatinga", "pampa", "pantanal", "costeiro", "brasil"];   // os 8 carimbos que levam ao de jornada completa
   const ler = (k, d, area = localStorage) => { try { const v = area.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } };
   const gravar = (k, v, area = localStorage) => { try { area.setItem(k, JSON.stringify(v)); } catch (e) {} };
   const hoje = () => new Date().toLocaleDateString("sv-SE");
-  const KC = "biomas:carimbos", KP = "biomas:prog", KA = "biomas:adiado";
+  const KC = "biomas:carimbos", KP = "biomas:prog";
   const avisar = () => dispatchEvent(new CustomEvent("biomas:carimbos"));
-  function carimbos() {   // sincroniza com os quizzes já vencidos e cria o carimbo de jornada completa quando os 7 biomas estão aceitos
+  function carimbos() {   // sincroniza com os quizzes já vencidos e cria o carimbo de jornada completa quando os 8 foram ganhos
     const c = ler(KC, {}), prog = ler(KP, {}); let mudou = false;
-    for (const id in prog) { const q = prog[id] && prog[id].quiz; if (q && q.ok / q.n >= .6 && !c[id]) { c[id] = { em: q.em || hoje(), aceito: false }; mudou = true; } }
-    if (!c.completa && BIOMAS.every(id => c[id] && c[id].aceito)) { c.completa = { em: BIOMAS.map(id => c[id].em).sort().pop(), aceito: false }; mudou = true; }
+    for (const k in c) {   // formato antigo ({ aceito }): carimbo aceito ou pendente vira carimbo já visto; a "completa" nunca aceita some (agora ela exige os 8)
+      if (c[k].visto !== undefined) continue;
+      if (k === "completa" && !c[k].aceito) delete c[k]; else { c[k].visto = true; delete c[k].aceito; }
+      mudou = true;
+    }
+    for (const id in prog) { const q = prog[id] && prog[id].quiz; if (q && q.ok / q.n >= .6 && !c[id]) { c[id] = { em: q.em || hoje(), ts: Date.now(), visto: false }; mudou = true; } }
+    if (!c.completa && BIOMAS.every(id => c[id])) { c.completa = { em: BIOMAS.map(id => c[id].em).sort().pop(), ts: Date.now(), visto: false }; mudou = true; }
     if (mudou) gravar(KC, c);
     return c;
   }
-  function registrarGanho(id) { const c = carimbos(); if (!c[id]) { c[id] = { em: hoje(), aceito: false }; gravar(KC, c); } avisar(); }   // chamado quando o visitante vence o quiz
-  const carimbado = id => !!(carimbos()[id] && carimbos()[id].aceito);
-  const aceitos = () => { const o = {}, c = carimbos(); for (const id in c) if (c[id].aceito) o[id] = c[id].em; return o; };
-  const pendentes = ids => { const c = carimbos(); return ids.filter(id => c[id] && !c[id].aceito); };
-  const completaPendente = () => { const x = carimbos().completa; return !!x && !x.aceito; };
-  function marcar(ids) { const c = carimbos(); ids.forEach(id => { if (c[id]) c[id].aceito = true; }); gravar(KC, c); avisar(); }
-  function adiar(ids) { gravar(KA, [...new Set([...ler(KA, [], sessionStorage), ...ids])], sessionStorage); avisar(); }   // "Depois": não pergunta de novo nesta sessão
+  let PG = null, emCena = false;   // PG = dados do passaporte da página (definidos em iniciar)
+  function registrarGanho(id) { const c = carimbos(); if (!c[id]) { c[id] = { em: hoje(), ts: Date.now(), visto: false }; gravar(KC, c); } avisar(); verificar(); }   // chamado quando o visitante vence o quiz
+  const carimbado = id => !!carimbos()[id];
+  const aceitos = () => { const o = {}, c = carimbos(); for (const id in c) o[id] = c[id].em; return o; };
+  function marcarVistos(ids) { const c = carimbos(); ids.forEach(id => { if (c[id]) c[id].visto = true; }); gravar(KC, c); }
+  /* Abre a cena do overlay quando há carimbo ainda não visto: em qualquer página, ao carregar ou logo depois de vencer um quiz. */
+  function verificar() {
+    if (!PG || emCena || /^\/lab-carimbo/.test(location.pathname)) return;
+    const c = carimbos(), novos = BIOMAS.filter(id => c[id] && !c[id].visto);
+    if (c.completa && !c.completa.visto) cena(PG, "completa", novos);
+    else if (novos.length) cena(PG, "bioma", novos);
+  }
+  function iniciar(P) { PG = P; const ir = () => verificar(); if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", ir); else setTimeout(ir, 0); }
 
   /* ---------- Parâmetros da animação (ajustáveis no lab-carimbo; o lab grava em localStorage "biomas:anim") ---------- */
   const ANIM_PADRAO = {
@@ -800,17 +834,20 @@ const BiomasUI = (() => {
      A cena da jornada completa refaz todos os carimbos em sequência e, depois de mais 2 s, bate o carimbo vermelho, com um tremor bem mais forte. */
   function cena(P, tipo, ids, sim) {   // sim: { antes, depois, anim } roda a cena sem tocar no armazenamento (lab)
     const mk = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
-    const nomeDe = id => P.regs.find(r => r.id === id).nome, regsBio = P.regs.filter(r => r.id !== "brasil");
+    const nomeDe = id => id === "brasil" ? "Brasil (Quiz final)" : P.regs.find(r => r.id === id).nome;
     const lista = a => a.length > 1 ? a.slice(0, -1).join(", ") + " e " + a[a.length - 1] : a[0];
     const A = sim ? sim.anim : animAtual();
     let antes, depois;
     if (sim) { antes = sim.antes; depois = sim.depois; }
-    else { antes = aceitos(); marcar(ids); depois = aceitos(); }   // aceita já: se a página for fechada no meio da cena, nada se perde
+    else {   // marca como visto já: se a página for fechada no meio da cena, ela não se repete
+      depois = aceitos(); antes = { ...depois }; ids.forEach(i => { delete antes[i]; }); if (tipo === "completa") delete antes.completa;
+      marcarVistos(tipo === "completa" ? [...ids, "completa"] : ids); emCena = true;
+    }
     const foco = document.activeElement, root = document.documentElement;
     const ov = mk("div", "cena"), flash = mk("div", "cena-flash"), papel = mk("div", "cena-papel"), fol = wrap("folha", ""), msg = mk("div", "cena-msg"), bt = mk("div", "cena-bt"), pul = mk("button", "cena-pular", "Pular");
     ov.setAttribute("role", "dialog"); ov.setAttribute("aria-modal", "true"); ov.setAttribute("aria-label", tipo === "completa" ? "Carimbo de jornada completa" : "Carimbando o passaporte");
     msg.setAttribute("aria-live", "polite"); pul.type = "button";
-    papel.appendChild(fol); ov.append(flash, papel, msg, pul); document.body.appendChild(ov); root.classList.add("cena-aberta");
+    fol.style.setProperty("--ry", raioY(P)); papel.appendChild(fol); ov.append(flash, papel, msg, pul); document.body.appendChild(ov); root.classList.add("cena-aberta");
 
     let pulou = false, fim = false; const espera = new Set();
     const esperar = ms => pulou ? Promise.resolve() : new Promise(r => { const t = setTimeout(feito, ms); function feito() { clearTimeout(t); espera.delete(feito); r(); } espera.add(feito); });
@@ -824,26 +861,30 @@ const BiomasUI = (() => {
       }, A.impacto);
     }
     const botao = (txt, cls, fn) => { const b = mk("button", cls, txt); b.type = "button"; b.addEventListener("click", fn); bt.appendChild(b); return b; };
-    function fechar() { document.removeEventListener("keydown", tecla, true); ov.remove(); root.classList.remove("cena-aberta"); novos = new Set(); if (foco && foco.isConnected) foco.focus({ preventScroll: true }); if (!sim) avisar(); }
+    function fechar() { document.removeEventListener("keydown", tecla, true); ov.remove(); root.classList.remove("cena-aberta"); novos = new Set(); if (foco && foco.isConnected) foco.focus({ preventScroll: true }); if (!sim) { emCena = false; avisar(); } }
     function mostrar(titulo, linhas, final) {
       fim = true; pul.remove(); msg.classList.toggle("final", !!final);
       msg.append(mk("strong", "", titulo), ...linhas.map(t => mk("p", "", t)), bt); msg.classList.add("visivel");
     }
     function msgBioma() {
-      const rec = ids.length, bio = ids.filter(i => i !== "brasil").map(nomeDe), faltam = regsBio.filter(r => depois[r.id] == null).length;
-      const quem = bio.length ? `${bio.length > 1 ? "Biomas" : "Bioma"}: ${lista(bio)}${ids.includes("brasil") ? " e o carimbo do Brasil" : ""}.` : "O carimbo do Brasil.";
-      const resto = faltam > 1 ? `Faltam ${faltam} carimbos de biomas para completar a jornada.` : faltam === 1 ? "Falta 1 carimbo de bioma para completar a jornada." : "Você reuniu os carimbos de todos os biomas! Falta só carimbar a jornada completa.";
+      const rec = ids.length, faltam = P.regs.filter(r => depois[r.id] == null).length;
+      const quem = `${rec > 1 ? "Carimbos" : "Carimbo"}: ${lista(ids.map(nomeDe))}.`;
+      const resto = faltam > 1 ? `Faltam ${faltam} carimbos para completar a jornada.` : faltam === 1 ? "Falta 1 carimbo para completar a jornada." : "Você reuniu todos os carimbos!";
       mostrar(rec > 1 ? `Você recebeu ${rec} carimbos!` : "Você recebeu 1 carimbo!", [quem, resto]);
       botao("Continuar", "sim", fechar).focus({ preventScroll: true });
     }
     function msgFinal(c) {
-      mostrar("Você carimbou todos os biomas!", ["Você completou sua jornada pelos Biomas do Brasil, parabéns!"], true);
-      botao("Compartilhar passaporte", "sim", ev => compartilhar(P, c, ev.currentTarget)); botao("Fechar", "", fechar).focus({ preventScroll: true });
+      mostrar("Jornada completa!", ["Você reuniu todos os carimbos e completou sua jornada pelos Biomas do Brasil, parabéns!"], true);
+      botao("Compartilhar", "sim", ev => escolherFormato(P, ev.currentTarget)); botao("Fechar", "", fechar).focus({ preventScroll: true });
     }
     async function roteiro() {
       if (tipo === "completa") {
         const c = {}; pintar(c); await esperar(A.pausaInicioFinal);
-        for (const r of P.regs.filter(r => depois[r.id] != null)) { c[r.id] = depois[r.id]; pintar(c, r.id); batida(false); await esperar(A.intervaloFinal); }
+        // ordem: os carimbos mais antigos, o último vencido como penúltimo e o de jornada completa por último
+        const todos = P.regs.map(r => r.id).filter(id => depois[id] != null), novos2 = ids.filter(id => id !== "completa" && depois[id] != null);
+        const ts = ler(KC, {}), cmp = (x, y) => (depois[x] < depois[y] ? -1 : depois[x] > depois[y] ? 1 : 0) || ((ts[x] && ts[x].ts) || 0) - ((ts[y] && ts[y].ts) || 0);   // por dia e, no mesmo dia, pela hora em que foi ganho
+        const velhos = todos.filter(id => !novos2.includes(id)).sort(cmp), ultimos = novos2.sort(cmp);
+        for (const id of [...velhos, ...ultimos]) { c[id] = depois[id]; pintar(c, id); batida(false); await esperar(A.intervaloFinal); }
         await esperar(A.suspenseVermelho);            // suspense antes do carimbo de jornada completa
         c.completa = depois.completa; pintar(c, "completa"); batida(true); await esperar(A.pausaMsgFinal);
         msgFinal(c);
@@ -855,6 +896,7 @@ const BiomasUI = (() => {
     }
     function pular() { pulou = true; [...espera].forEach(f => f()); }
     function tecla(e) {
+      if (document.querySelector(".fmt-ov")) return;   // com o popup de formato aberto, as teclas são dele
       if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); if (fim) fechar(); else pular(); }
       else if (e.key === "Tab") { const f = [...ov.querySelectorAll("button")]; if (!f.length) return; e.preventDefault(); const k = f.indexOf(document.activeElement); f[(k + (e.shiftKey ? -1 : 1) + f.length) % f.length].focus(); }
     }
@@ -862,40 +904,126 @@ const BiomasUI = (() => {
     roteiro();
   }
 
-  /* Pergunta sobre a folha: aparece quando há carimbos ganhos e ainda não aceitos (e, depois de todos os biomas, o de jornada completa). */
-  function aviso(P, tipo, pend, nomeDe) {
-    let t;
-    if (tipo === "completa") t = "Você coletou os carimbos de todos os biomas! Deseja carimbar sua jornada como COMPLETA agora?";
-    else {
-      const bi = pend.filter(i => i !== "brasil").map(nomeDe), br = pend.includes("brasil");
-      const lista = a => a.length > 1 ? a.slice(0, -1).join(", ") + " e " + a[a.length - 1] : a[0];
-      t = "Você recebeu ";
-      if (!bi.length) t += "o carimbo do Brasil";
-      else t += `${bi.length > 1 ? "os carimbos dos biomas" : "o carimbo do bioma"} ${lista(bi)}${br ? " e o carimbo do Brasil" : ""}`;
-      t += ". Deseja carimbar seu passaporte agora?";
+  const ICO = {
+    compartilhar: '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.5l6.8-4M8.6 13.5l6.8 4"/></svg>',
+    tocar: '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="currentColor"><path d="M7 4.5v15a1 1 0 0 0 1.5.9l12-7.5a1 1 0 0 0 0-1.8l-12-7.5A1 1 0 0 0 7 4.5z"/></svg>'
+  };
+  const reduzido = () => matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const botaoIcone = (cls, icone, txt) => { const b = document.createElement("button"); b.type = "button"; b.className = cls; b.innerHTML = ICO[icone]; const t = document.createElement("span"); t.textContent = txt; b.appendChild(t); return b; };
+
+  /* Confete (folhas e papéis nas cores dos biomas) que cai uma única vez sobre o selo de jornada completa. */
+  function confete(alvo) {
+    if (reduzido() || !alvo.animate) return;
+    const cores = Object.values(COR), caixa = document.createElement("div"); caixa.className = "pass-confete"; caixa.setAttribute("aria-hidden", "true"); alvo.appendChild(caixa);
+    for (let i = 0; i < 26; i++) {
+      const e = document.createElement("i"), x = Math.random() * 100, r = (Math.random() - .5) * 720, dx = (Math.random() - .5) * 90, dur = 2200 + Math.random() * 1800, atraso = Math.random() * 700;
+      e.style.cssText = `left:${x}%;background:${cores[i % cores.length]};border-radius:${i % 3 ? "2px" : "50% 0 50% 0"}`; caixa.appendChild(e);
+      e.animate([{ transform: "translate(0,-10px) rotate(0)", opacity: 0 }, { opacity: 1, offset: .12 }, { transform: `translate(${dx}px,${alvo.offsetHeight + 40}px) rotate(${r}deg)`, opacity: 0 }], { duration: dur, delay: atraso, easing: "ease-in", fill: "both" });
     }
-    const box = document.createElement("div"); box.className = "folha-aviso"; box.setAttribute("role", "alertdialog"); box.setAttribute("aria-label", tipo === "completa" ? "Carimbo de jornada completa" : "Carimbos recebidos");
-    const p = document.createElement("p"); p.textContent = t;
-    const bs = document.createElement("div"); bs.className = "folha-aviso-bt";
-    const sim = document.createElement("button"), dep = document.createElement("button"); sim.type = dep.type = "button"; sim.className = "sim"; sim.textContent = "Sim"; dep.textContent = "Depois";
-    sim.addEventListener("click", () => cena(P, tipo, pend)); dep.addEventListener("click", () => adiar(pend));
-    bs.append(sim, dep); box.append(p, bs); return box;
+    setTimeout(() => caixa.remove(), 5000);
   }
 
-  /* Bloco do passaporte: texto de progresso (ou a mensagem de jornada completa), a folha com os carimbos aceitos, a pergunta sobre os pendentes e o botão de compartilhar. */
-  function passaporte(P) {
-    const box = document.createElement("div"), ids = P.regs.map(r => r.id), nomeDe = id => P.regs.find(r => r.id === id).nome;
-    const mk = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; e.textContent = txt; return e; };
+  /* Os carimbos que o visitante tem caem em sequência na folha (rápido; desligado com prefers-reduced-motion). */
+  function cairCarimbos(f, atraso = 0) {
+    if (reduzido() || !f || !f.animate) return;
+    f.querySelectorAll(".marca").forEach((m, i) => m.animate([{ transform: `scale(1.4) rotate(${((Math.random() - .5) * 12).toFixed(1)}deg)`, opacity: 0 }, { opacity: .9, offset: .6 }, { transform: "scale(1) rotate(0)", opacity: .9 }], { duration: 260, delay: atraso + i * 120, easing: "cubic-bezier(.2,.9,.3,1.1)", fill: "backwards" }));
+  }
+  /* Sem capa: na primeira vez que o passaporte aparece na sessão, os carimbos já ganhos caem em sequência (quando ele fica visível). */
+  function entrada(box) {
+    if (reduzido() || ler("biomas:entrou", false, sessionStorage)) return;
+    const f = box.querySelector(".folha"); if (!f || !f.querySelector(".marca") || !f.animate || !("IntersectionObserver" in window)) return;
+    const io = new IntersectionObserver(es => {
+      if (!es.some(e => e.isIntersecting)) return;
+      io.disconnect(); gravar("biomas:entrou", true, sessionStorage); cairCarimbos(f);
+    }, { threshold: .4 });
+    io.observe(f);
+  }
+
+  /* Popup do compartilhar: o visitante escolhe o formato da imagem e só então ela é gerada. */
+  function escolherFormato(P, btn) {
+    const mk = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
+    const foco = document.activeElement, atual = formatoAtual();
+    const ov = mk("div", "fmt-ov"), cx = mk("div", "fmt-cx"), h = mk("h2", "", "Compartilhar passaporte"), p = mk("p", "", "Escolha o formato da imagem:"), lista = mk("div", "fmt-lista"), cancelar = mk("button", "fmt-cancelar", "Cancelar");
+    ov.setAttribute("role", "dialog"); ov.setAttribute("aria-modal", "true"); ov.setAttribute("aria-label", "Formato da imagem para compartilhar"); cancelar.type = "button";
+    const bs = [["quadrado", "Quadrada", "1080 × 1080, boa para o feed"], ["stories", "Stories", "1080 × 1920, tela cheia no celular"], ["paisagem", "Horizontal", "1600 px de largura, boa para mensagens"]].map(([k, t, d]) => {
+      const b = mk("button", "fmt-op"); b.type = "button"; b.setAttribute("aria-pressed", String(atual === k)); b.append(mk("strong", "", t), mk("span", "", d));
+      b.addEventListener("click", () => { FORMATO = k; gravar("biomas:formato", k); fechar(); compartilhar(P, aceitos(), btn, k); }); lista.appendChild(b); return b;
+    });
+    function fechar() { document.removeEventListener("keydown", tecla, true); ov.remove(); if (foco && foco.isConnected) foco.focus({ preventScroll: true }); }
+    function tecla(e) {
+      if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); fechar(); }
+      else if (e.key === "Tab") { const f = [...bs, cancelar]; e.preventDefault(); const k = f.indexOf(document.activeElement); f[(k + (e.shiftKey ? -1 : 1) + f.length) % f.length].focus(); }
+    }
+    cancelar.addEventListener("click", fechar); ov.addEventListener("click", e => { if (e.target === ov) fechar(); }); document.addEventListener("keydown", tecla, true);
+    cx.append(h, p, lista, cancelar); ov.appendChild(cx); document.body.appendChild(ov); (bs.find(b => b.getAttribute("aria-pressed") === "true") || bs[0]).focus({ preventScroll: true });
+  }
+
+  /* Capa do passaporte: couro verde com friso e emblema dourados (o losango e o círculo do ícone do site), do mesmo tamanho da folha. */
+  function capaSvg(P) {
+    const [, , vw, vh] = P.vb, W = 100, H = +(100 * vh / vw).toFixed(2), cx = W / 2, cy = +(H * .42).toFixed(2), ouro = "url(#ouro)";
+    return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true" focusable="false"><defs>
+<linearGradient id="couro" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1a5a3c"/><stop offset=".55" stop-color="#0f3d2a"/><stop offset="1" stop-color="#0a2b1d"/></linearGradient>
+<linearGradient id="ouro" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f3dc8f"/><stop offset=".5" stop-color="#c9a24a"/><stop offset="1" stop-color="#e8cb7c"/></linearGradient>
+<linearGradient id="lombada" x1="0" x2="1"><stop offset="0" stop-color="#000" stop-opacity=".5"/><stop offset=".07" stop-color="#000" stop-opacity=".12"/><stop offset=".12" stop-color="#fff" stop-opacity=".08"/><stop offset=".2" stop-color="#000" stop-opacity="0"/></linearGradient>
+<filter id="grao" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="3" seed="5" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  .0 .0 .0 .5 -.12"/></filter>
+<filter id="relevo" x="-5%" y="-5%" width="110%" height="110%"><feGaussianBlur in="SourceAlpha" stdDeviation=".12" result="b"/><feOffset in="b" dx=".15" dy=".25" result="o"/><feComponentTransfer in="o" result="s"><feFuncA type="linear" slope=".7"/></feComponentTransfer><feMerge><feMergeNode in="s"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+<rect width="${W}" height="${H}" rx="2" fill="url(#couro)"/><rect width="${W}" height="${H}" rx="2" filter="url(#grao)"/><rect width="${W}" height="${H}" rx="2" fill="url(#lombada)"/>
+<g fill="none" stroke="${ouro}" filter="url(#relevo)"><rect x="5" y="5" width="${W - 10}" height="${H - 10}" rx="1" stroke-width=".7"/><rect x="7" y="7" width="${W - 14}" height="${H - 14}" stroke-width=".25"/>
+<g transform="translate(${cx} ${cy})"><polygon points="0,-17 24,0 0,17 -24,0" stroke-width=".7"/><polygon points="0,-13.5 19,0 0,13.5 -19,0" stroke-width=".25"/><circle r="9.5" stroke-width=".7"/><path d="M-9 1.5Q0 -3.2 9 2.6" stroke-width="1.4" stroke-linecap="round"/></g></g>
+<g fill="${ouro}" text-anchor="middle" filter="url(#relevo)"><text x="${cx}" y="${(H * .72).toFixed(2)}" font-family="'Instrument Serif',Georgia,serif" font-size="9.2" letter-spacing="1.2">PASSAPORTE</text>
+<text x="${cx}" y="${(H * .8).toFixed(2)}" font-family="'Instrument Sans',system-ui,sans-serif" font-weight="600" font-size="3" letter-spacing="1.6">BIOMAS DO BRASIL</text></g></svg>`;
+  }
+
+  /* Bloco do passaporte: progresso (ou a tela de conquista), a folha com todos os carimbos e os botões.
+     opts: { capa: true mostra o passaporte fechado, com capa que abre ao clicar nela (e fecha ao clicar no passaporte aberto); kicker: false tira o rótulo "Passaporte"; proximo(c) => {nome, href} sugere o próximo bioma; extra: botões ao lado do compartilhar; depois: nós abaixo dos botões } */
+  function passaporte(P, opts = {}) {
+    const box = document.createElement("div");
+    const mk = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
+    let confetiFeito = false, anterior = null, aberta = !opts.capa;   // com capa, o passaporte sempre começa fechado
     function desenhar() {
-      const c = aceitos(), reg = P.regs.filter(r => r.id !== "brasil"), n = reg.filter(r => c[r.id] != null).length, completo = c.completa != null;
-      box.replaceChildren(mk("p", "kicker", "Passaporte"));
-      if (completo) { const m = mk("div", "pass-fim"); m.append(mk("strong", "", "Você carimbou todos os biomas!"), mk("span", "", "Você completou sua jornada pelos Biomas do Brasil, parabéns!")); box.appendChild(m); }
-      else box.appendChild(mk("p", "lead", `${n} de ${reg.length} biomas carimbados. Acerte o quiz de um bioma para ganhar o carimbo dele.`));
-      const f = folha(P, c), pend = pendentes(ids), adiados = ler(KA, [], sessionStorage);
-      if (pend.length) { if (pend.some(id => !adiados.includes(id))) f.appendChild(aviso(P, "bioma", pend, nomeDe)); }
-      else if (completaPendente() && !adiados.includes("completa")) f.appendChild(aviso(P, "completa", ["completa"], nomeDe));   // a jornada completa só é carimbada quando não há carimbo de bioma pendente
-      box.appendChild(f);
-      if (n || c.brasil != null) { const b = mk("button", "pass-btn", "Compartilhar passaporte"); b.type = "button"; b.addEventListener("click", () => compartilhar(P, c, b)); box.appendChild(b); }
+      const c = aceitos(), tot = P.regs.length, n = P.regs.filter(r => c[r.id] != null).length, completo = c.completa != null;
+      box.replaceChildren();
+      if (opts.kicker !== false) box.appendChild(mk("p", "kicker", "Passaporte"));
+      let painel;   // progresso ou conquista: com capa (página do passaporte), vai abaixo da folha, que é a protagonista
+      if (completo) {
+        const m = mk("div", "pass-fim"); m.append(mk("span", "pass-selo", "Jornada completa"), mk("strong", "", "Você completou a jornada!"), mk("span", "pass-fim-txt", "Todos os carimbos estão no seu passaporte. Parabéns!"));
+        painel = m; if (!confetiFeito) { confetiFeito = true; confete(m); }
+      } else {
+        const pg = mk("div", "pass-prog"), barra = mk("div", "pass-barra"), i = document.createElement("i"); i.style.width = (n / tot * 100) + "%";
+        barra.setAttribute("role", "progressbar"); barra.setAttribute("aria-valuemin", "0"); barra.setAttribute("aria-valuemax", String(tot)); barra.setAttribute("aria-valuenow", String(n)); barra.setAttribute("aria-label", "Carimbos do passaporte"); barra.appendChild(i);
+        pg.append(mk("p", "lead", `${n} de ${tot} carimbos`), barra);
+        const prox = opts.proximo && opts.proximo(c);
+        if (prox) { const pp = mk("p", "pass-prox", "Próximo carimbo: "), a = mk("a", "", prox.nome); a.href = prox.href; pp.appendChild(a); pg.appendChild(pp); }
+        else if (!opts.proximo) pg.appendChild(mk("p", "pass-prox", "Acerte o quiz de um bioma para ganhar o carimbo dele."));
+        painel = pg;
+      }
+      if (!opts.capa) box.appendChild(painel);
+      const fo = folha(P, c);
+      if (opts.capa) {
+        const lv = mk("div", "livreto" + (aberta ? " aberto" : "")), cv = mk("button", "capa"); lv.style.aspectRatio = `${P.vb[2]} / ${P.vb[3]}`; lv.style.setProperty("--ry", raioY(P));
+        cv.type = "button"; cv.setAttribute("aria-label", "Abrir o passaporte"); cv.innerHTML = capaSvg(P); if (aberta) cv.hidden = true;
+        let timer = 0;
+        const abrir = () => {
+          if (aberta) return; aberta = true; lv.classList.add("aberto"); fo.tabIndex = 0; fo.setAttribute("role", "button"); fo.setAttribute("aria-label", "Fechar o passaporte");
+          cairCarimbos(fo, 450);   // os carimbos caem um a um assim que a capa já girou o bastante para mostrar a folha
+          clearTimeout(timer); timer = setTimeout(() => { cv.hidden = true; }, reduzido() ? 0 : 1000);
+        };
+        const fechar = () => {   // clicar no passaporte aberto devolve a capa
+          if (!aberta) return; aberta = false; clearTimeout(timer); fo.removeAttribute("tabindex"); fo.removeAttribute("role"); fo.removeAttribute("aria-label");
+          cv.hidden = false; void cv.offsetWidth; lv.classList.remove("aberto"); cv.focus({ preventScroll: true });
+        };
+        cv.addEventListener("click", abrir);
+        fo.addEventListener("click", fechar); fo.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); fechar(); } });
+        if (aberta) { fo.tabIndex = 0; fo.setAttribute("role", "button"); fo.setAttribute("aria-label", "Fechar o passaporte"); }
+        lv.append(fo, cv); box.appendChild(lv); box.appendChild(painel);
+      } else box.appendChild(fo);
+      const ac = mk("div", "pass-acoes");
+      if (n) { const b = botaoIcone("pass-btn principal", "compartilhar", "Compartilhar"); b.addEventListener("click", () => escolherFormato(P, b)); ac.appendChild(b); }
+      (opts.extra || []).forEach(x => ac.appendChild(x));
+      if (ac.children.length) box.appendChild(ac);
+      (opts.depois || []).forEach(x => box.appendChild(x));
+      if (anterior === null && aberta && !opts.capa) setTimeout(() => entrada(box), 0);
+      anterior = n;
     }
     const on = () => { if (box.__visto && !box.isConnected) { removeEventListener("biomas:carimbos", on); return; } if (box.isConnected) box.__visto = true; desenhar(); };
     addEventListener("biomas:carimbos", on); desenhar();
@@ -919,10 +1047,11 @@ const BiomasUI = (() => {
     return true;
   }
 
-  return { rever, temPendentes: P => pendentes(P.regs.map(r => r.id)).length > 0 || completaPendente(), jpegAte, MAX_IMAGEM, ANIM_PADRAO, animAtual, demo, simular, graficoChuva, folha, passaporte, carimbos, carimbado, registrarGanho, todosCarimbados: P => { const c = aceitos(); return P.regs.filter(r => r.id !== "brasil").every(r => c[r.id] != null); } };
+  return { rever, iniciar, verificar, jpegAte, MAX_IMAGEM, ANIM_PADRAO, animAtual, demo, simular, graficoChuva, folha, passaporte, botaoIcone, carimbos, carimbado, registrarGanho, todosCarimbados: P => { const c = aceitos(); return P.regs.every(r => c[r.id] != null); } };
 })();
 
 const PASSAPORTE = {"vb":[-24,-26,455,387],"d":"M109,1L113,1L112,6L115,7L117,11L113,20L115,28L123,35L127,31L129,32L135,28L146,29L147,28L145,25L146,24L154,23L160,27L164,25L171,26L182,10L182,7L185,10L185,16L188,25L191,26L195,30L195,36L193,38L196,42L198,41L200,45L205,47L206,46L210,50L212,49L219,50L221,52L222,51L224,53L225,52L228,53L231,56L232,55L233,57L234,56L236,58L237,57L241,65L244,65L246,63L255,67L261,67L263,69L276,68L287,75L299,86L300,85L302,87L311,87L314,91L317,102L317,111L313,121L305,131L299,135L292,148L283,155L284,156L283,159L284,160L283,162L284,178L281,187L282,192L279,194L277,198L278,205L277,207L274,210L272,216L267,221L267,227L262,229L259,232L260,234L259,235L248,235L247,236L243,235L242,237L238,236L237,237L238,238L236,238L231,242L226,242L225,244L220,245L214,250L205,261L206,262L205,271L207,275L205,277L204,282L195,290L190,301L175,314L173,320L169,324L167,325L166,321L170,317L165,314L165,312L158,306L152,304L150,301L146,303L146,301L139,294L134,296L149,279L165,269L165,262L163,257L161,256L158,257L161,247L157,242L153,244L151,243L149,236L150,233L147,229L130,228L132,219L129,212L131,211L130,207L133,202L132,201L133,198L135,196L132,190L131,189L130,190L127,187L126,185L127,181L123,179L113,179L112,173L110,171L112,169L112,166L109,158L105,156L102,157L98,156L96,153L93,153L88,149L83,147L79,148L75,144L73,144L71,140L72,135L70,132L71,131L70,124L61,126L51,133L49,132L45,136L42,135L30,136L28,135L29,125L27,123L23,127L16,127L14,123L8,122L9,119L1,107L3,105L3,101L8,98L7,94L9,92L10,87L18,82L25,81L27,79L30,79L33,81L34,80L38,53L36,48L33,46L33,40L40,38L39,35L35,34L34,35L34,30L46,30L47,28L49,29L54,26L57,35L58,34L62,38L65,38L67,36L71,37L72,35L79,32L81,28L87,26L86,23L81,23L82,22L80,18L81,16L75,9L80,10L82,12L86,11L90,14L93,10L98,10L105,7L109,3Z","bio":"M112.7,1.1L114.5,2.4L113.0,7.0L116.9,8.2L118.1,11.7L115.3,14.8L114.3,20.6L116.2,29.1L123.5,34.8L126.4,34.1L127.7,31.3L130.4,32.1L130.5,30.8L134.0,30.6L136.0,28.0L146.6,29.4L147.4,27.6L145.5,25.7L146.8,23.6L151.6,24.6L155.1,22.7L161.6,27.1L164.6,24.8L171.6,26.4L181.7,10.9L182.1,7.3L186.4,12.2L189.5,26.8L191.4,26.5L193.1,29.6L195.8,30.6L195.9,36.1L194.3,38.2L196.4,42.1L198.5,41.4L200.3,44.8L207.8,46.6L207.4,48.8L211.4,50.4L217.0,49.6L220.9,52.3L223.9,51.9L224.6,53.9L225.8,52.1L227.8,54.6L229.7,53.9L229.8,56.2L232.9,55.7L233.4,57.9L236.8,56.4L236.2,58.0L238.4,58.0L237.4,58.9L239.3,59.8L240.9,65.5L243.4,64.6L243.7,66.1L246.5,63.4L248.4,65.0L243.9,68.0L244.4,73.6L242.5,73.0L243.0,71.3L239.5,72.6L238.5,79.0L235.0,82.1L236.0,83.0L232.4,83.8L232.4,82.2L229.4,81.2L230.8,85.5L229.1,88.6L222.0,88.7L222.0,90.3L220.9,89.0L218.4,90.6L215.9,88.1L212.2,88.3L212.0,91.5L209.8,90.7L211.7,99.6L208.0,107.3L206.2,107.7L206.0,121.5L202.9,112.0L201.4,111.8L197.8,117.0L198.7,107.1L194.9,108.7L193.7,115.9L196.3,117.8L194.4,118.7L195.4,120.0L192.5,123.6L193.8,125.2L190.5,128.8L191.6,130.0L189.4,131.3L190.7,132.4L185.2,133.6L184.9,135.5L184.2,134.2L179.7,134.5L181.3,138.3L184.7,140.2L182.5,143.1L184.3,147.0L186.6,146.6L186.6,147.9L183.3,148.4L179.5,153.4L177.4,153.0L176.9,156.4L175.7,154.9L172.0,156.9L171.3,155.8L170.0,158.5L167.6,156.4L166.3,158.6L165.4,157.3L160.1,158.9L158.2,155.9L153.2,155.8L149.8,147.4L145.9,148.8L147.2,150.1L145.9,150.3L145.7,145.5L142.7,151.8L145.0,153.9L142.6,156.0L145.6,157.2L146.5,159.6L144.9,158.5L143.5,160.0L142.1,157.9L140.8,162.0L138.3,161.0L140.0,160.8L138.5,160.3L140.0,158.9L136.6,157.7L136.0,158.9L131.3,153.7L130.1,150.9L132.2,148.6L129.7,147.3L127.3,148.5L126.8,144.3L123.5,145.5L120.0,143.5L117.0,145.1L114.5,143.0L114.4,146.1L111.8,145.2L113.2,148.1L111.3,147.3L110.5,148.8L113.5,152.1L114.6,148.4L114.0,152.6L117.4,152.3L116.3,156.0L114.7,154.0L115.0,157.0L118.3,165.5L122.1,170.1L128.7,171.1L129.9,166.1L135.2,163.2L139.9,162.5L142.5,164.0L140.4,165.1L139.4,169.7L136.6,170.5L137.6,172.3L133.5,176.8L132.9,175.5L133.1,177.4L132.1,175.0L130.8,175.5L129.1,183.4L127.7,177.2L125.9,180.0L124.2,177.5L121.2,179.9L122.8,180.4L112.8,180.2L112.3,173.5L109.5,170.5L112.2,170.5L110.5,159.5L106.0,157.0L99.2,157.5L96.7,153.9L91.7,153.0L89.2,149.9L79.6,148.8L73.6,144.6L70.9,138.5L70.6,125.4L60.7,127.0L45.1,137.2L38.3,135.7L28.4,136.3L29.4,123.1L23.6,127.7L15.8,128.0L14.3,123.7L7.5,123.0L9.7,119.5L1.2,107.5L1.4,105.9L3.5,105.5L4.0,100.9L8.1,98.9L7.2,95.0L10.6,87.1L18.0,82.3L25.8,81.1L27.2,79.3L33.7,80.5L38.3,54.0L36.6,48.8L33.0,46.2L33.0,40.0L40.6,39.3L39.5,35.8L34.6,35.6L34.6,30.4L48.2,30.2L48.0,27.6L50.3,29.6L54.5,26.1L56.6,29.8L56.9,34.9L58.8,34.4L63.2,38.5L68.9,36.1L69.4,39.2L72.6,35.2L78.6,32.1L79.1,33.3L81.2,28.6L87.1,26.0L86.6,24.2L81.4,23.8L81.0,15.7L75.4,9.0L80.8,10.4L82.1,12.4L88.2,12.0L90.4,14.6L92.2,13.8L92.0,11.1L101.6,9.2L109.0,4.2L108.3,1.2ZM248.5,64.1L257.0,67.6L261.4,67.5L260.6,70.5L264.9,76.6L262.7,77.3L264.0,78.1L261.8,81.2L264.4,81.4L263.1,85.5L265.6,91.2L263.4,94.0L264.5,96.1L263.0,96.2L260.4,101.5L260.1,99.8L258.4,101.0L256.1,97.9L252.9,98.0L252.4,100.4L254.3,102.4L253.0,107.2L254.9,105.5L255.4,106.6L254.4,108.7L251.5,107.0L248.1,107.7L246.7,105.5L247.6,108.0L245.4,109.5L246.2,111.8L241.6,114.5L246.0,118.1L244.8,117.7L246.2,120.2L244.9,120.9L244.7,119.5L243.9,121.3L243.4,119.9L243.8,122.1L242.2,122.5L245.3,124.3L242.0,126.5L243.9,125.0L242.9,123.4L238.9,126.2L236.4,135.6L240.8,131.7L241.8,133.4L237.4,136.7L242.6,135.0L244.9,139.3L235.9,145.3L243.3,145.0L244.9,147.7L242.3,150.4L241.8,155.7L238.0,154.0L237.7,157.5L240.4,157.0L238.4,159.0L242.2,159.7L238.1,162.8L237.8,165.0L239.5,164.5L240.1,168.0L241.5,167.8L240.4,168.5L242.4,169.4L240.2,171.0L239.1,175.2L234.9,178.2L237.4,179.2L239.3,177.0L240.2,178.5L243.0,175.0L241.9,179.8L244.3,179.1L243.7,180.7L244.8,180.0L247.2,183.9L248.9,178.1L250.9,179.4L252.9,177.3L255.0,163.8L251.5,155.6L251.7,151.6L253.2,155.1L252.1,148.8L255.5,158.8L256.6,159.3L256.7,157.5L258.6,158.7L255.6,161.5L254.5,169.6L259.4,171.0L261.3,169.5L259.3,173.8L260.4,177.9L262.4,177.5L258.1,176.5L256.4,179.1L256.9,183.4L259.5,184.4L256.5,185.4L258.4,185.4L256.7,189.2L258.4,190.3L257.9,192.3L256.0,193.0L254.1,191.2L252.6,193.9L254.3,194.4L252.7,195.3L250.6,193.4L250.4,195.4L251.9,195.9L248.7,197.1L247.9,200.2L245.9,199.9L247.8,205.2L249.9,206.5L249.1,209.7L246.4,208.6L240.1,212.4L238.2,206.3L238.0,208.5L235.2,207.9L238.2,209.6L236.5,209.7L238.9,214.0L235.3,216.1L235.4,210.9L233.7,212.9L233.4,211.5L231.2,212.8L233.4,218.8L230.9,217.4L232.6,221.4L230.9,220.6L231.7,222.7L230.4,223.0L228.7,222.0L230.5,221.6L227.8,221.5L230.4,220.9L226.8,218.9L220.4,217.9L219.9,214.6L218.5,213.9L219.1,215.6L217.9,215.5L216.0,212.5L219.2,221.2L216.4,222.5L217.9,221.4L216.6,220.5L214.4,222.7L217.4,224.3L216.8,226.1L213.9,224.9L213.3,226.3L211.2,224.2L213.0,225.8L212.1,227.0L213.6,226.4L212.4,227.6L213.5,229.1L213.9,225.9L217.3,227.7L218.3,224.3L217.1,223.4L219.4,221.4L218.1,226.9L220.2,226.8L217.9,227.7L220.1,229.6L218.3,229.9L217.8,232.0L217.4,228.4L215.8,229.1L214.7,227.1L215.7,229.6L213.2,229.6L213.5,232.7L210.8,233.3L212.5,234.3L208.8,233.2L209.1,235.2L211.5,234.9L209.8,239.0L207.9,240.3L203.6,239.4L204.5,240.9L206.4,239.6L207.9,240.9L211.5,240.4L210.9,241.7L212.6,242.2L204.0,242.0L207.4,244.8L204.6,246.0L203.4,243.6L202.8,246.5L197.4,247.3L193.7,250.3L191.4,248.4L196.8,244.4L197.5,245.9L202.8,245.3L203.0,243.6L200.5,242.3L203.2,238.9L200.9,239.3L201.3,237.9L209.4,237.9L209.8,236.0L204.3,237.5L200.9,236.7L201.4,235.1L199.4,235.3L198.5,233.4L190.6,234.2L189.9,232.5L187.6,232.0L187.0,233.4L181.5,230.8L180.8,231.9L180.4,230.4L184.8,231.4L184.6,229.4L186.9,228.3L189.5,231.3L197.5,231.6L198.0,232.9L199.0,230.5L202.8,232.3L202.6,233.7L203.1,229.9L200.5,229.4L203.3,227.2L204.9,233.0L207.9,234.9L207.9,232.0L211.0,232.9L213.6,230.9L210.0,231.4L208.4,229.4L209.9,229.2L209.6,227.4L206.4,229.4L204.7,226.9L209.4,226.4L212.0,229.4L211.1,226.9L207.0,225.7L210.0,224.4L211.2,226.7L210.1,222.2L214.0,224.0L214.9,221.5L212.7,220.5L215.9,219.9L213.3,219.6L214.0,218.5L212.7,218.9L211.4,216.1L217.7,220.4L216.6,216.3L213.9,215.2L215.7,214.3L210.2,213.2L211.9,211.9L215.6,212.9L215.0,210.5L216.7,210.0L215.2,208.8L210.1,209.4L208.8,211.1L208.1,208.9L208.2,211.2L204.9,209.2L205.1,212.4L204.2,211.4L203.9,213.4L203.1,211.4L202.5,212.6L206.9,214.0L205.4,211.8L207.9,211.4L206.6,212.8L209.6,214.9L208.3,213.7L207.0,214.8L208.5,221.6L204.9,214.9L203.4,216.4L202.8,214.5L201.8,215.9L199.5,213.4L197.8,213.1L197.9,214.6L197.4,212.9L194.3,212.6L195.6,211.1L195.5,212.5L198.3,212.9L196.1,211.0L198.1,212.1L198.7,210.8L201.6,213.9L202.2,209.7L199.9,211.0L199.8,209.0L195.9,210.5L191.2,208.4L187.2,211.0L188.5,205.6L192.5,202.9L191.4,202.5L192.9,200.8L199.0,204.8L196.3,201.5L197.3,200.6L200.2,201.5L205.9,197.9L207.6,200.6L209.7,200.4L206.9,198.9L208.5,196.9L202.7,193.2L202.9,196.8L201.7,196.4L200.0,199.9L192.1,198.1L192.6,199.5L189.4,197.3L191.4,200.3L189.0,200.3L189.9,202.5L186.4,199.9L189.5,203.8L187.7,206.6L186.6,205.8L186.6,212.9L180.6,216.7L181.7,218.6L175.2,225.3L177.0,225.5L174.6,228.3L171.6,229.9L168.2,228.9L166.7,230.8L166.9,228.9L159.9,224.5L158.6,227.4L154.9,226.1L152.5,227.4L158.0,231.2L155.8,230.9L154.2,233.5L155.2,234.5L153.4,234.7L152.5,237.4L156.7,236.8L158.0,239.1L157.0,240.4L158.8,239.9L159.1,242.2L155.5,239.8L155.0,241.5L152.8,240.3L152.7,244.6L151.4,244.4L148.6,231.1L143.4,228.5L139.8,230.4L133.8,229.4L133.5,227.1L134.8,226.7L133.1,225.9L134.9,225.8L133.5,223.9L136.0,224.3L136.4,221.4L137.7,221.4L135.6,218.9L137.4,220.5L137.0,215.4L139.2,215.9L138.6,213.0L135.7,212.0L136.4,210.6L139.0,209.4L142.7,212.8L141.0,213.9L143.4,214.6L143.0,210.1L147.9,214.9L151.0,210.6L156.3,194.6L154.9,190.8L153.2,191.4L152.5,189.6L155.0,189.9L155.1,181.9L151.2,183.4L150.5,179.0L148.1,180.4L149.5,177.8L148.0,178.7L147.5,176.0L144.8,178.5L142.8,178.0L143.9,180.0L141.7,179.0L141.0,181.2L139.1,179.1L138.0,179.9L137.0,177.3L134.6,182.4L131.7,183.8L134.5,175.0L138.2,171.5L136.6,170.5L139.9,169.1L140.4,165.1L142.5,163.5L137.4,162.7L132.1,164.6L128.0,169.6L128.7,171.1L122.1,170.1L118.3,165.5L115.0,157.0L114.7,154.0L116.3,156.0L117.4,152.3L114.0,152.6L114.6,148.4L113.5,152.1L110.5,148.5L111.3,147.3L113.2,148.1L111.7,145.5L114.4,146.1L114.5,143.0L117.0,145.1L120.0,143.5L123.5,145.5L126.8,144.3L127.3,148.5L129.7,147.3L132.2,148.6L130.1,150.9L130.4,153.5L132.2,153.2L136.0,158.9L136.6,157.7L140.0,158.9L138.5,160.3L140.0,160.8L138.3,161.0L140.8,162.0L142.1,157.9L143.5,160.0L144.9,158.5L146.8,159.1L142.6,156.0L145.0,153.9L142.7,151.8L145.5,145.5L145.9,150.3L147.2,150.1L145.9,148.8L149.8,147.4L153.2,155.8L158.2,155.9L160.1,158.9L165.4,157.3L166.3,158.6L167.6,156.4L170.0,158.5L171.3,155.8L172.0,156.9L175.7,154.9L176.9,156.4L177.4,153.0L179.5,153.4L183.3,148.4L186.6,147.9L186.6,146.6L184.3,147.0L182.5,143.1L184.7,140.2L181.3,138.3L179.7,134.5L184.2,134.2L184.9,135.5L185.2,133.6L190.7,132.4L189.4,131.3L191.6,130.0L190.5,128.8L193.8,125.2L192.5,123.6L195.4,120.0L194.4,118.7L196.3,117.8L193.7,115.9L194.9,108.7L198.7,107.1L197.8,117.0L201.4,111.8L202.9,112.0L206.0,121.5L206.2,107.7L208.0,107.3L211.7,99.6L209.8,90.7L212.0,91.5L212.2,88.3L215.9,88.1L218.4,90.6L220.9,89.0L222.0,90.3L222.0,88.7L229.1,88.6L230.8,85.5L229.4,81.2L232.4,82.2L232.4,83.8L236.0,83.0L235.0,82.1L238.5,79.0L239.5,72.6L243.0,71.3L242.5,73.0L244.4,73.6L243.9,68.0ZM312.2,87.6L318.0,104.2L316.8,114.2L313.8,121.2L305.1,132.1L300.1,135.6L292.1,149.5L284.4,155.0L283.4,166.9L285.2,176.7L282.3,187.7L282.9,192.0L278.8,196.6L277.4,208.4L267.3,223.8L267.9,228.0L260.1,232.4L259.6,236.3L251.3,236.1L251.0,233.6L249.4,234.4L250.2,236.2L247.2,236.9L240.6,235.6L238.0,236.9L238.9,239.3L236.3,239.0L232.1,241.5L232.0,243.2L226.4,243.3L212.8,252.4L206.4,261.3L207.3,263.1L205.7,266.9L207.4,271.3L205.1,282.4L199.4,286.7L194.6,293.3L193.4,292.0L192.3,293.8L186.0,293.4L180.6,291.6L180.3,293.4L175.3,292.0L175.7,294.4L173.8,292.5L164.2,292.4L157.6,289.3L157.7,291.0L156.6,289.3L154.8,290.8L153.8,288.9L155.5,289.8L156.0,288.2L159.3,288.3L159.5,289.9L161.4,289.0L162.5,290.9L165.8,291.3L165.5,289.8L168.7,288.9L168.7,286.8L168.9,288.3L170.2,287.8L169.5,279.8L174.6,281.9L175.4,279.8L178.1,279.4L176.5,275.8L174.2,276.2L172.2,273.4L171.1,277.9L172.5,279.1L168.6,277.8L167.0,274.2L165.1,276.8L162.3,276.0L162.4,277.8L160.5,275.3L160.0,277.4L156.5,277.5L160.5,278.9L159.7,280.7L165.4,278.3L167.8,279.3L168.4,280.8L165.0,281.7L166.7,282.3L165.3,283.5L162.3,281.3L158.5,280.6L158.3,281.8L156.7,279.7L154.5,280.8L152.3,278.7L154.9,279.0L152.2,277.3L156.2,274.0L164.4,270.8L165.7,263.3L163.6,258.1L158.0,257.9L160.5,245.1L157.3,243.0L152.5,244.4L152.8,240.3L155.0,241.5L155.5,239.8L159.1,242.2L158.8,239.9L157.0,240.4L158.0,239.1L156.7,236.8L152.5,237.4L153.4,234.7L155.2,234.5L154.2,233.5L155.8,230.9L158.0,231.2L152.5,227.4L154.7,226.1L158.6,227.4L159.9,224.5L166.9,228.9L166.7,230.8L168.2,228.9L171.6,229.9L174.6,228.3L177.0,225.5L175.2,225.3L181.7,218.6L180.6,216.7L187.0,212.0L185.9,207.9L189.5,203.8L186.4,199.9L189.7,202.5L189.0,200.3L191.4,200.3L189.4,197.3L192.6,199.5L192.1,198.1L200.0,199.9L203.5,195.2L202.0,193.3L208.5,196.9L206.9,198.9L209.5,200.6L207.6,200.6L205.9,197.9L200.2,201.5L197.3,200.6L196.3,201.5L199.0,204.8L192.9,200.8L191.4,202.5L192.5,202.9L188.5,205.6L187.2,211.0L191.2,208.4L195.9,210.5L199.8,209.0L199.9,211.0L202.2,209.7L201.6,213.9L198.7,210.8L198.1,212.1L196.1,211.0L198.3,212.9L195.5,212.5L195.6,211.1L194.3,212.6L197.4,212.9L197.9,214.6L197.8,213.1L199.5,213.4L201.8,215.9L202.8,214.5L203.4,216.4L204.9,214.9L208.5,221.6L207.0,214.8L208.3,213.7L209.6,214.9L206.6,212.8L207.9,211.4L205.4,211.8L206.9,214.0L205.3,212.8L204.3,214.3L202.5,212.3L205.1,212.4L205.1,209.0L205.2,210.5L206.9,209.7L205.8,210.7L208.2,211.2L208.1,208.9L208.8,211.1L212.8,208.9L216.7,210.0L215.0,210.5L215.6,212.9L211.8,211.9L210.2,213.2L215.7,214.3L212.9,215.6L215.6,215.3L214.5,215.9L216.6,216.3L217.7,220.4L211.4,216.1L212.7,218.9L214.0,218.5L213.3,219.6L215.9,219.9L212.7,220.5L214.9,221.5L214.0,224.0L210.1,222.2L211.2,226.7L210.0,224.4L207.0,225.7L211.1,226.9L212.1,229.3L209.4,226.4L204.7,227.0L206.4,229.4L209.5,227.4L208.6,230.1L210.1,231.4L213.4,230.7L212.7,232.4L208.0,231.9L206.9,235.0L203.3,227.2L200.5,229.4L203.1,229.9L202.6,233.7L202.8,232.3L199.0,230.5L198.0,232.9L197.5,231.6L189.5,231.3L186.9,228.3L184.6,229.4L184.8,231.4L180.3,230.4L180.8,231.9L181.5,230.8L187.0,233.4L187.6,232.0L189.9,232.5L190.6,234.2L198.5,233.4L199.4,235.3L201.4,235.1L200.9,236.7L204.3,237.5L209.8,236.0L209.4,237.9L201.3,237.9L200.9,239.3L203.2,238.9L200.5,242.3L203.0,243.6L202.8,245.3L197.5,245.9L196.8,244.4L191.4,248.4L193.8,250.3L197.4,247.3L202.8,246.5L203.4,243.6L204.6,246.0L207.4,244.8L204.0,242.0L212.6,242.2L210.9,241.7L211.5,240.4L207.9,240.9L206.4,239.6L204.5,240.9L203.6,239.4L207.9,240.3L209.8,239.0L211.5,234.9L209.1,235.2L208.8,233.2L212.5,234.3L210.8,233.3L213.5,232.7L213.2,229.6L215.7,229.6L214.7,227.1L215.8,229.1L217.4,228.4L217.8,232.0L218.3,229.9L220.1,229.6L217.9,227.7L220.2,226.8L218.1,226.9L219.4,221.4L217.1,223.4L218.3,224.3L217.3,227.7L213.9,225.9L213.5,229.1L212.4,227.6L213.6,226.4L212.1,227.0L213.0,225.8L211.2,224.2L213.3,226.3L213.9,224.9L216.8,226.1L217.4,224.3L214.4,222.7L216.6,220.5L217.9,221.4L216.4,222.5L219.2,221.2L215.9,212.6L217.9,215.5L219.1,215.6L218.5,213.9L219.9,214.6L220.4,217.9L230.4,220.9L227.8,221.5L230.5,221.6L228.7,222.0L230.4,223.0L231.7,222.7L230.9,220.6L232.6,221.4L230.9,217.4L233.4,218.8L231.2,212.8L233.4,211.5L233.7,212.9L235.4,210.9L235.3,216.1L238.9,214.0L236.5,209.7L238.2,209.6L235.2,207.9L238.0,208.5L238.2,206.3L240.1,212.4L246.4,208.6L249.1,209.7L249.9,206.5L245.9,200.2L247.9,200.2L248.7,197.1L251.9,195.9L250.4,195.4L250.6,193.4L252.7,195.3L254.3,194.4L252.6,193.9L254.1,191.2L256.0,193.0L257.9,192.3L258.4,190.3L256.7,189.2L258.4,185.4L256.5,185.4L259.5,184.4L256.9,183.4L256.4,179.1L258.1,176.5L260.5,178.1L262.5,177.4L260.4,177.9L259.5,172.0L261.8,170.0L264.4,170.8L268.0,169.3L268.8,166.1L270.4,167.1L274.0,165.4L275.5,158.6L273.5,159.0L271.3,156.1L274.6,155.5L282.5,148.3L280.1,144.0L283.6,143.7L284.4,148.5L285.2,143.0L286.8,142.1L289.5,143.5L292.3,141.7L291.1,137.5L293.3,140.0L298.8,129.0L300.5,131.2L301.3,129.1L304.0,128.6L303.0,126.0L304.6,123.6L301.8,121.9L302.7,119.8L310.6,116.2L310.1,114.6L307.5,114.5L312.3,113.0L310.9,108.5L315.6,104.0L314.2,103.0L315.8,101.5L314.2,99.9L313.4,96.1L315.0,94.3ZM261.8,68.1L276.0,68.3L288.3,75.5L298.8,85.8L312.1,87.6L315.0,94.3L313.4,96.1L315.6,104.0L310.9,108.5L312.3,113.0L307.5,114.5L310.1,114.6L310.6,116.2L302.7,119.8L301.8,121.9L304.6,123.6L303.0,126.0L303.8,129.1L301.3,129.1L300.5,131.2L298.8,129.0L293.4,140.0L290.9,137.7L292.3,141.7L289.5,143.5L286.8,142.1L285.2,143.0L285.3,148.0L284.0,148.4L283.4,143.5L280.1,144.0L282.5,148.3L274.6,155.5L271.4,155.9L275.8,160.1L272.9,166.4L268.8,166.1L268.0,169.3L264.5,170.8L254.9,170.1L255.6,161.5L258.6,158.7L256.7,157.5L256.6,159.3L255.5,158.8L252.1,148.8L253.2,155.1L251.7,151.6L251.5,155.6L255.0,163.8L252.9,177.0L250.9,179.4L248.9,178.1L247.2,183.9L244.8,180.0L243.7,180.7L244.3,179.1L241.9,179.8L243.0,175.0L240.2,178.5L239.3,177.0L237.4,179.2L234.9,178.2L240.0,172.8L242.4,169.4L240.4,168.5L241.5,167.8L240.1,168.0L239.5,164.5L237.8,165.0L238.1,162.8L242.2,159.7L238.4,159.0L240.4,157.0L237.7,157.5L238.0,154.0L241.8,155.7L242.3,150.4L244.9,146.6L243.3,145.0L235.9,145.3L244.9,139.3L242.6,135.0L237.6,137.0L237.3,135.5L241.9,133.2L240.6,131.7L236.4,135.6L238.1,132.7L236.4,131.5L241.2,123.9L244.0,124.4L242.0,126.5L245.3,124.3L242.2,122.5L243.8,122.1L243.4,119.9L243.9,121.3L244.7,119.5L244.9,120.9L246.2,120.2L244.8,117.7L246.0,118.1L241.6,114.5L246.2,111.8L245.4,109.5L247.6,108.0L246.7,105.5L248.1,107.7L251.5,107.0L254.4,108.7L255.4,106.6L254.9,105.5L253.0,107.2L254.3,102.4L252.4,100.4L252.9,97.9L256.1,97.9L258.4,101.0L260.1,99.8L260.4,101.5L264.5,96.0L263.4,94.0L265.6,91.1L263.9,90.1L263.1,85.5L264.4,81.4L261.8,81.2L264.0,78.1L262.7,77.3L264.9,76.6L260.6,70.5ZM172.2,273.4L174.2,276.2L176.5,275.8L178.1,279.4L175.4,279.8L174.6,281.9L169.5,279.8L170.0,288.1L168.7,286.8L168.7,288.9L165.5,289.8L165.6,291.3L162.5,290.9L161.4,289.0L159.5,289.9L159.3,288.3L156.0,288.2L155.5,289.8L153.8,288.9L153.7,290.2L156.6,289.3L157.7,291.0L157.6,289.3L164.2,292.4L173.8,292.5L175.7,294.4L175.3,292.0L180.3,293.4L180.6,291.6L186.0,293.4L192.3,293.8L193.4,292.0L194.6,293.3L188.9,303.8L177.0,313.4L173.6,320.8L167.9,325.8L166.5,325.3L166.6,320.8L170.2,317.4L162.7,310.5L152.7,305.1L150.0,301.5L146.5,303.6L145.2,299.7L140.0,295.4L136.7,297.0L133.2,296.2L152.0,277.3L154.8,278.7L152.3,278.7L154.5,280.8L156.7,279.7L158.3,281.8L158.5,280.6L162.3,281.3L165.3,283.5L166.7,282.3L165.0,281.7L168.4,280.8L167.8,279.3L165.4,278.3L159.7,280.7L160.5,278.9L156.5,277.5L160.0,277.4L160.5,275.3L162.4,277.8L162.3,276.0L165.1,276.8L167.0,274.2L168.6,277.8L172.5,279.1L171.1,277.9ZM132.4,175.7L133.0,177.5L132.9,175.5L134.6,176.1L131.7,183.8L134.6,182.4L137.0,177.3L138.0,179.9L139.1,179.1L141.0,181.2L141.7,179.0L143.9,180.0L142.8,178.0L144.8,178.5L147.5,176.0L148.0,178.7L149.5,177.8L148.1,180.4L150.5,179.0L151.2,183.4L155.1,181.8L155.0,189.9L152.5,189.6L153.2,191.4L154.9,190.8L156.3,194.6L152.8,206.9L147.9,214.9L143.0,210.1L143.5,214.4L141.5,214.1L142.7,212.8L139.0,209.4L136.4,210.6L135.7,212.0L138.6,213.0L139.2,215.9L137.0,215.4L137.4,220.5L135.6,218.9L137.7,221.3L136.0,224.3L135.1,223.1L133.4,224.1L135.3,224.8L133.1,225.9L134.8,226.7L133.2,227.9L134.6,227.9L134.2,229.1L130.3,228.3L131.9,219.1L129.0,212.7L131.5,211.0L129.4,209.3L134.8,196.5L132.4,191.0L127.2,187.9L127.8,180.2L121.2,180.0L124.2,177.5L124.5,179.7L126.8,179.8L127.9,177.3L129.1,183.4L130.2,176.5Z","r":44,"regs":[{"id":"amazonia","nome":"Amazônia","pos":[121,87]},{"id":"cerrado","nome":"Cerrado","pos":[202,162]},{"id":"mata-atlantica","nome":"Mata Atlântica","pos":[216,232]},{"id":"caatinga","nome":"Caatinga","pos":[268,124]},{"id":"pampa","nome":"Pampas","pos":[165,296]},{"id":"pantanal","nome":"Pantanal","pos":[138,196]},{"id":"costeiro","nome":"Costeiro-marinho","pos":[322,222]},{"id":"brasil","nome":"Brasil","pos":[52,292]}]};   // contorno do Brasil e posição dos carimbos (build/paginas.py)
+BiomasUI.iniciar(PASSAPORTE);   // se há carimbo novo ou a jornada completou, a cena do overlay abre também no mapa
 
 /* ---------- Dados ---------- */
 const B = [
@@ -1202,7 +1331,7 @@ function mergulharBtn(id) {
 }
 function passaporte() {
   const sec = el("div", { class: "rain" });
-  sec.appendChild(BiomasUI.passaporte(PASSAPORTE));   // progresso ou mensagem de jornada completa, folha, pergunta sobre carimbos pendentes e compartilhar
+  sec.appendChild(BiomasUI.passaporte(PASSAPORTE));   // progresso ou mensagem de jornada completa, folha e compartilhar
   return sec;
 }
 

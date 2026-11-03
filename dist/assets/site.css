@@ -359,6 +359,81 @@ html { overflow-x: clip; }   /* o 100vw conta a barra de rolagem; sem isto a pá
 .hero-foto .hero-leg, .hero-foto .hero-cred { text-shadow: 0 1px 2px rgba(0,0,0,.9), 0 0 10px rgba(0,0,0,.7); }
 .hero-foto::before { background: linear-gradient(to top, #0b100c 0%, rgba(11,16,12,.55) 38%, transparent 70%); }
 
+/* ---------- Passaporte (/biomas/jornada/): objeto físico, grade 4x2 e estados dos cards ---------- */
+.jornada-pass { max-width: 600px; }
+.jornada-pass .pass-prog, .jornada-pass .pass-fim, .jornada-pass .pass-acoes { margin-left: auto; margin-right: auto; max-width: 560px; }
+.jornada-pass .pass-prog { text-align: left; }
+.jornada-pass .folha { max-width: 560px; margin-top: 22px; transform: rotate(-2deg); box-shadow: 0 3px 4px rgba(0,0,0,.45), 0 20px 40px rgba(0,0,0,.5); }
+/* passaporte fechado: livreto com capa de couro que gira na lombada (esquerda) e revela a folha */
+.livreto { position: relative; max-width: 560px; margin: 22px auto 0; perspective: 1800px; transform: rotate(-2deg); border-radius: 2% / var(--ry, 2.3%); box-shadow: 0 3px 4px rgba(0,0,0,.45), 0 20px 40px rgba(0,0,0,.5); }
+.jornada-pass .livreto .folha { position: absolute; inset: 0; margin: 0; max-width: none; transform: none; box-shadow: none; }
+.livreto .capa { position: absolute; inset: 0; z-index: 2; padding: 0; border: 0; border-radius: 2% / var(--ry, 2.3%); cursor: pointer; background: none; transform-origin: left center; transition: transform 1s cubic-bezier(.5, 0, .2, 1), box-shadow 1s; backface-visibility: hidden; -webkit-backface-visibility: hidden; box-shadow: 0 0 0 rgba(0,0,0,0); }
+.livreto .capa svg { display: block; width: 100%; height: 100%; }
+.livreto .capa:hover:not([disabled]), .livreto .capa:focus-visible { transform: rotateY(-7deg); box-shadow: 8px 6px 18px rgba(0,0,0,.4); }
+.livreto .capa:focus-visible { outline: 3px solid var(--ink); outline-offset: 4px; }
+.livreto.aberto .capa, .livreto.aberto .capa:hover, .livreto.aberto .capa:focus-visible { transform: rotateY(-172deg); box-shadow: none; pointer-events: none; }   /* vale também com o mouse parado em cima: a regra de hover não pode segurar a capa */
+@media (prefers-reduced-motion: reduce) { .livreto .capa { transition: none; } }
+@media (max-width: 860px) { .livreto { transform: rotate(-1deg); } }
+.jornada-pass .pass-acoes { justify-content: center; }
+.jornada-pass .pass-sem { margin-top: 12px; }
+.jornada-pass .pass-fim { text-align: center; }
+
+/* grade: 4 colunas no desktop (8 cards sem buraco), 2 no celular */
+.cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (min-width: 900px) { .cards { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.card { position: relative; transition: transform .18s, border-color .18s, background .18s, box-shadow .18s; }
+.card h3 { font-size: 26px; }
+.card:hover, .card:focus-visible { transform: translateY(-4px); border-color: var(--col); box-shadow: 0 10px 22px rgba(0,0,0,.4); }
+.card:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+.card svg.sil-fino path { stroke: var(--col); stroke-width: 3px; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.tag-final { align-self: flex-start; padding: 2px 8px; font: 700 11px/1.3 var(--body); letter-spacing: .12em; text-transform: uppercase; color: var(--col); border: 1px solid var(--col); }
+.card .dica-quiz { display: block; margin-top: 4px; font-size: 12.5px; color: var(--muted); }
+.card.sem-carimbo { border-style: dashed; border-top-style: solid; background: transparent; }
+.card.sem-carimbo svg { fill: #8c8f84; opacity: .55; }
+.card.sem-carimbo:hover svg { fill: var(--col); opacity: 1; }
+.mini-carimbo { position: absolute; top: 14px; right: 12px; padding: 3px 9px; font: 800 11px/1.2 var(--body); letter-spacing: .14em; text-transform: uppercase; color: var(--col); border: 2px solid var(--col); border-radius: 3px; background: color-mix(in srgb, var(--col) 12%, #0b100c); transform: rotate(8deg); opacity: .92; pointer-events: none; }
+.res-link { display: inline-block; margin-right: 14px; font-weight: 600; text-underline-offset: 3px; }
+.prox .prox-nav { padding: 0 0 28px; }
+@media (prefers-reduced-motion: reduce) { .card { transition: none; } .card:hover, .card:focus-visible { transform: none; } }
+
+/* celular: passaporte na largura da coluna com rotação menor; menu em uma linha com rolagem horizontal */
+@media (max-width: 860px) {
+  .jornada-pass .folha { transform: rotate(-1deg); }
+  .topo { flex-wrap: nowrap; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; gap: 2px; }
+  .topo::-webkit-scrollbar { display: none; }
+  .topo .marca { flex: none; margin-right: auto; padding-right: 8px; } .topo a.nav { flex: none; white-space: nowrap; }
+  .card h3 { font-size: 22px; } .card p { font-size: 13.5px; }
+  .card svg, .card svg[style] { height: 84px !important; }
+  .mini-carimbo { top: 10px; right: 8px; padding: 2px 6px; font-size: 9.5px; }
+}
+
+/* rodapé com links */
+.rodape-links { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px 40px; max-width: 1040px; margin: 40px auto 0; padding-top: 24px; border-top: 1px solid var(--rule); }
+.rodape-links h2 { margin: 0 0 8px; font: 500 12px var(--body); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.rodape-links ul { display: grid; gap: 2px; margin: 0; padding: 0; list-style: none; }
+.rodape-links a { display: inline-block; padding: 6px 0; font-size: 15px; color: var(--ink); text-underline-offset: 3px; }
+.rodape-links p { margin: 10px 0 0; font-size: 13px; line-height: 1.45; color: var(--muted); }
+@media (min-width: 861px) { .rodape-links ul { grid-template-columns: repeat(2, max-content); gap: 2px 28px; } }
+.card .data-carimbo { display: block; margin-top: 4px; font-size: 12.5px; font-weight: 600; color: var(--col); }
+/* na página do passaporte a folha vem primeiro; o painel de progresso ou de conquista fica logo abaixo dela */
+.jornada-pass .livreto + .pass-prog, .jornada-pass .livreto + .pass-fim { margin-top: 26px; }
+
+/* popup de formato da imagem de compartilhar */
+.fmt-ov { position: fixed; inset: 0; z-index: 400; display: grid; place-items: center; padding: 20px; background: rgba(2, 4, 3, .8); backdrop-filter: blur(3px); }
+.fmt-cx { width: min(420px, 100%); padding: 24px; background: #11160f; border: 1px solid var(--rule); box-shadow: 0 24px 60px rgba(0,0,0,.6); }
+.fmt-cx h2 { margin: 0; font: 400 32px/1.1 var(--display); color: var(--ink); }
+.fmt-cx p { margin: 6px 0 16px; font-size: 15px; color: var(--muted); }
+.fmt-lista { display: grid; gap: 8px; }
+.fmt-op { display: grid; gap: 2px; min-height: 56px; padding: 10px 14px; text-align: left; cursor: pointer; color: var(--ink); background: transparent; border: 1px solid var(--rule); }
+.fmt-op strong { font-weight: 600; font-size: 16px; } .fmt-op span { font-size: 13px; color: var(--muted); }
+.fmt-op:hover, .fmt-op:focus-visible { background: rgba(255,255,255,.1); border-color: var(--ink); }
+.fmt-op[aria-pressed="true"] { border-color: var(--ink); background: rgba(255,255,255,.06); }
+.fmt-op:focus-visible, .fmt-cancelar:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+.fmt-cancelar { margin-top: 14px; min-height: 40px; padding: 6px 16px; cursor: pointer; color: var(--muted); background: none; border: 1px solid var(--rule); }
+.fmt-cancelar:hover { color: var(--ink); background: rgba(255,255,255,.08); }
+.livreto.aberto .folha { cursor: pointer; }
+.livreto.aberto .folha:focus-visible { outline: 3px solid var(--ink); outline-offset: 4px; }
+
 /* Compartilhado pelo painel do mapa e pelas páginas: gráfico de chuva e folha do passaporte. */
 .chuva { margin-top: 14px; }
 .chuva svg { display: block; width: 100%; height: auto; overflow: visible; }
@@ -373,20 +448,7 @@ html { overflow-x: clip; }   /* o 100vw conta a barra de rolagem; sem isto a pá
 .chuva .ch-p { font: 400 8.6px var(--body); fill: var(--muted); }
 .folha svg { display: block; width: 100%; height: auto; }
 .selo { margin-left: 8px; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--col, var(--accent)); font-weight: 600; }
-.folha { position: relative; margin-top: 14px; max-width: 480px; transform: rotate(-.6deg); box-shadow: 0 2px 3px rgba(0,0,0,.45), 0 10px 18px rgba(0,0,0,.45), 0 26px 46px rgba(0,0,0,.5); }
-.pass-fim { margin-top: 10px; padding: 10px 14px; border-left: 4px solid #7fd18b; background: rgba(127, 209, 139, .12); }
-.pass-fim strong { display: block; font: 400 26px/1.1 var(--display); color: #7fd18b; }
-.pass-fim span { display: block; margin-top: 4px; font-size: 15px; line-height: 1.45; color: var(--ink); }
-.pass-btn { margin-top: 14px; padding: 8px 16px; font-size: 14px; cursor: pointer; color: var(--ink); background: transparent; border: 1px solid var(--rule); }
-.pass-btn:hover:not(:disabled) { background: rgba(255,255,255,.1); }
-.pass-btn:disabled { opacity: .6; cursor: progress; }
-.folha-aviso { position: absolute; inset: 0; z-index: 2; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 16px; padding: 20px; text-align: center; background: rgba(8, 12, 9, .8); backdrop-filter: blur(1.5px); }
-.folha-aviso p { margin: 0; max-width: 34ch; font: 400 22px/1.25 var(--display); color: var(--ink); }
-.folha-aviso-bt { display: flex; gap: 10px; }
-.folha-aviso-bt button { padding: 8px 20px; font-size: 15px; cursor: pointer; color: var(--ink); background: transparent; border: 1px solid var(--rule); }
-.folha-aviso-bt button:hover { background: rgba(255,255,255,.12); }
-.folha-aviso-bt .sim { color: #11160f; background: var(--ink); border-color: var(--ink); font-weight: 600; }
-.folha-aviso-bt .sim:hover { background: var(--ink); filter: brightness(1.1); }
+.folha { border-radius: 2% / var(--ry, 2.3%); position: relative; margin-top: 14px; max-width: 480px; transform: rotate(-.6deg); box-shadow: 0 2px 3px rgba(0,0,0,.45), 0 10px 18px rgba(0,0,0,.45), 0 26px 46px rgba(0,0,0,.5); }
 .folha svg, .folha svg * { -webkit-user-select: none; user-select: none; }   /* o texto dos carimbos e do papel timbrado não pode ser selecionado */
 
 /* ---------- A cena do carimbo: tela cheia escura, passaporte no centro, tremor a cada batida ---------- */
@@ -407,4 +469,27 @@ html.cena-aberta, html.cena-aberta body { overflow: hidden; }
 .cena-bt .sim { color: #11160f; background: var(--ink); border-color: var(--ink); font-weight: 600; }
 .cena-bt .sim:hover:not(:disabled) { background: var(--ink); filter: brightness(1.1); }
 .cena-pular { position: fixed; right: 22px; bottom: 18px; padding: 6px 0; font-size: 13px; cursor: pointer; color: var(--muted); background: none; border: 0; text-decoration: underline; text-underline-offset: 3px; }
-.folha svg .marca.novo { transform-box: fill-box; transform-origin: center; }   /* a queda do carimbo (escala) parte do centro dele */
+.folha svg .marca { transform-box: fill-box; transform-origin: center; }   /* a queda do carimbo (escala) parte do centro dele */
+
+/* ---------- Progresso, conquista e botões do passaporte ---------- */
+.pass-prog { margin-top: 10px; max-width: 480px; }
+.pass-prog .lead { margin: 0; font: 400 26px/1.1 var(--display); }
+.pass-barra { height: 8px; margin-top: 8px; overflow: hidden; background: rgba(255,255,255,.14); }
+.pass-barra i { display: block; height: 100%; background: linear-gradient(90deg, #009c3b, #ffdf00 55%, #5f96d2); transition: width .6s ease; }
+.pass-prox { margin: 8px 0 0; font-size: 15px; color: var(--muted); }
+.pass-prox a { color: var(--ink); font-weight: 600; text-underline-offset: 3px; }
+.pass-fim { position: relative; overflow: hidden; margin-top: 10px; padding: 18px 16px 14px; text-align: center; border: 1px solid rgba(127, 209, 139, .55); background: radial-gradient(ellipse at 50% 0%, rgba(127, 209, 139, .2), rgba(127, 209, 139, 0) 75%); }
+.pass-selo { display: inline-block; padding: 4px 14px; font: 800 12px/1.2 var(--body); letter-spacing: .22em; text-transform: uppercase; color: #7fd18b; border: 2px solid #7fd18b; border-radius: 3px; transform: rotate(-3deg); }
+.pass-fim strong { display: block; margin-top: 12px; font: 400 clamp(34px, 6vw, 52px)/1 var(--display); color: var(--ink); }
+.pass-fim-txt { display: block; margin-top: 6px; font-size: 15px; line-height: 1.45; color: var(--muted); }
+.pass-confete { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.pass-confete i { position: absolute; top: 0; width: 8px; height: 12px; opacity: 0; }
+.pass-acoes { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+.pass-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 8px 18px; font-size: 15px; cursor: pointer; color: var(--ink); background: transparent; border: 1px solid var(--rule); }
+.pass-btn:hover:not(:disabled) { background: rgba(255,255,255,.1); }
+.pass-btn:disabled { opacity: .6; cursor: progress; }
+.pass-btn.principal { color: #11160f; background: var(--ink); border-color: var(--ink); font-weight: 600; }
+.pass-btn.principal:hover:not(:disabled) { background: var(--ink); filter: brightness(1.1); }
+.pass-btn svg { flex: none; }
+@media (max-width: 520px) { .pass-acoes .pass-btn { flex: 1 1 0; padding-left: 10px; padding-right: 10px; } }
+@media (prefers-reduced-motion: reduce) { .pass-barra i { transition: none; } }
