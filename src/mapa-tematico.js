@@ -113,7 +113,8 @@
     const kmAlvo = (d.w / d.upk) * .16, kms = [10, 20, 50, 100, 200, 500], km = kms.reduce((a, b) => Math.abs(b - kmAlvo) < Math.abs(a - kmAlvo) ? b : a);
     const barra = sv("line", { x1: 0, y1: 0, x2: 60, y2: 0, class: "mt-escala" });
     const esc = sv("g", { class: "mt-pin", "data-x": 70, "data-y": d.h - 70 }, barra, rotulo(`${km} km`, "mt-rot-esc", { x: 0, y: -8 })); gpins.append(esc); pins.push({ pin: esc, barra, km, escala: true });
-    const nor = sv("g", { class: "mt-pin", "data-x": d.w - 80, "data-y": 90 }, sv("path", { d: "M0-18L8 10 0 4-8 10z", class: "mt-norte" }), rotulo("N", "mt-rot-esc", { x: 0, y: 28, "text-anchor": "middle" })); gpins.append(nor); pins.push({ pin: nor });
+    // seta bicolor, igual à dos mapas de localização: metade esquerda preta, metade direita só contorno, "N" acima da ponta
+    const nor = sv("g", { class: "mt-pin", "data-x": d.w - 80, "data-y": 104 }, sv("path", { d: "M0-18L-7.8 9.6 0 3.6z", class: "mt-norte mt-norte-e" }), sv("path", { d: "M0-18L7.8 9.6 0 3.6z", class: "mt-norte mt-norte-d" }), rotulo("N", "mt-rot-esc mt-rot-norte", { x: 0, y: -23, "text-anchor": "middle" })); gpins.append(nor); pins.push({ pin: nor, norte: true });
     svg.append(gpins);
     vp.replaceChildren(svg);
 
@@ -217,10 +218,10 @@
       const cabe = (x, y, w, h) => !caixas.some(b => x < b[0] + b[2] && x + w > b[0] && y < b[1] + b[3] && y + h > b[1]);
       const cabem = bs => bs.every(b => cabe(...b));
       pins.forEach(p => {   // marcadores, escala e norte: posição fixa em px
-        const x = +p.pin.dataset.x, y = +p.pin.dataset.y;
+        const x = +p.pin.dataset.x, y = p.norte ? Math.max(+p.pin.dataset.y, 42 * u) : +p.pin.dataset.y;   // a seta fica a pelo menos 42 px do topo, para o "N" não ser cortado
         p.pin.setAttribute("transform", `translate(${x} ${y}) scale(${u})`);
         if (p.escala) { p.barra.setAttribute("x2", (p.km * d.upk) / u); caixas.push([x / u - 4, y / u - 26, (p.km * d.upk) / u + 70, 38]); }
-        else if (!p.rot && !p.camada) caixas.push([x / u - 22, y / u - 26, 44, 60]);   // seta do norte
+        else if (!p.rot && !p.camada) caixas.push([x / u - 22, y / u - 40, 44, 56]);   // seta do norte
       });
       const rot = pins.filter(p => p.rot).sort((a, b) => PRIO[a.camada] - PRIO[b.camada]);
       rot.forEach(p => {

@@ -70,7 +70,10 @@
 .mt-rot-grade { font-size: 10.5px; fill: #6b6b6b; font-weight: 400; stroke-width: 3px; }
 .mt-rot-esc { font-size: 12px; font-weight: 600; }
 .mt-escala { stroke: #222; stroke-width: 3px; stroke-linecap: butt; }
-.mt-norte { fill: #222; }
+.mt-norte { stroke: #000; stroke-width: 1.2px; stroke-linejoin: miter; }   /* mesmo desenho do mapa de localização: esquerda preta, direita só contorno */
+.mt-norte-e { fill: #000; }
+.mt-norte-d { fill: none; }
+.mt-rot-norte { fill: #000; font-weight: 700; }
 
 .mt-fonte-curta { display: block; margin-top: 4px; font-size: 12px; }
 .mt-leg { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 10px; font-size: 13px; color: var(--muted); }
