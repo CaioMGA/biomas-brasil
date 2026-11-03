@@ -415,3 +415,5 @@ html { overflow-x: clip; }   /* o 100vw conta a barra de rolagem; sem isto a pá
 .rodape-links p { margin: 10px 0 0; font-size: 13px; line-height: 1.45; color: var(--muted); }
 @media (min-width: 861px) { .rodape-links ul { grid-template-columns: repeat(2, max-content); gap: 2px 28px; } }
 .card .data-carimbo { display: block; margin-top: 4px; font-size: 12.5px; font-weight: 600; color: var(--col); }
+/* na página do passaporte a folha vem primeiro; o painel de progresso ou de conquista fica logo abaixo dela */
+.jornada-pass .livreto + .pass-prog, .jornada-pass .livreto + .pass-fim { margin-top: 26px; }

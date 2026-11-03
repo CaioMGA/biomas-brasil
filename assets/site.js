@@ -441,9 +441,10 @@ const BiomasUI = (() => {
       const c = aceitos(), tot = P.regs.length, n = P.regs.filter(r => c[r.id] != null).length, completo = c.completa != null;
       box.replaceChildren();
       if (opts.kicker !== false) box.appendChild(mk("p", "kicker", "Passaporte"));
+      let painel;   // progresso ou conquista: com capa (página do passaporte), vai abaixo da folha, que é a protagonista
       if (completo) {
         const m = mk("div", "pass-fim"); m.append(mk("span", "pass-selo", "Jornada completa"), mk("strong", "", "Você completou a jornada!"), mk("span", "pass-fim-txt", "Todos os carimbos estão no seu passaporte. Parabéns!"));
-        box.appendChild(m); if (!confetiFeito) { confetiFeito = true; confete(m); }
+        painel = m; if (!confetiFeito) { confetiFeito = true; confete(m); }
       } else {
         const pg = mk("div", "pass-prog"), barra = mk("div", "pass-barra"), i = document.createElement("i"); i.style.width = (n / tot * 100) + "%";
         barra.setAttribute("role", "progressbar"); barra.setAttribute("aria-valuemin", "0"); barra.setAttribute("aria-valuemax", String(tot)); barra.setAttribute("aria-valuenow", String(n)); barra.setAttribute("aria-label", "Carimbos do passaporte"); barra.appendChild(i);
@@ -451,8 +452,9 @@ const BiomasUI = (() => {
         const prox = opts.proximo && opts.proximo(c);
         if (prox) { const pp = mk("p", "pass-prox", "Próximo carimbo: "), a = mk("a", "", prox.nome); a.href = prox.href; pp.appendChild(a); pg.appendChild(pp); }
         else if (!opts.proximo) pg.appendChild(mk("p", "pass-prox", "Acerte o quiz de um bioma para ganhar o carimbo dele."));
-        box.appendChild(pg);
+        painel = pg;
       }
+      if (!opts.capa) box.appendChild(painel);
       const fo = folha(P, c);
       if (opts.capa) {
         const lv = mk("div", "livreto" + (aberta ? " aberto" : "")), cv = mk("button", "capa"); lv.style.aspectRatio = `${P.vb[2]} / ${P.vb[3]}`; lv.style.setProperty("--ry", raioY(P));
@@ -469,7 +471,7 @@ const BiomasUI = (() => {
         cv.addEventListener("click", abrir);
         fo.addEventListener("click", fechar); fo.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); fechar(); } });
         if (aberta) { fo.tabIndex = 0; fo.setAttribute("role", "button"); fo.setAttribute("aria-label", "Fechar o passaporte"); }
-        lv.append(fo, cv); box.appendChild(lv);
+        lv.append(fo, cv); box.appendChild(lv); box.appendChild(painel);
       } else box.appendChild(fo);
       const ac = mk("div", "pass-acoes");
       if (n) { const b = botaoIcone("pass-btn principal", "compartilhar", "Compartilhar"); b.addEventListener("click", () => escolherFormato(P, b)); ac.appendChild(b); }
