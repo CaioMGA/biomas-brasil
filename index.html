@@ -967,7 +967,7 @@ const BiomasUI = (() => {
       botao("Continuar", "sim", fechar).focus({ preventScroll: true });
     }
     function msgFinal(c) {
-      mostrar("Jornada completa!", ["Você reuniu os oito carimbos e completou sua jornada pelos Biomas do Brasil, parabéns!"], true);
+      mostrar("Jornada completa!", ["Você reuniu todos os carimbos e completou sua jornada pelos Biomas do Brasil, parabéns!"], true);
       botao("Compartilhar passaporte", "sim", ev => compartilhar(P, c, ev.currentTarget)); botao("Fechar", "", fechar).focus({ preventScroll: true });
     }
     async function roteiro() {
@@ -1038,7 +1038,7 @@ const BiomasUI = (() => {
       box.replaceChildren();
       if (opts.kicker !== false) box.appendChild(mk("p", "kicker", "Passaporte"));
       if (completo) {
-        const m = mk("div", "pass-fim"); m.append(mk("span", "pass-selo", "Jornada completa"), mk("strong", "", "Você completou a jornada!"), mk("span", "pass-fim-txt", "Os oito carimbos estão no seu passaporte. Parabéns!"));
+        const m = mk("div", "pass-fim"); m.append(mk("span", "pass-selo", "Jornada completa"), mk("strong", "", "Você completou a jornada!"), mk("span", "pass-fim-txt", "Todos os carimbos estão no seu passaporte. Parabéns!"));
         box.appendChild(m); if (!confetiFeito) { confetiFeito = true; confete(m); }
       } else {
         const pg = mk("div", "pass-prog"), barra = mk("div", "pass-barra"), i = document.createElement("i"); i.style.width = (n / tot * 100) + "%";
