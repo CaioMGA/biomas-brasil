@@ -125,7 +125,6 @@ def figura(root, id, nome):
     paises = b["paises"]; lista = ", ".join(paises[:-1]) + " e " + paises[-1] if len(paises) > 1 else (paises[0] if paises else "")
     desc = f"Mapa da América do Sul: o Brasil e seus estados contornados, e {o_} {nome} {cp} na cor de destaque"
     desc += f", ocupando partes de {lista}." if len(paises) > 1 else "."
-    cap = f"Localização {do_} {E(nome)} na América do Sul" + (f": o bioma se estende por {E(lista)}." if len(paises) > 1 else ".")
     fb = b.get("fonte") or {}
     lic = f' ({E(fb["licenca"])})' if fb.get("licenca") else ""
     bio = (f'contorno do bioma: <a href="{E(fb["url"])}" target="_blank" rel="noopener">{E(fb["nome"])}</a>{lic}' if fb.get("url") else "")
@@ -135,8 +134,7 @@ def figura(root, id, nome):
     return (f'<figure class="loc"><div class="loc-mapa"><svg viewBox="{vx} {vy} {S} {S}" role="img" aria-label="{E(desc)}" preserveAspectRatio="xMidYMid meet">'
             f'<rect class="loc-mar" x="{vx}" y="{vy}" width="{S}" height="{S}"/><path class="loc-terra" d="{terra}"/><path class="loc-br" d="{brasil}"/>{mascara}{borda}{biom}'
             f'<path class="loc-front" d="{terra}"/><path class="loc-uf" d="{estados}"/><path class="loc-br-borda" d="{brasil}"/>{ref}</svg>'
-            f'<p class="loc-mini">{E(nome)} em destaque na América do Sul</p></div>'
-            f'<figcaption>{cap}{fonte}<span class="loc-leg"><i class="loc-sw loc-sw-bioma"></i>{E(nome)}</span></figcaption></figure>')
+            f'</div><figcaption>{fonte}</figcaption></figure>')
 
 
 if __name__ == "__main__":
