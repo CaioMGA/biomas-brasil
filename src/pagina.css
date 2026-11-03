@@ -84,11 +84,6 @@ a { color: inherit; }
 .loc-sw-bioma { background: var(--accent); }
 @media (max-width: 700px) { .loc-linha { grid-template-columns: minmax(0, 1fr); justify-items: center; } .loc-mapa, .loc-leg { grid-column: 1; } .loc-leg { justify-self: center; } .loc-mapa, .loc figcaption { width: min(360px, 100%); } }
 
-/* Vista aérea do bioma, na abertura da seção Paisagem e clima */
-.vista { margin: 22px 0 0; }
-.vista img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; background: rgba(255,255,255,.05); }
-.vista figcaption { margin-top: 6px; font-size: 13px; line-height: 1.45; color: var(--muted); }
-.vista figcaption a { text-decoration: underline; text-underline-offset: 2px; }
 /* Carrossel de fichas de espécies (cada ficha tem foto, nomes e descrição); sem JS continua rolável com snap */
 .car { margin-top: 18px; }
 .car-ctl { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; font-size: 14px; color: var(--muted); }
@@ -98,11 +93,11 @@ a { color: inherit; }
 .car-track { display: flex; margin: 0; padding: 0; list-style: none; overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; scrollbar-width: thin; }
 .car-slide { flex: 0 0 100%; min-width: 0; scroll-snap-align: start; }
 /* a foto fica DENTRO do cartão da espécie: encostada no topo e na lateral, com o crédito logo abaixo e o texto depois */
-.car-card { padding: 0; overflow: hidden; }
+.car-card { padding: 0; overflow: hidden; border-radius: 7px; }
+.car-fig .foto { border-radius: 0; }   /* o cartão já arredonda os cantos */
 .car-fig { margin: 0; }
-.car-fig img { display: block; width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: cover; background: rgba(255,255,255,.05); }
-.car-fig figcaption { padding: 6px 16px 0; font-size: 12px; line-height: 1.4; color: var(--muted); }
-.car-fig figcaption a { text-decoration: underline; text-underline-offset: 2px; }
+.car-fig img { aspect-ratio: 3 / 2; }
+.car-fig figcaption { padding: 6px 16px 0; }
 .car-sem div { display: grid; place-items: center; aspect-ratio: 3 / 2; padding: 16px; text-align: center; font-size: 14px; color: var(--muted); background: rgba(255,255,255,.03); }
 .car-txt { padding: 12px 16px 16px; }
 @media (prefers-reduced-motion: reduce) { .car-track { scroll-behavior: auto; } }
@@ -160,8 +155,6 @@ blockquote.lit cite { display: block; margin-top: 8px; font: 400 14px var(--body
 .rd-toc a.vis { border-left-color: var(--accent); color: var(--ink); }
 .rd-toc a small { opacity: .7; white-space: nowrap; }
 .rd-main p a, .rd-main li a, .rd-src a { text-decoration: underline; text-underline-offset: 3px; }
-.voltar { display: inline-block; margin-top: 18px; padding: 6px 14px; font-size: 14px; text-decoration: none; border: 1px solid var(--rule); border-radius: 0; }
-.voltar:hover { background: rgba(255,255,255,.08); }
 .prox { max-width: 1040px; margin: 0 auto; padding: 0 24px 80px; }
 .prox h2 { margin: 0; font: 400 clamp(32px, 4vw, 44px)/1.05 var(--display); }
 .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; margin: 18px 0 0; padding: 0; list-style: none; }
@@ -258,14 +251,6 @@ html { scroll-behavior: smooth; }
 
 .rd-main .prox-nav { max-width: none; margin: 56px 0 0; padding: 0; }   /* a cópia antes dos créditos fica na coluna do texto */
 
-/* Faixa "Próximo bioma: Nome" logo abaixo do cabeçalho */
-.prox-topo { max-width: 1040px; margin: 0 auto; padding: 10px 24px 0; font-size: 14px; text-align: right; }
-.prox-topo a { display: inline-flex; justify-content: flex-end; text-align: right; border-left: 0; border-right: 3px solid var(--col); align-items: baseline; flex-wrap: wrap; gap: 6px; padding: 6px 12px; text-decoration: none; background: rgba(255,255,255,.04); }
-.prox-topo a:hover { background: color-mix(in srgb, var(--col) 14%, transparent); }
-.prox-topo .prox-rotulo { font-size: 12px; }
-.prox-topo b { font-weight: 600; }
-@media (max-width: 860px) { .prox-topo { padding: 10px 16px 0; } }
-
 /* Página final: passaporte centralizado */
 .jornada-topo { text-align: center; }
 .jornada-topo .intro { max-width: 60ch; margin-left: auto; margin-right: auto; }
@@ -293,3 +278,52 @@ html.loc-aberto, html.loc-aberto body { overflow: hidden; }
 .loc-ov-fechar { position: absolute; top: 12px; right: 12px; padding: 10px 20px; cursor: pointer; font-size: 15px; font-weight: 600; color: #11160f; background: var(--ink); border: 0; border-radius: 999px; }
 .loc-ov-fechar:hover { filter: brightness(1.1); }
 @media (prefers-reduced-motion: reduce) { .loc-ov { animation: none; } }
+
+/* ---------- Estilo padrão das fotos ---------- */
+body { background: transparent; }   /* o fundo #0b100c fica no html, para o grão (body::before) aparecer por cima dele e por baixo do conteúdo */
+body::before { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: .07; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+.foto { position: relative; overflow: hidden; border-radius: 7px; background: rgba(255,255,255,.05); }
+.foto img { display: block; width: 100%; height: auto; object-fit: cover; }
+.foto::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; box-shadow: inset 0 0 0 1px rgba(255,255,255,.08); background: radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,.3)); }   /* borda interna + vinheta sutil */
+@media (hover: hover) and (pointer: fine) {
+  .foto img { transition: transform .4s; }
+  .foto:hover img { transform: scale(1.03); }
+}
+@media (prefers-reduced-motion: reduce) { .foto img { transition: none; } .foto:hover img { transform: none; } }
+.fig-leg { font: italic 400 18px/1.35 var(--display); color: var(--ink); }
+.fig-cred { font-size: 12px; line-height: 1.4; color: var(--muted); }
+.fig-cred a { text-decoration: underline; text-underline-offset: 2px; }
+.sangra { width: 100vw; margin-inline: calc(50% - 50vw); }   /* imagem que vaza a coluna de texto */
+html { overflow-x: clip; }   /* o 100vw conta a barra de rolagem; sem isto a página ganharia rolagem lateral */
+
+/* ---------- Abertura (hero) das páginas de bioma ---------- */
+.hero { position: relative; isolation: isolate; display: flex; align-items: flex-end; min-height: 36vh; overflow: hidden; background: radial-gradient(ellipse at 15% 0, color-mix(in srgb, var(--accent) 16%, transparent), transparent 62%); }
+.hero-foto { min-height: 80vh; min-height: 80svh; background: var(--bg); }
+.hero-img { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; }
+.hero-foto::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(to top, #0b100c, transparent 60%); }   /* o título fica legível sobre a foto */
+.hero-foto::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,.35)); }   /* vinheta */
+.hero-in { width: min(1040px, 100%); margin: 0 auto; padding: 72px 24px 28px; }
+.hero h1 { margin: 0; font: 400 clamp(60px, 9vw, 128px)/.92 var(--display); text-shadow: 0 2px 24px rgba(0,0,0,.45); }
+.hero .intro { max-width: 40ch; margin: 14px 0 0; font: italic 400 clamp(22px, 2.6vw, 30px)/1.25 var(--display); color: var(--ink); text-shadow: 0 1px 14px rgba(0,0,0,.6); }
+.hero-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; margin: 18px 0 0; }
+.hero .tm { font-size: 14px; color: var(--muted); }
+.hero-leg { max-width: 62ch; margin: 28px 0 0; font-size: 16px; color: var(--muted); }
+.hero-cred { max-width: 80ch; margin: 4px 0 0; }
+.voltar { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; font-size: 14px; text-decoration: none; color: var(--ink); background: rgba(11, 16, 12, .35); border: 1px solid rgba(236, 230, 212, .35); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }   /* botão fantasma, como .pass-btn */
+.voltar:hover { background: rgba(255,255,255,.12); }
+.voltar svg { flex: none; }
+/* mini-mapa de localização no canto do hero, recolorido no tema escuro */
+.hero-loc { position: absolute; z-index: 1; top: 20px; right: 24px; width: 160px; }
+.hero-loc:empty { display: none; }
+.hero .loc { margin: 0; display: block; }
+.hero .loc-linha { display: block; }
+.hero .loc-mapa { width: 100%; }
+.hero .loc svg { border: 1px solid rgba(236, 230, 212, .22); border-radius: 6px; box-shadow: 0 6px 22px rgba(0,0,0,.5); }
+.hero .loc-mar { fill: #121b15; } .hero .loc-terra { fill: #26332a; } .hero .loc-br { fill: #36483c; }
+.hero .loc-front, .hero .loc-uf { stroke: rgba(236, 230, 212, .22); } .hero .loc-br-borda { stroke: rgba(236, 230, 212, .55); } .hero .loc-bioma-borda { stroke: none; }
+.hero .loc-grade, .hero .loc-ref, .hero .loc-t { display: none; }
+@media (max-width: 860px) {
+  .hero-in { padding: 160px 16px 24px; }
+  .hero-loc { top: 14px; right: 14px; width: 112px; }
+}
+@media (max-width: 860px) { .rd-wrap { padding-top: 8px; } }

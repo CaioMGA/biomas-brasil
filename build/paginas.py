@@ -153,8 +153,8 @@ class Site:
             f = fotos.get(e["c"])
             if f:
                 cred = f'Foto: {E(f["autor"])} · <a href="{E(f["licenca_url"])}" target="_blank" rel="noopener">{E(f["licenca"])}</a> · <a href="{E(f["fonte_url"])}" target="_blank" rel="noopener">Wikimedia Commons</a>'
-                fig = (f'<figure class="car-fig"><img src="/assets/fotos/{id}/{E(f["arquivo"])}" width="{f["w"]}" height="{f["h"]}" alt="{E(f["alt"])}" loading="lazy" decoding="async">'
-                       f'<figcaption>{cred}</figcaption></figure>')
+                fig = (f'<figure class="car-fig"><div class="foto"><img src="/assets/fotos/{id}/{E(f["arquivo"])}" width="{f["w"]}" height="{f["h"]}" alt="{E(f["alt"])}" loading="lazy" decoding="async"></div>'
+                       f'<figcaption class="fig-cred">{cred}</figcaption></figure>')
             else:
                 fig = '<figure class="car-fig car-sem"><div>Sem foto de licença livre confirmada para esta espécie.</div></figure>'
             slides.append(f'<li class="car-slide" role="group" aria-roledescription="slide" aria-label="{i + 1} de {n}: {E(e["n"])}"><div class="sp car-card">{fig}'
@@ -164,13 +164,23 @@ class Site:
                 f'<span class="car-n" aria-live="polite">1 de {n}</span><button type="button" class="car-next" aria-label="Próxima espécie">→</button></div>'
                 f'<ul class="car-track" tabindex="0" aria-label="Espécies, use as setas do teclado ou deslize">{"".join(slides)}</ul></div>')
 
-    def vista_aerea(self, id):
-        """Foto grande de vista aérea do bioma, que abre a seção "Paisagem e clima" (opcional: chave "_vista_aerea" em data/fotos/<id>.json)."""
+    def hero(self, id, nome, kicker, intro, minutos):
+        """Abertura da página: foto de tela cheia (a vista aérea do bioma, se houver) com o título embaixo à esquerda, mini-mapa de localização
+        no canto e o botão "Ver no mapa". Sem foto (Brasil, Costeiro), vira só o bloco de título, com um brilho na cor do bioma."""
         f = (self.fotos.get(id) or {}).get("_vista_aerea")
-        if not f: return ""
-        cred = f'Foto: {E(f["autor"])} · <a href="{E(f["licenca_url"])}" target="_blank" rel="noopener">{E(f["licenca"])}</a> · <a href="{E(f["fonte_url"])}" target="_blank" rel="noopener">Wikimedia Commons</a>'
-        return (f'<figure class="vista"><img src="/assets/fotos/{id}/{E(f["arquivo"])}" width="{f["w"]}" height="{f["h"]}" alt="{E(f["alt"])}" decoding="async">'
-                f'<figcaption>{E(f["legenda"])} {cred}</figcaption></figure>')
+        loc = localizacao.figura(self.root, id, nome)
+        fonte = re.search(r'<span class="loc-fonte">.*?</span>', loc, re.S)   # as fontes do mini-mapa seguem na linha de créditos do hero
+        loc = re.sub(r'<figcaption>.*?</figcaption>|<span class="loc-leg">.*?</span>', "", loc, flags=re.S)
+        cred = ""
+        if f:
+            cred = (f'<p class="hero-leg fig-leg">{E(f["legenda"])}</p><p class="hero-cred fig-cred">Foto: {E(f["autor"])} · <a href="{E(f["licenca_url"])}" target="_blank" rel="noopener">{E(f["licenca"])}</a> · '
+                    f'<a href="{E(f["fonte_url"])}" target="_blank" rel="noopener">Wikimedia Commons</a>' + (f' · Mapa: {fonte.group(0)}' if fonte else "") + '</p>')
+        img = (f'<img class="hero-img" src="/assets/fotos/{id}/{E(f["arquivo"])}" width="{f["w"]}" height="{f["h"]}" alt="{E(f["alt"])}" fetchpriority="high" decoding="async">') if f else ""
+        mapa = '<path d="M9 4 3 6.5v13L9 17l6 2.5 6-2.5v-13L15 6.5 9 4Zm0 0v13m6-10.5v13" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"/>'
+        voltar = f'<a class="voltar" href="/#{"" if id == "brasil" else id}"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">{mapa}</svg>Ver no mapa</a>'
+        return (f'<header class="hero{" hero-foto" if f else ""}">{img}<div class="hero-loc">{loc}</div><div class="hero-in">'
+                f'<p class="kicker">{kicker}</p><h1>{E(nome)}</h1><p class="intro">{E(intro)}</p>'
+                f'<p class="hero-meta"><span class="tm">{minutos} de leitura</span>{voltar}</p>{cred}</div></header>')
 
     def nome(self, id):
         return "Brasil" if id == "brasil" else self.byId[id]["name"]
@@ -266,7 +276,6 @@ class Site:
         h = f'<h2>{E(s["titulo"])}</h2>'
         k, corpo = s["kind"], ""
         if k == "texto":
-            if s["id"] == "paisagem": corpo += self.vista_aerea(id)   # a vista aérea abre a seção "Paisagem e clima"
             ps = [f"<p>{E(t)}</p>" for t in s["s"]["p"]]
             if s["s"].get("chuva") and id != "brasil":   # o gráfico de chuva fica entre o 3º e o 4º parágrafo (no fim, se a seção tiver menos de 4)
                 ps.insert(min(3, len(ps)), f'<div class="chuva-bioma" data-bioma="{id}"></div>')
@@ -315,16 +324,10 @@ class Site:
             partes.insert(len(partes) - 1, self.bloco_proximo(id))
         secs = "".join(partes)
         corpo = f"""<div class="rd-bar"><i></i></div>
-{self.link_proximo_topo(id)}
+{self.hero(id, nome, kicker, c.get("intro", ""), fmt_min(self.total[id]))}
 <div class="rd-wrap">
 <nav class="rd-toc" aria-label="Seções">{toc}</nav>
 <main class="rd-main">
-<p class="kicker">{kicker}</p>
-<h1>{E(nome)}</h1>
-<p class="intro">{E(c.get("intro", ""))}</p>
-<p><span class="tm" style="color:var(--muted);font-size:14px">{fmt_min(self.total[id])} de leitura</span></p>
-<a class="voltar" href="/#{"" if id == "brasil" else id}">← Ver no mapa</a>
-{localizacao.figura(self.root, id, nome)}
 {secs}
 </main>
 </div>
@@ -352,19 +355,6 @@ class Site:
         return (f'<nav class="prox-nav" aria-label="{rotulo}"><a class="prox-link" href="{href}" style="--col:{cor}">{sil}'
                 f'<span class="prox-txt"><span class="prox-rotulo">{rotulo}</span><span class="prox-nome">{E(nome)}</span>'
                 f'<span class="prox-intro">{E(intro)}</span></span><span class="prox-seta" aria-hidden="true">→</span></a></nav>')
-
-    def link_proximo_topo(self, id):
-        """Faixa curta logo abaixo do cabeçalho: "Próximo bioma: Nome →", sem descrição. Só nos biomas da sequência."""
-        if id not in ORDEM:
-            return ""
-        i = ORDEM.index(id)
-        if i + 1 < len(ORDEM):
-            r = self.regiao(ORDEM[i + 1])
-            rotulo, nome, href, cor = "Próximo bioma", r["nome"], r["url"], r["cor"]
-        else:
-            rotulo, nome, href, cor = "Fim da jornada", "Seu passaporte", "/biomas/jornada/", "var(--ink)"
-        return (f'<div class="prox-topo"><a href="{href}" style="--col:{cor}"><span class="prox-rotulo">{rotulo}:</span> '
-                f'<b>{E(nome)}</b> <span aria-hidden="true">→</span></a></div>')
 
     def cartao(self, r):
         return (f'<li><a class="card" href="{r["url"]}" data-id="{r["id"]}" style="--col:{r["cor"]}">{self.silhueta(r["id"])}'
