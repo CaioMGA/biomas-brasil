@@ -1,0 +1,102 @@
+{
+ "Chrysocyon brachyurus": {
+  "arquivo": "chrysocyon-brachyurus.jpg",
+  "w": 1200,
+  "h": 800,
+  "alt": "Retrato de lobo-guará, de orelhas grandes, focinho escuro e a garganta branca.",
+  "autor": "Ferrarezi Jr.",
+  "licenca": "CC BY-SA 4.0",
+  "licenca_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "fonte_url": "https://commons.wikimedia.org/wiki/File:Chrysocyon_brachyurus_no_Parque_Nacional_da_Serra_da_Canastra_por_Celso_Ferrarezi_Jr_(07).jpg",
+  "arquivo_commons": "Chrysocyon brachyurus no Parque Nacional da Serra da Canastra por Celso Ferrarezi Jr (07).jpg"
+ },
+ "Myrmecophaga tridactyla": {
+  "arquivo": "myrmecophaga-tridactyla.jpg",
+  "w": 1200,
+  "h": 800,
+  "alt": "Tamanduá-bandeira caminhando no capim seco, com o filhote agarrado às costas.",
+  "autor": "djcooker",
+  "licenca": "CC BY 4.0",
+  "licenca_url": "https://creativecommons.org/licenses/by/4.0",
+  "fonte_url": "https://commons.wikimedia.org/wiki/File:Myrmecophaga_tridactyla_345917023.jpg",
+  "arquivo_commons": "Myrmecophaga tridactyla 345917023.jpg"
+ },
+ "Rhea americana": {
+  "arquivo": "rhea-americana.jpg",
+  "w": 1200,
+  "h": 800,
+  "alt": "Ema caminhando em campo aberto de capim seco, com ipês floridos de rosa e amarelo ao fundo.",
+  "autor": "Giles Laurent",
+  "licenca": "CC BY-SA 4.0",
+  "licenca_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "fonte_url": "https://commons.wikimedia.org/wiki/File:032_Greater_rhea_and_Pink_Ip%C3%AA_trees_in_Encontro_das_%C3%81guas_State_Park_Photo_by_Giles_Laurent.jpg",
+  "arquivo_commons": "032 Greater rhea and Pink Ipê trees in Encontro das Águas State Park Photo by Giles Laurent.jpg"
+ },
+ "Priodontes maximus": {
+  "arquivo": "priodontes-maximus.jpg",
+  "w": 1200,
+  "h": 800,
+  "alt": "Tatu-canastra de pé na grama, de carapaça em placas e garras longas nas patas dianteiras.",
+  "autor": "Warren Garst (1922–2016)",
+  "licenca": "CC BY-SA 4.0",
+  "licenca_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "fonte_url": "https://commons.wikimedia.org/wiki/File:Giant_armadillo_standing_in_grass_-_DPLA_-_d2b2dc5adcc7c4f285cf90aa788fb45d.jpg",
+  "arquivo_commons": "Giant armadillo standing in grass - DPLA - d2b2dc5adcc7c4f285cf90aa788fb45d.jpg"
+ },
+ "Caryocar brasiliense": {
+  "arquivo": "caryocar-brasiliense.jpg",
+  "w": 1200,
+  "h": 800,
+  "alt": "Flor do pequi, de estames amarelos compridos e botões avermelhados, com um campo de Cerrado ao fundo.",
+  "autor": "Luizdesouza",
+  "licenca": "CC BY-SA 4.0",
+  "licenca_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "fonte_url": "https://commons.wikimedia.org/wiki/File:Caryocar_brasiliense_2015-09-27_(084306).jpg",
+  "arquivo_commons": "Caryocar brasiliense 2015-09-27 (084306).jpg"
+ },
+ "Handroanthus ochraceus e outros": {
+  "arquivo": "handroanthus.jpg",
+  "w": 1200,
+  "h": 800,
+  "alt": "Ipê-amarelo inteiro, coberto de flores amarelas, ao lado de uma estrada de terra, sob céu azul.",
+  "autor": "Welliton Fonseca",
+  "licenca": "CC BY-SA 3.0",
+  "licenca_url": "https://creativecommons.org/licenses/by-sa/3.0",
+  "fonte_url": "https://commons.wikimedia.org/wiki/File:Ip%C3%AA_florido_-_panoramio.jpg",
+  "arquivo_commons": "Ipê florido - panoramio.jpg"
+ },
+ "Mauritia flexuosa": {
+  "arquivo": "mauritia-flexuosa.jpg",
+  "w": 1200,
+  "h": 800,
+  "alt": "Buritis altos numa vereda alagada do Cerrado, entre a vegetação rasteira e a água, sob céu azul.",
+  "autor": "Erick Caldas Xavier",
+  "licenca": "CC BY-SA 4.0",
+  "licenca_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "fonte_url": "https://commons.wikimedia.org/wiki/File:Esta%C3%A7%C3%A3o_Ecol%C3%B3gica_Municipal_Veredas_de_Taquarussu_Erick_Caldas_Xavier_(5).jpg",
+  "arquivo_commons": "Estação Ecológica Municipal Veredas de Taquarussu Erick Caldas Xavier (5).jpg"
+ },
+ "Stryphnodendron adstringens": {
+  "arquivo": "stryphnodendron-adstringens.jpg",
+  "w": 1200,
+  "h": 800,
+  "alt": "Folhas pequenas e frutos escuros em forma de vagem de um barbatimão.",
+  "autor": "Eurico Zimbres",
+  "licenca": "CC BY-SA 3.0",
+  "licenca_url": "https://creativecommons.org/licenses/by-sa/3.0",
+  "fonte_url": "https://commons.wikimedia.org/wiki/File:Stryphnodendron_adstringens-1.jpg",
+  "arquivo_commons": "Stryphnodendron adstringens-1.jpg"
+ },
+ "_vista_aerea": {
+  "arquivo": "vista-aerea.jpg",
+  "w": 1600,
+  "h": 900,
+  "alt": "Vale profundo com um rio entre morros cobertos de vegetação do Cerrado, visto de um ponto alto.",
+  "legenda": "Vale com rio visto do alto, no Parque Nacional da Chapada dos Veadeiros (GO).",
+  "autor": "Danilo Rogério",
+  "licenca": "CC BY-SA 4.0",
+  "licenca_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "fonte_url": "https://commons.wikimedia.org/wiki/File:PARNA_da_Chapada_dos_Veadeiros_-_Danilo.roger(001).jpg",
+  "arquivo_commons": "PARNA da Chapada dos Veadeiros - Danilo.roger(001).jpg"
+ }
+}
