@@ -323,7 +323,7 @@ html { overflow-x: clip; }   /* o 100vw conta a barra de rolagem; sem isto a pá
 .hero .loc svg { border: 1px solid rgba(236, 230, 212, .22); border-radius: 6px; box-shadow: 0 6px 22px rgba(0,0,0,.5); }
 .hero .loc-mar { fill: #121b15; } .hero .loc-terra { fill: #26332a; } .hero .loc-br { fill: #36483c; }
 .hero .loc-front, .hero .loc-uf { stroke: rgba(236, 230, 212, .22); } .hero .loc-br-borda { stroke: rgba(236, 230, 212, .55); } .hero .loc-bioma-borda { stroke: none; }
-.hero .loc-grade, .hero .loc-ref, .hero .loc-t { display: none; }
+.hero .loc-grade, .hero .loc-ref, .hero .loc-t, .hero .loc-norte { display: none; }   /* o mini-mapa não tem seta do norte nem rótulos; o ampliado (.loc-ov) tem tudo */
 @media (max-width: 860px) {
   .hero-in { padding: 160px 16px 24px; }
   .hero-loc { top: 14px; right: 14px; width: 112px; }
@@ -331,3 +331,4 @@ html { overflow-x: clip; }   /* o 100vw conta a barra de rolagem; sem isto a pá
 @media (max-width: 860px) { .rd-wrap { padding-top: 8px; } }
 .loc-ov-fonte { width: min(calc(100vw - 24px), 720px); margin: 0; font-size: 13px; line-height: 1.45; text-align: center; color: var(--muted); }
 .loc-ov-fonte a { text-decoration: underline; text-underline-offset: 2px; }
+.loc-t-pais { fill: #1d2a20; stroke: rgba(239, 226, 157, .9); font-weight: 600; letter-spacing: .03em; }

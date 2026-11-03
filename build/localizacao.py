@@ -76,6 +76,29 @@ def rot_graus(v, pos, neg):
     return "0°" if v == 0 else f"{abs(v)}°{neg if v < 0 else pos}"
 
 
+# posição manual (lon, lat, âncora, giro em graus) onde o centro do contorno cai mal: países estreitos ou colados no rótulo do Trópico e nas Guianas
+AJUSTE = {"CHL": (-71.6, -36, "middle", -90), "ARG": (-65.5, -37, "middle", 0), "PRY": (-58.2, -26.2, "middle", 0), "VEN": (-67, 7.3, "middle", 0),
+          "GUY": (-60.6, 5.3, "middle", 0), "SUR": (-56, 3.0, "middle", 0), "FRA": (-50.5, 4.6, "start", 0)}
+PEQUENOS = {"SUR", "GUY", "FRA", "URY"}   # países pequenos: letra menor, para os nomes não se atropelarem
+
+
+def nomes_paises(P, paises, F):
+    """Nome de cada país no centro do maior contorno dele. Classe loc-t: o CSS os esconde no mini-mapa e os mostra no ampliado."""
+    out = []
+    for p in paises:
+        if p["iso"] in CENTRAL: continue
+        r = max(p["rings"], key=lambda r: abs(sum(r[i][0] * r[(i + 1) % len(r)][1] - r[(i + 1) % len(r)][0] * r[i][1] for i in range(len(r)))))
+        a = sum(r[i][0] * r[(i + 1) % len(r)][1] - r[(i + 1) % len(r)][0] * r[i][1] for i in range(len(r))) / 2
+        cx = sum((r[i][0] + r[(i + 1) % len(r)][0]) * (r[i][0] * r[(i + 1) % len(r)][1] - r[(i + 1) % len(r)][0] * r[i][1]) for i in range(len(r))) / (6 * a)
+        cy = sum((r[i][1] + r[(i + 1) % len(r)][1]) * (r[i][0] * r[(i + 1) % len(r)][1] - r[(i + 1) % len(r)][0] * r[i][1]) for i in range(len(r))) / (6 * a)
+        an, rot = "middle", 0
+        if p["iso"] in AJUSTE: cx, cy, an, rot = AJUSTE[p["iso"]]
+        x, y = P(cx, cy)
+        fs = F * (.78 if p["iso"] in PEQUENOS else 1.3 if p["iso"] == "BRA" else 1)
+        out.append(f'<text class="loc-t loc-t-pais" x="{x}" y="{y}" font-size="{fs:.0f}" text-anchor="{an}"{f' transform="rotate({rot} {x} {y})"' if rot else ""}>{E(p["nome"])}</text>')
+    return "".join(out)
+
+
 def referencias_loc(P, S, vx, vy):
     """Grade a cada 10°, Linha do Equador, Trópico de Capricórnio, nomes dos oceanos e seta do norte (SVG estático, em unidades do viewBox)."""
     F = max(S // 34, 1)   # corpo do texto: ~11 px na figura de 380 px
@@ -97,7 +120,7 @@ def referencias_loc(P, S, vx, vy):
     h = lambda v: f"{v:.0f}"   # seta bicolor: metade esquerda preta, metade direita branca com contorno fino, halo branco fino (mesmo desenho de docs/seta-norte.svg)
     esq = f"M0 {h(-F * 1.5)}L{h(-F * .65)} {h(F * .8)} 0 {h(F * .3)}z"; dir = f"M0 {h(-F * 1.5)}L{h(F * .65)} {h(F * .8)} 0 {h(F * .3)}z"
     halo = f"M0 {h(-F * 1.5)}L{h(F * .65)} {h(F * .8)} 0 {h(F * .3)} {h(-F * .65)} {h(F * .8)}z"   # contorno branco ao redor da seta inteira
-    out.append(f'<g transform="translate({nx} {ny})"><path d="{halo}" fill="#fff" stroke="#fff" stroke-width="{F * .2:.0f}" stroke-linejoin="round"/><path d="{esq}" fill="#000" stroke="#000" stroke-width="{F * .07:.1f}" stroke-linejoin="miter"/><path d="{dir}" fill="#fff" stroke="#000" stroke-width="{F * .07:.1f}" stroke-linejoin="miter"/>{T(0, -F * 1.8, "N", "loc-t-norte", " text-anchor=\"middle\" font-weight=\"700\"")}</g>')
+    out.append(f'<g class="loc-norte" transform="translate({nx} {ny})"><path d="{halo}" fill="#fff" stroke="#fff" stroke-width="{F * .2:.0f}" stroke-linejoin="round"/><path d="{esq}" fill="#000" stroke="#000" stroke-width="{F * .07:.1f}" stroke-linejoin="miter"/><path d="{dir}" fill="#fff" stroke="#000" stroke-width="{F * .07:.1f}" stroke-linejoin="miter"/>{T(0, -F * 1.8, "N", "loc-t-norte", " text-anchor=\"middle\" font-weight=\"700\"")}</g>')
     return "".join(out)
 
 
@@ -131,6 +154,7 @@ def figura(root, id, nome):
     fonte = ('<span class="loc-fonte">Fontes: países e estados do Brasil: <a href="https://www.naturalearthdata.com/" target="_blank" rel="noopener">Natural Earth</a> (domínio público)' + ("; " + bio if bio else "") + ".</span>")
     S = max(P.w, P.h); vx, vy = -(S - P.w) // 2, -(S - P.h) // 2   # moldura quadrada: o continente fica centralizado, com oceano nas sobras
     ref = referencias_loc(P, S, vx, vy)
+    ref += nomes_paises(P, ctx["paises"], max(S // 34, 1))
     return (f'<figure class="loc"><div class="loc-linha"><div class="loc-mapa"><svg viewBox="{vx} {vy} {S} {S}" role="img" aria-label="{E(desc)}" preserveAspectRatio="xMidYMid meet">'
             f'<rect class="loc-mar" x="{vx}" y="{vy}" width="{S}" height="{S}"/><path class="loc-terra" d="{terra}"/><path class="loc-br" d="{brasil}"/>{mascara}{borda}{biom}'
             f'<path class="loc-front" d="{terra}"/><path class="loc-uf" d="{estados}"/><path class="loc-br-borda" d="{brasil}"/>{ref}</svg>'
