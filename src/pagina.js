@@ -143,7 +143,7 @@
   function tocarAnimacoes(box) {
     const bt = (txt, tipo) => { const b = el("button", { type: "button", class: "pass-btn" }, txt); b.addEventListener("click", () => BiomasUI.simular(D.passaporte, tipo)); return b; };
     box.append(el("p", { class: "cap" }, "Veja de novo como os carimbos batem no passaporte. É uma demonstração: seus carimbos reais não mudam."),
-      bt("▶ Tocar animação dos carimbos", "bioma"), bt("▶ Tocar animação da jornada completa", "completa"));
+      bt("Ver carimbos", "bioma"));
   }
 
   function videos() {
