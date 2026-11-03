@@ -55,8 +55,5 @@ html.cena-aberta, html.cena-aberta body { overflow: hidden; }
 .pass-btn.principal { color: #11160f; background: var(--ink); border-color: var(--ink); font-weight: 600; }
 .pass-btn.principal:hover:not(:disabled) { background: var(--ink); filter: brightness(1.1); }
 .pass-btn svg { flex: none; }
-.pass-formato { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-top: 10px; font-size: 13px; color: var(--muted); }
-.pass-formato button { min-height: 30px; padding: 3px 10px; font-size: 13px; cursor: pointer; color: var(--muted); background: transparent; border: 1px solid var(--rule); }
-.pass-formato button[aria-pressed="true"] { color: var(--ink); border-color: var(--ink); background: rgba(255,255,255,.08); }
 @media (max-width: 520px) { .pass-acoes .pass-btn { flex: 1 1 0; padding-left: 10px; padding-right: 10px; } }
 @media (prefers-reduced-motion: reduce) { .pass-barra i { transition: none; } }

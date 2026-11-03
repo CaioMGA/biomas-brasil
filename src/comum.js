@@ -205,10 +205,10 @@ const BiomasUI = (() => {
     URL.revokeObjectURL(img.src);
     return jpegAte(cv, MAX_IMAGEM);
   }
-  async function compartilhar(P, c, btn) {
+  async function compartilhar(P, c, btn, formato) {
     const sp = btn.querySelector("span") || btn, lbl = sp.textContent; btn.disabled = true; sp.textContent = "Gerando imagem…";
     try {
-      const blob = await imagemPassaporte(P, c), file = new File([blob], "passaporte-biomas-do-brasil.jpg", { type: "image/jpeg" });
+      const blob = await imagemPassaporte(P, c, formato), file = new File([blob], "passaporte-biomas-do-brasil.jpg", { type: "image/jpeg" });
       const completo = c.completa != null;
       const dados = { files: [file], title: "Meu passaporte dos Biomas do Brasil", text: completo ? "Completei minha jornada pelos Biomas do Brasil!" : "Meu passaporte dos Biomas do Brasil" };
       let enviado = false;
@@ -333,7 +333,7 @@ const BiomasUI = (() => {
     }
     function msgFinal(c) {
       mostrar("Jornada completa!", ["Você reuniu todos os carimbos e completou sua jornada pelos Biomas do Brasil, parabéns!"], true);
-      botao("Compartilhar passaporte", "sim", ev => compartilhar(P, c, ev.currentTarget)); botao("Fechar", "", fechar).focus({ preventScroll: true });
+      botao("Compartilhar", "sim", ev => escolherFormato(P, ev.currentTarget)); botao("Fechar", "", fechar).focus({ preventScroll: true });
     }
     async function roteiro() {
       if (tipo === "completa") {
@@ -354,6 +354,7 @@ const BiomasUI = (() => {
     }
     function pular() { pulou = true; [...espera].forEach(f => f()); }
     function tecla(e) {
+      if (document.querySelector(".fmt-ov")) return;   // com o popup de formato aberto, as teclas são dele
       if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); if (fim) fechar(); else pular(); }
       else if (e.key === "Tab") { const f = [...ov.querySelectorAll("button")]; if (!f.length) return; e.preventDefault(); const k = f.indexOf(document.activeElement); f[(k + (e.shiftKey ? -1 : 1) + f.length) % f.length].focus(); }
     }
@@ -392,6 +393,25 @@ const BiomasUI = (() => {
     io.observe(f);
   }
 
+  /* Popup do compartilhar: o visitante escolhe o formato da imagem e só então ela é gerada. */
+  function escolherFormato(P, btn) {
+    const mk = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
+    const foco = document.activeElement, atual = formatoAtual();
+    const ov = mk("div", "fmt-ov"), cx = mk("div", "fmt-cx"), h = mk("h2", "", "Compartilhar passaporte"), p = mk("p", "", "Escolha o formato da imagem:"), lista = mk("div", "fmt-lista"), cancelar = mk("button", "fmt-cancelar", "Cancelar");
+    ov.setAttribute("role", "dialog"); ov.setAttribute("aria-modal", "true"); ov.setAttribute("aria-label", "Formato da imagem para compartilhar"); cancelar.type = "button";
+    const bs = [["quadrado", "Quadrada", "1080 × 1080, boa para o feed"], ["stories", "Stories", "1080 × 1920, tela cheia no celular"], ["paisagem", "Horizontal", "1600 px de largura, boa para mensagens"]].map(([k, t, d]) => {
+      const b = mk("button", "fmt-op"); b.type = "button"; b.setAttribute("aria-pressed", String(atual === k)); b.append(mk("strong", "", t), mk("span", "", d));
+      b.addEventListener("click", () => { FORMATO = k; gravar("biomas:formato", k); fechar(); compartilhar(P, aceitos(), btn, k); }); lista.appendChild(b); return b;
+    });
+    function fechar() { document.removeEventListener("keydown", tecla, true); ov.remove(); if (foco && foco.isConnected) foco.focus({ preventScroll: true }); }
+    function tecla(e) {
+      if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); fechar(); }
+      else if (e.key === "Tab") { const f = [...bs, cancelar]; e.preventDefault(); const k = f.indexOf(document.activeElement); f[(k + (e.shiftKey ? -1 : 1) + f.length) % f.length].focus(); }
+    }
+    cancelar.addEventListener("click", fechar); ov.addEventListener("click", e => { if (e.target === ov) fechar(); }); document.addEventListener("keydown", tecla, true);
+    cx.append(h, p, lista, cancelar); ov.appendChild(cx); document.body.appendChild(ov); (bs.find(b => b.getAttribute("aria-pressed") === "true") || bs[0]).focus({ preventScroll: true });
+  }
+
   /* Capa do passaporte: couro verde com friso e emblema dourados (o losango e o círculo do ícone do site), do mesmo tamanho da folha. */
   function capaSvg(P, completo) {
     const [, , vw, vh] = P.vb, W = 100, H = +(100 * vh / vw).toFixed(2), cx = W / 2, cy = +(H * .42).toFixed(2), ouro = "url(#ouro)";
@@ -409,11 +429,11 @@ const BiomasUI = (() => {
   }
 
   /* Bloco do passaporte: progresso (ou a tela de conquista), a folha com todos os carimbos e os botões.
-     opts: { capa: true mostra o passaporte fechado, com capa que abre (clique, teclado ou ao rolar até ele); kicker: false tira o rótulo "Passaporte"; proximo(c) => {nome, href} sugere o próximo bioma; extra: botões ao lado do compartilhar; depois: nós abaixo dos botões } */
+     opts: { capa: true mostra o passaporte fechado, com capa que abre ao clicar nela; kicker: false tira o rótulo "Passaporte"; proximo(c) => {nome, href} sugere o próximo bioma; extra: botões ao lado do compartilhar; depois: nós abaixo dos botões } */
   function passaporte(P, opts = {}) {
     const box = document.createElement("div");
     const mk = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
-    let confetiFeito = false, anterior = null, aberta = !opts.capa || !!ler("biomas:capa", false, sessionStorage);
+    let confetiFeito = false, anterior = null, aberta = !opts.capa;   // com capa, o passaporte sempre começa fechado
     function desenhar() {
       const c = aceitos(), tot = P.regs.length, n = P.regs.filter(r => c[r.id] != null).length, completo = c.completa != null;
       box.replaceChildren();
@@ -435,27 +455,16 @@ const BiomasUI = (() => {
         const lv = mk("div", "livreto" + (aberta ? " aberto" : "")), cv = mk("button", "capa"); lv.style.aspectRatio = `${P.vb[2]} / ${P.vb[3]}`;
         cv.type = "button"; cv.setAttribute("aria-label", "Abrir o passaporte"); cv.innerHTML = capaSvg(P, completo); if (aberta) cv.hidden = true;
         const abrir = () => {
-          if (aberta) return; aberta = true; gravar("biomas:capa", true, sessionStorage); lv.classList.add("aberto");
+          if (aberta) return; aberta = true; lv.classList.add("aberto");
           setTimeout(() => { cv.hidden = true; entrada(box); }, reduzido() ? 0 : 1000);
         };
         cv.addEventListener("click", abrir);
-        if (!aberta && "IntersectionObserver" in window) { let t = 0; const io = new IntersectionObserver(es => { if (aberta) { io.disconnect(); return; } if (es.some(e => e.isIntersecting)) { clearTimeout(t); t = setTimeout(abrir, 1400); } else clearTimeout(t); }, { threshold: .7 }); io.observe(lv); }
         lv.append(fo, cv); box.appendChild(lv);
       } else box.appendChild(fo);
       const ac = mk("div", "pass-acoes");
-      if (n) { const b = botaoIcone("pass-btn principal", "compartilhar", "Compartilhar passaporte"); b.addEventListener("click", () => compartilhar(P, aceitos(), b)); ac.appendChild(b); }
+      if (n) { const b = botaoIcone("pass-btn principal", "compartilhar", "Compartilhar"); b.addEventListener("click", () => escolherFormato(P, b)); ac.appendChild(b); }
       (opts.extra || []).forEach(x => ac.appendChild(x));
       if (ac.children.length) box.appendChild(ac);
-      if (n) {
-        const fm = mk("div", "pass-formato"); fm.setAttribute("role", "group"); fm.setAttribute("aria-label", "Formato da imagem de compartilhar");
-        fm.appendChild(mk("span", "", "Imagem:"));
-        [["quadrado", "Quadrada"], ["stories", "Stories"], ["paisagem", "Horizontal"]].forEach(([k, t]) => {
-          const x = mk("button", "", t); x.type = "button"; x.setAttribute("aria-pressed", String(formatoAtual() === k));
-          x.addEventListener("click", () => { FORMATO = k; gravar("biomas:formato", k); fm.querySelectorAll("button").forEach(y => y.setAttribute("aria-pressed", String(y === x))); });
-          fm.appendChild(x);
-        });
-        box.appendChild(fm);
-      }
       (opts.depois || []).forEach(x => box.appendChild(x));
       if (anterior === null && aberta) setTimeout(() => entrada(box), 0);
       anterior = n;
