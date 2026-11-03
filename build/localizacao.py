@@ -77,14 +77,14 @@ def referencias_loc(P, S, vx, vy):
     """Grade a cada 10°, Linha do Equador, Trópico de Capricórnio, nomes dos oceanos e seta do norte (SVG estático, em unidades do viewBox)."""
     F = max(S // 34, 1)   # corpo do texto: ~11 px na figura de 380 px
     x0, x1, y0, y1 = vx, vx + S, vy, vy + S
-    lons = [v for v in range(-80, 0, 10) if x0 + S * .02 < P(v, 0)[0] < x1 - S * .02]   # todos os meridianos que cabem na moldura quadrada (que mostra oceano além do continente)
+    lons = [v for v in range(-90, 0, 10) if x0 + S * .02 < P(v, 0)[0] < x1 - S * .02]   # todos os meridianos que cabem na moldura quadrada (que mostra oceano além do continente)
     lats = list(range(-50, 20, 10))
     g = "".join(f"M{P(v, 0)[0]} {y0}V{y1}" for v in lons) + "".join(f"M{x0} {P(0, v)[1]}H{x1}" for v in lats if v != 0)
     out = [f'<path class="loc-grade" d="{g}"/>']
     ye, yt = P(0, 0)[1], P(0, TROPICO)[1]
     out += [f'<path class="loc-ref loc-ref-equador" d="M{x0} {ye}H{x1}"/>', f'<path class="loc-ref loc-ref-tropico" d="M{x0} {yt}H{x1}"/>']
     T = lambda x, y, txt, cls, extra="", fs=None: f'<text class="loc-t {cls}" x="{x}" y="{y}" font-size="{fs or F}"{extra}>{txt}</text>'
-    out += [T(P(v, 0)[0], y0 + F * 1.05, rot_graus(v, "L", "O"), "loc-t-grade", ' text-anchor="middle"') for v in lons]
+    out += [T(P(v, 0)[0], y0 + F * 1.05, rot_graus(v, "L", "O"), "loc-t-grade", ' text-anchor="middle"') for v in lons if v > -90]   # o meridiano de 90°O só tem a linha, sem rótulo (pedido do usuário)
     out += [T(x0 + F * .3, P(0, v)[1] - F * .25, rot_graus(v, "N", "S"), "loc-t-grade") for v in lats if v not in (0,)]
     out += [T(x1 - F * 5.4, ye - F * .35, "Equador (0°)", "loc-t-ref loc-t-ref-equador", ' text-anchor="end"'),
             T(x0 + F * 2.9, yt - F * .35, "Trópico de Capricórnio (23°26′ S)", "loc-t-ref loc-t-ref-tropico")]
