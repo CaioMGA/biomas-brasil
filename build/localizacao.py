@@ -14,7 +14,9 @@ import mapas
 
 E = lambda s: html.escape(str(s), quote=True)
 BBOX = (-82.0, -56.5, -34.0, 13.5)   # América do Sul continental (sem as ilhas oceânicas distantes)
-SUL = {"ARG", "BOL", "BRA", "CHL", "COL", "ECU", "GUY", "PRY", "PER", "SUR", "URY", "VEN", "FRA", "PAN", "CRI", "NIC", "HND"}   # FRA: só a Guiana Francesa; PAN, CRI, NIC e HND: a ponta da América Central que cai no recorte (a moldura não muda)
+SUL = {"ARG", "BOL", "BRA", "CHL", "COL", "ECU", "GUY", "PRY", "PER", "SUR", "URY", "VEN", "FRA", "PAN", "CRI", "NIC", "HND", "SLV"}   # FRA: só a Guiana Francesa; PAN, CRI, NIC e HND: a ponta da América Central que cai no recorte (a moldura não muda)
+VISIVEL = (-96.0, -57.0, -20.0, 14.0)   # o que a moldura quadrada realmente mostra (o continente é mais estreito que alta; sobra oceano nas laterais)
+CENTRAL = {"PAN", "CRI", "NIC", "HND", "SLV"}   # América Central que cai na parte visível; para esses países vale VISIVEL, não BBOX
 EPS_PAIS = .12   # graus; ~1 px a 400 px de largura
 
 
@@ -26,13 +28,14 @@ def contexto(raw, root):
     import shp
     from mapas_dados import dp_ring
     paises, estados = [], []
-    for a, g in shp.read(f"{raw}/ne_10m_admin_0_countries/ne_10m_admin_0_countries", BBOX):
+    for a, g in shp.read(f"{raw}/ne_10m_admin_0_countries/ne_10m_admin_0_countries", VISIVEL):
         if a["ADM0_A3"] not in SUL: continue
         rings = []
         for r in g:
             xs, ys = [p[0] for p in r], [p[1] for p in r]
             if a["ADM0_A3"] == "FRA" and not (-55 < min(xs) and max(xs) < -51 and 2 < min(ys) and max(ys) < 6.5): continue   # só a Guiana Francesa
-            if max(xs) < BBOX[0] or min(xs) > BBOX[2] or max(ys) < BBOX[1] or min(ys) > BBOX[3]: continue
+            lim = VISIVEL if a["ADM0_A3"] in CENTRAL else BBOX
+            if max(xs) < lim[0] or min(xs) > lim[2] or max(ys) < lim[1] or min(ys) > lim[3]: continue
             q = dp_ring(r, EPS_PAIS)
             if q: rings.append([[round(x, 2), round(y, 2)] for x, y in q])
         if rings: paises.append({"nome": _pais_nome(a), "iso": a["ADM0_A3"], "rings": rings})
