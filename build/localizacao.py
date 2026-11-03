@@ -65,12 +65,40 @@ def bioma(id, root):
     print(out, os.path.getsize(out) // 1024, "KB; países:", sorted(set(tocados)))
 
 
+TROPICO = -23.4366   # Trópico de Capricórnio: 23°26′ S (muda ~0,5" por ano)
+
+
+def rot_graus(v, pos, neg):
+    return "0°" if v == 0 else f"{abs(v)}°{neg if v < 0 else pos}"
+
+
+def referencias_loc(P, S, vx, vy):
+    """Grade a cada 10°, Linha do Equador, Trópico de Capricórnio, nomes dos oceanos e seta do norte (SVG estático, em unidades do viewBox)."""
+    F = max(S // 34, 1)   # corpo do texto: ~11 px na figura de 380 px
+    lons = list(range(-80, -30, 10)); lats = list(range(-50, 20, 10))
+    x0, x1, y0, y1 = vx, vx + S, vy, vy + S
+    g = "".join(f"M{P(v, 0)[0]} {y0}V{y1}" for v in lons) + "".join(f"M{x0} {P(0, v)[1]}H{x1}" for v in lats if v != 0)
+    out = [f'<path class="loc-grade" d="{g}"/>']
+    ye, yt = P(0, 0)[1], P(0, TROPICO)[1]
+    out += [f'<path class="loc-ref loc-ref-equador" d="M{x0} {ye}H{x1}"/>', f'<path class="loc-ref loc-ref-tropico" d="M{x0} {yt}H{x1}"/>']
+    T = lambda x, y, txt, cls, extra="", fs=None: f'<text class="loc-t {cls}" x="{x}" y="{y}" font-size="{fs or F}"{extra}>{txt}</text>'
+    out += [T(P(v, 0)[0], y0 + F * 1.05, rot_graus(v, "L", "O"), "loc-t-grade", ' text-anchor="middle"') for v in lons]
+    out += [T(x0 + F * .3, P(0, v)[1] - F * .25, rot_graus(v, "N", "S"), "loc-t-grade") for v in lats if v not in (0,)]
+    out += [T(x1 - F * 5.4, ye - F * .35, "Equador (0°)", "loc-t-ref loc-t-ref-equador", ' text-anchor="end"'),
+            T(x0 + F * 2.9, yt - F * .35, "Trópico de Capricórnio (23°26′ S)", "loc-t-ref loc-t-ref-tropico")]
+    out += [T(P(-76.5, 0)[0], P(0, -41)[1], "Oceano Pacífico", "loc-t-mar", f' text-anchor="middle" transform="rotate(-62 {P(-76.5, 0)[0]} {P(0, -41)[1]})"', round(F * 1.15)),
+            T(P(-40, 0)[0], P(0, -39)[1], "Oceano Atlântico", "loc-t-mar", ' text-anchor="middle"', round(F * 1.15))]
+    nx, ny = x1 - F * 3, y0 + F * 5.6   # seta do norte no canto superior direito (Atlântico)
+    out.append(f'<g transform="translate({nx} {ny})"><path class="loc-norte" d="M0-{F * 2.3:.0f}L{F:.0f} {F * 1.2:.0f} 0 {F * .5:.0f} -{F:.0f} {F * 1.2:.0f}z"/>{T(0, -F * 2.7, "N", "loc-t-grade", " text-anchor=\"middle\" font-weight=\"700\"")}</g>')
+    return "".join(out)
+
+
 def figura(root, id, nome):
     """HTML da figura (SVG embutido) ou "" se faltar o contexto ou os dados do bioma."""
     pc, pb = (os.path.join(root, "data", "localizacao", f) for f in ("america-do-sul.json", id + ".json"))
     if not (os.path.exists(pc) and os.path.exists(pb)): return ""
     ctx, b = json.load(open(pc, encoding="utf-8")), json.load(open(pb, encoding="utf-8"))
-    nome = b.get("nome_exibido", nome); pl = b.get("plural", False); o_, do_, cp = ("os", "dos", "contornados e pintados") if pl else ("o", "do", "contornado e pintado")
+    nome = b.get("nome_exibido", nome); pl = b.get("plural", False); o_, do_, cp = ("os", "dos", "contornados e pintados") if pl else ("a", "da", "contornada e pintada") if id in ("amazonia", "caatinga", "mata-atlantica") else ("o", "do", "contornado e pintado")
     P = mapas.Proj(ctx["bbox"], pad=0)
     br = [p for p in ctx["paises"] if p["iso"] == "BRA"]; resto = [p for p in ctx["paises"] if p["iso"] != "BRA"]
     cam = lambda aneis: mapas.caminho(P, aneis, True)
@@ -86,9 +114,10 @@ def figura(root, id, nome):
     bio = (f'contorno do bioma: <a href="{E(fb["url"])}" target="_blank" rel="noopener">{E(fb["nome"])}</a>{lic}' if fb.get("url") else "")
     fonte = ('<span class="loc-fonte">Fontes: países e estados do Brasil: <a href="https://www.naturalearthdata.com/" target="_blank" rel="noopener">Natural Earth</a> (domínio público)' + ("; " + bio if bio else "") + ".</span>")
     S = max(P.w, P.h); vx, vy = -(S - P.w) // 2, -(S - P.h) // 2   # moldura quadrada: o continente fica centralizado, com oceano nas sobras
+    ref = referencias_loc(P, S, vx, vy)
     return (f'<figure class="loc"><div class="loc-mapa"><svg viewBox="{vx} {vy} {S} {S}" role="img" aria-label="{E(desc)}" preserveAspectRatio="xMidYMid meet">'
             f'<rect class="loc-mar" x="{vx}" y="{vy}" width="{S}" height="{S}"/><path class="loc-terra" d="{terra}"/><path class="loc-br" d="{brasil}"/><path class="loc-bioma" d="{biom}"/>'
-            f'<path class="loc-front" d="{terra}"/><path class="loc-uf" d="{estados}"/><path class="loc-br-borda" d="{brasil}"/><path class="loc-bioma-borda" d="{borda}"/></svg>'
+            f'<path class="loc-front" d="{terra}"/><path class="loc-uf" d="{estados}"/><path class="loc-br-borda" d="{brasil}"/><path class="loc-bioma-borda" d="{borda}"/>{ref}</svg>'
             f'<p class="loc-mini">{E(nome)} em destaque na América do Sul</p></div>'
             f'<figcaption>{cap}{fonte}<span class="loc-leg"><i class="loc-sw loc-sw-bioma"></i>{E(nome)}</span></figcaption></figure>')
 
