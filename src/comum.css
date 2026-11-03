@@ -12,7 +12,7 @@
 .chuva .ch-p { font: 400 8.6px var(--body); fill: var(--muted); }
 .folha svg { display: block; width: 100%; height: auto; }
 .selo { margin-left: 8px; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--col, var(--accent)); font-weight: 600; }
-.folha { position: relative; margin-top: 14px; max-width: 480px; transform: rotate(-.6deg); box-shadow: 0 2px 3px rgba(0,0,0,.45), 0 10px 18px rgba(0,0,0,.45), 0 26px 46px rgba(0,0,0,.5); }
+.folha { border-radius: 2% / var(--ry, 2.3%); position: relative; margin-top: 14px; max-width: 480px; transform: rotate(-.6deg); box-shadow: 0 2px 3px rgba(0,0,0,.45), 0 10px 18px rgba(0,0,0,.45), 0 26px 46px rgba(0,0,0,.5); }
 .folha svg, .folha svg * { -webkit-user-select: none; user-select: none; }   /* o texto dos carimbos e do papel timbrado não pode ser selecionado */
 
 /* ---------- A cena do carimbo: tela cheia escura, passaporte no centro, tremor a cada batida ---------- */

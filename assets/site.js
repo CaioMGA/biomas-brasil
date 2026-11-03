@@ -142,16 +142,17 @@ const BiomasUI = (() => {
     let marks = "";
     P.regs.forEach((rg, i) => { if (c[rg.id] == null) return; const k = carimbo(rg, i, rg.pos, P.r, c[rg.id]); defs += k.defs; marks += k.g; });
     if (c.completa != null) { const k = carimboCompleta(P, c); defs += k.defs; marks += k.g; }   // só depois que o visitante aceita o carimbo de jornada completa
-    return `<svg ${isolado ? `xmlns="http://www.w3.org/2000/svg" width="${vw * 4}" height="${vh * 4}" ` : ""}viewBox="${vx} ${vy} ${vw} ${vh}" role="img" aria-label="Folha do passaporte: contorno do Brasil e dos biomas e os carimbos dos biomas já completados" style="isolation:isolate"><defs>${defs}</defs>
+    return `<svg ${isolado ? `xmlns="http://www.w3.org/2000/svg" width="${vw * 4}" height="${vh * 4}" ` : ""}viewBox="${vx} ${vy} ${vw} ${vh}" role="img" aria-label="Folha do passaporte: contorno do Brasil e dos biomas e os carimbos dos biomas já completados" style="isolation:isolate"><defs>${defs}<clipPath id="cantos"><rect x="${vx}" y="${vy}" width="${vw}" height="${vh}" rx="${(vw * .02).toFixed(2)}"/></clipPath></defs><g clip-path="url(#cantos)">
 <rect x="${vx}" y="${vy}" width="${vw}" height="${vh}" fill="#f1ebda" filter="url(#papel)"/><rect x="${vx}" y="${vy}" width="${vw}" height="${vh}" fill="url(#vig)"/>
 <defs><linearGradient id="moldura" gradientUnits="userSpaceOnUse" x1="${vx}" y1="${vy}" x2="${vx + vw}" y2="${vy + vh}"><stop offset="0" stop-color="#9c7424"/><stop offset=".5" stop-color="#c9a24a"/><stop offset="1" stop-color="#8f6a1f"/></linearGradient></defs>
 <g fill="none" stroke="url(#moldura)" opacity=".85"><rect x="${vx + 5}" y="${vy + 5}" width="${vw - 10}" height="${vh - 10}" rx="2" stroke-width="1.6"/><rect x="${vx + 9}" y="${vy + 9}" width="${vw - 18}" height="${vh - 18}" rx="1" stroke-width=".55"/></g>
 <path d="${P.bio}" fill="none" stroke="#1c1c1c" stroke-width=".6" stroke-linejoin="round" stroke-dasharray="9 1.4 5 2.2 14 1 4 1.6 8 1.2 18 2.4" opacity=".8" filter="url(#falha)"/>
-<path d="${P.d}" fill="none" stroke="#161616" stroke-width=".9" stroke-linejoin="round" stroke-dasharray="13 1.6 7 2.4 19 1.2 5 2 10 1.4 25 2.8 8 1.8" filter="url(#falha)"/>${isolado ? "" : timbre(P)}${bar.el}${marks}</svg>`;
+<path d="${P.d}" fill="none" stroke="#161616" stroke-width=".9" stroke-linejoin="round" stroke-dasharray="13 1.6 7 2.4 19 1.2 5 2 10 1.4 25 2.8 8 1.8" filter="url(#falha)"/>${isolado ? "" : timbre(P)}${bar.el}${marks}</g></svg>`;
   }
 
   /* P = {vb, d, bio, r, regs: [{id, nome, pos}]}; carimbados = {id: "AAAA-MM-DD" | ""} (só os biomas que passaram no quiz) */
-  function folha(P, carimbados) { return wrap("folha", svgFolha(P, carimbados, false)); }
+  const raioY = P => (2 * P.vb[2] / P.vb[3]).toFixed(3) + "%";   // 2% da largura, em % da altura: o canto fica circular
+  function folha(P, carimbados) { const f = wrap("folha", svgFolha(P, carimbados, false)); f.style.setProperty("--ry", raioY(P)); return f; }
 
   /* JPEG com no máximo `max` bytes: baixa a qualidade aos poucos e, se ainda passar, reduz as dimensões. O canvas precisa estar opaco (JPEG não tem transparência). */
   const MAX_IMAGEM = 500000;
@@ -307,7 +308,7 @@ const BiomasUI = (() => {
     const ov = mk("div", "cena"), flash = mk("div", "cena-flash"), papel = mk("div", "cena-papel"), fol = wrap("folha", ""), msg = mk("div", "cena-msg"), bt = mk("div", "cena-bt"), pul = mk("button", "cena-pular", "Pular");
     ov.setAttribute("role", "dialog"); ov.setAttribute("aria-modal", "true"); ov.setAttribute("aria-label", tipo === "completa" ? "Carimbo de jornada completa" : "Carimbando o passaporte");
     msg.setAttribute("aria-live", "polite"); pul.type = "button";
-    papel.appendChild(fol); ov.append(flash, papel, msg, pul); document.body.appendChild(ov); root.classList.add("cena-aberta");
+    fol.style.setProperty("--ry", raioY(P)); papel.appendChild(fol); ov.append(flash, papel, msg, pul); document.body.appendChild(ov); root.classList.add("cena-aberta");
 
     let pulou = false, fim = false; const espera = new Set();
     const esperar = ms => pulou ? Promise.resolve() : new Promise(r => { const t = setTimeout(feito, ms); function feito() { clearTimeout(t); espera.delete(feito); r(); } espera.add(feito); });
@@ -454,7 +455,7 @@ const BiomasUI = (() => {
       }
       const fo = folha(P, c);
       if (opts.capa) {
-        const lv = mk("div", "livreto" + (aberta ? " aberto" : "")), cv = mk("button", "capa"); lv.style.aspectRatio = `${P.vb[2]} / ${P.vb[3]}`;
+        const lv = mk("div", "livreto" + (aberta ? " aberto" : "")), cv = mk("button", "capa"); lv.style.aspectRatio = `${P.vb[2]} / ${P.vb[3]}`; lv.style.setProperty("--ry", raioY(P));
         cv.type = "button"; cv.setAttribute("aria-label", "Abrir o passaporte"); cv.innerHTML = capaSvg(P); if (aberta) cv.hidden = true;
         let timer = 0;
         const abrir = () => {
