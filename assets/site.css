@@ -371,7 +371,7 @@ html { overflow-x: clip; }   /* o 100vw conta a barra de rolagem; sem isto a pá
 .livreto .capa svg { display: block; width: 100%; height: 100%; }
 .livreto .capa:hover:not([disabled]), .livreto .capa:focus-visible { transform: rotateY(-7deg); box-shadow: 8px 6px 18px rgba(0,0,0,.4); }
 .livreto .capa:focus-visible { outline: 3px solid var(--ink); outline-offset: 4px; }
-.livreto.aberto .capa { transform: rotateY(-172deg); pointer-events: none; }
+.livreto.aberto .capa, .livreto.aberto .capa:hover, .livreto.aberto .capa:focus-visible { transform: rotateY(-172deg); box-shadow: none; pointer-events: none; }   /* vale também com o mouse parado em cima: a regra de hover não pode segurar a capa */
 @media (prefers-reduced-motion: reduce) { .livreto .capa { transition: none; } }
 @media (max-width: 860px) { .livreto { transform: rotate(-1deg); } }
 .jornada-pass .pass-acoes { justify-content: center; }
