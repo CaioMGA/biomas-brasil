@@ -1,8 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 300" width="200" height="300" role="img" aria-label="Seta do norte">
   <rect width="200" height="300" fill="#fff"/>
   <text x="100" y="62" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="44" font-weight="700" fill="#000">N</text>
+  <!-- halo branco ao redor da seta inteira -->
+  <path d="M100 85 L145 235 L100 205 L55 235 Z" fill="#fff" stroke="#fff" stroke-width="10" stroke-linejoin="round"/>
   <!-- metade esquerda: preenchida em preto -->
   <path d="M100 85 L55 235 L100 205 Z" fill="#000" stroke="#000" stroke-width="2" stroke-linejoin="miter"/>
-  <!-- metade direita: só contorno fino -->
-  <path d="M100 85 L145 235 L100 205 Z" fill="none" stroke="#000" stroke-width="2" stroke-linejoin="miter"/>
+  <!-- metade direita: preenchida em branco, contorno fino -->
+  <path d="M100 85 L145 235 L100 205 Z" fill="#fff" stroke="#000" stroke-width="2" stroke-linejoin="miter"/>
 </svg>

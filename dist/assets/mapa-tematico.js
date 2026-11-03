@@ -114,7 +114,7 @@
     const barra = sv("line", { x1: 0, y1: 0, x2: 60, y2: 0, class: "mt-escala" });
     const esc = sv("g", { class: "mt-pin", "data-x": 70, "data-y": d.h - 70 }, barra, rotulo(`${km} km`, "mt-rot-esc", { x: 0, y: -8 })); gpins.append(esc); pins.push({ pin: esc, barra, km, escala: true });
     // seta bicolor, igual à dos mapas de localização: metade esquerda preta, metade direita só contorno, "N" acima da ponta
-    const nor = sv("g", { class: "mt-pin", "data-x": d.w - 80, "data-y": 104 }, sv("path", { d: "M0-18L-7.8 9.6 0 3.6z", class: "mt-norte mt-norte-e" }), sv("path", { d: "M0-18L7.8 9.6 0 3.6z", class: "mt-norte mt-norte-d" }), rotulo("N", "mt-rot-esc mt-rot-norte", { x: 0, y: -23, "text-anchor": "middle" })); gpins.append(nor); pins.push({ pin: nor, norte: true });
+    const nor = sv("g", { class: "mt-pin", "data-x": d.w - 80, "data-y": 104 }, sv("path", { d: "M0-18L7.8 9.6 0 3.6-7.8 9.6z", class: "mt-norte-halo" }), sv("path", { d: "M0-18L-7.8 9.6 0 3.6z", class: "mt-norte mt-norte-e" }), sv("path", { d: "M0-18L7.8 9.6 0 3.6z", class: "mt-norte mt-norte-d" }), rotulo("N", "mt-rot-esc mt-rot-norte", { x: 0, y: -23, "text-anchor": "middle" })); gpins.append(nor); pins.push({ pin: nor, norte: true });
     svg.append(gpins);
     vp.replaceChildren(svg);
 
