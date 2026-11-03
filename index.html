@@ -975,8 +975,8 @@ const BiomasUI = (() => {
         const c = {}; pintar(c); await esperar(A.pausaInicioFinal);
         // ordem: os carimbos mais antigos, o último vencido como penúltimo e o de jornada completa por último
         const todos = P.regs.map(r => r.id).filter(id => depois[id] != null), novos2 = ids.filter(id => id !== "completa" && depois[id] != null);
-        const velhos = todos.filter(id => !novos2.includes(id)).sort((x, y) => depois[x] < depois[y] ? -1 : depois[x] > depois[y] ? 1 : 0);
-        const ultimos = novos2.sort((x, y) => depois[x] < depois[y] ? -1 : depois[x] > depois[y] ? 1 : 0);
+        const ts = ler(KC, {}), cmp = (x, y) => (depois[x] < depois[y] ? -1 : depois[x] > depois[y] ? 1 : 0) || ((ts[x] && ts[x].ts) || 0) - ((ts[y] && ts[y].ts) || 0);   // por dia e, no mesmo dia, pela hora em que foi ganho
+        const velhos = todos.filter(id => !novos2.includes(id)).sort(cmp), ultimos = novos2.sort(cmp);
         for (const id of [...velhos, ...ultimos]) { c[id] = depois[id]; pintar(c, id); batida(false); await esperar(A.intervaloFinal); }
         await esperar(A.suspenseVermelho);            // suspense antes do carimbo de jornada completa
         c.completa = depois.completa; pintar(c, "completa"); batida(true); await esperar(A.pausaMsgFinal);
