@@ -55,13 +55,14 @@ def bioma(id, root):
     eps = max(.03, math.hypot(max(xs) - min(xs), max(ys) - min(ys)) * .002)   # a figura é pequena: biomas grandes podem ser mais simplificados
     simp = [q for q in (dp_ring([tuple(p) for p in r], eps) for r in aneis) if q]
     contorno = [[[round(x, 2), round(y, 2)] for x, y in l] for l in (dp([tuple(p) for p in l], eps) for l in m.get("limite_contorno", [])) if len(l) > 1]   # contorno externo, quando o limite vem de várias peças
+    ofic = [q for q in (dp_ring([tuple(p) for p in r], eps) for r in mapas.aneis(m.get("limite_oficial", []))) if q]   # limite oficial (IBGE): também é pintado, cobre as várzeas que as ecorregiões deixam em branco
     amostra = [p for r in simp for p in r[::max(1, len(r) // 40)]]
     tocados = [p["nome"] for p in ctx["paises"] if any(inside(pt, [tuple(v) for v in r]) for pt in amostra for r in p["rings"])]
     out = os.path.join(root, "data", "localizacao", id + ".json")
     fontes = m.get("fontes", {}); f = fontes.get(m.get("limite_fonte", "resolve")) or next(iter(fontes.values()), {})   # fonte do limite do bioma
     fonte = {"nome": f.get("titulo", "").split(" (")[0].split(", ")[0], "url": f.get("url", ""), "licenca": f.get("licenca", "")}
     extra = {k: m[k] for k in ("nome_exibido", "plural") if k in m}   # opcional: nome e número gramatical a mostrar no lugar do nome da página (ex.: "Pampas", plural)
-    json.dump({"rings": [[[round(x, 2), round(y, 2)] for x, y in r] for r in simp], "contorno": contorno, "paises": sorted(set(tocados)), "fonte": fonte, **extra}, open(out, "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"))
+    json.dump({"rings": [[[round(x, 2), round(y, 2)] for x, y in r] for r in simp], "contorno": contorno, **({"oficial": [[[round(x, 2), round(y, 2)] for x, y in r] for r in ofic]} if ofic else {}), "paises": sorted(set(tocados)), "fonte": fonte, **extra}, open(out, "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"))
     print(out, os.path.getsize(out) // 1024, "KB; países:", sorted(set(tocados)))
 
 
@@ -86,10 +87,10 @@ def referencias_loc(P, S, vx, vy):
     out += [T(x0 + F * .3, P(0, v)[1] - F * .25, rot_graus(v, "N", "S"), "loc-t-grade") for v in lats if v not in (0,)]
     out += [T(x1 - F * 5.4, ye - F * .35, "Equador (0°)", "loc-t-ref loc-t-ref-equador", ' text-anchor="end"'),
             T(x0 + F * 2.9, yt - F * .35, "Trópico de Capricórnio (23°26′ S)", "loc-t-ref loc-t-ref-tropico")]
-    out += [T(P(-76.5, 0)[0], P(0, -41)[1], "Oceano Pacífico", "loc-t-mar", f' text-anchor="middle" transform="rotate(-62 {P(-76.5, 0)[0]} {P(0, -41)[1]})"', round(F * 1.15)),
+    out += [T(P(-79.6, 0)[0], P(0, -41)[1], "Oceano Pacífico", "loc-t-mar", f' text-anchor="middle" transform="rotate(-72 {P(-79.6, 0)[0]} {P(0, -41)[1]})"', round(F * 1.15)),
             T(P(-40, 0)[0], P(0, -39)[1], "Oceano Atlântico", "loc-t-mar", ' text-anchor="middle"', round(F * 1.15))]
-    nx, ny = x1 - F * 3, y0 + F * 5.6   # seta do norte no canto superior direito (Atlântico)
-    out.append(f'<g transform="translate({nx} {ny})"><path class="loc-norte" d="M0-{F * 2.3:.0f}L{F:.0f} {F * 1.2:.0f} 0 {F * .5:.0f} -{F:.0f} {F * 1.2:.0f}z"/>{T(0, -F * 2.7, "N", "loc-t-grade", " text-anchor=\"middle\" font-weight=\"700\"")}</g>')
+    nx, ny = x1 - F * 3, y0 + F * 4.4   # seta do norte no canto superior direito (Atlântico)
+    out.append(f'<g transform="translate({nx} {ny})"><path class="loc-norte" d="M0-{F * 1.5:.0f}L{F * .65:.0f} {F * .8:.0f} 0 {F * .3:.0f} -{F * .65:.0f} {F * .8:.0f}z"/>{T(0, -F * 1.8, "N", "loc-t-grade", " text-anchor=\"middle\" font-weight=\"700\"")}</g>')
     return "".join(out)
 
 
@@ -103,7 +104,9 @@ def figura(root, id, nome):
     br = [p for p in ctx["paises"] if p["iso"] == "BRA"]; resto = [p for p in ctx["paises"] if p["iso"] != "BRA"]
     cam = lambda aneis: mapas.caminho(P, aneis, True)
     terra = cam([r for p in resto for r in p["rings"]]); brasil = cam([r for p in br for r in p["rings"]])
-    estados = cam(ctx["estados"]); biom = cam(b["rings"])
+    estados = cam(ctx["estados"])
+    area = lambda r: sum(r[i][0] * r[(i + 1) % len(r)][1] - r[(i + 1) % len(r)][0] * r[i][1] for i in range(len(r)))
+    biom = cam([r if area(r) < 0 else r[::-1] for r in b["rings"] + b.get("oficial", [])])   # o bioma é pintado inteiro: rios e lagos dentro dele (anéis internos) não abrem buracos; todos os anéis na mesma orientação, preenchimento "nonzero"
     borda = mapas.caminho(P, b["contorno"], False) if b.get("contorno") else biom   # só o contorno externo, sem as divisas internas entre peças do bioma
     paises = b["paises"]; lista = ", ".join(paises[:-1]) + " e " + paises[-1] if len(paises) > 1 else (paises[0] if paises else "")
     desc = f"Mapa da América do Sul: o Brasil e seus estados contornados, e {o_} {nome} {cp} na cor de destaque"
