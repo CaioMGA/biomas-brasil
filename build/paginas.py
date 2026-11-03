@@ -310,7 +310,10 @@ class Site:
         nome = self.nome(id)
         kicker = "País" if id == "brasil" else ("Sistema" if self.byId[id].get("marine") else "Bioma")
         toc = "".join(f'<a href="#sec-{s["id"]}" data-sec="{s["id"]}">{E(s["titulo"])}</a>' for s in p)
-        secs = "".join(self.secao(id, i, len(p), s) for i, s in enumerate(p))
+        partes = [self.secao(id, i, len(p), s) for i, s in enumerate(p)]
+        if id in ORDEM:   # nos biomas, o "próximo" vem antes dos créditos (a última seção), que ficam no fim da página
+            partes.insert(len(partes) - 1, self.bloco_proximo(id))
+        secs = "".join(partes)
         corpo = f"""<div class="rd-bar"><i></i></div>
 <div class="rd-wrap">
 <nav class="rd-toc" aria-label="Seções">{toc}</nav>
@@ -324,7 +327,7 @@ class Site:
 {secs}
 </main>
 </div>
-{self.bloco_proximo(id)}
+{"" if id in ORDEM else self.bloco_proximo(id)}
 <div class="rodape">{self.foot()}</div>"""
         dados = {"id": id, "regioes": self.regioes, "passaporte": self.P, "chuva": {k: {"mm": v["mm"], "ano": v["ano"], "seco": v["seco"], "pico": v["pico"]} for k, v in self.rain.items()}, "plano": [{"id": s["id"], "kind": s["kind"]} for s in p], "quiz": c.get("quiz", [])}
         if id == "brasil":

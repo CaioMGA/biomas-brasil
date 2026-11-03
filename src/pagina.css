@@ -252,3 +252,5 @@ html { scroll-behavior: smooth; }
   body:has(.toc-fab) .rodape { padding-bottom: 80px; }   /* o botão fixo não cobre o rodapé */
 }
 @media (prefers-reduced-motion: reduce) and (max-width: 860px) { .toc-painel { animation: none; } }
+
+.rd-main .prox-nav { max-width: none; margin: 56px 0 0; padding: 0; }   /* a cópia antes dos créditos fica na coluna do texto */
