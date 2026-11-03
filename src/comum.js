@@ -431,7 +431,7 @@ const BiomasUI = (() => {
   }
 
   /* Bloco do passaporte: progresso (ou a tela de conquista), a folha com todos os carimbos e os botões.
-     opts: { capa: true mostra o passaporte fechado, com capa que abre ao clicar nela; kicker: false tira o rótulo "Passaporte"; proximo(c) => {nome, href} sugere o próximo bioma; extra: botões ao lado do compartilhar; depois: nós abaixo dos botões } */
+     opts: { capa: true mostra o passaporte fechado, com capa que abre ao clicar nela (e fecha ao clicar no passaporte aberto); kicker: false tira o rótulo "Passaporte"; proximo(c) => {nome, href} sugere o próximo bioma; extra: botões ao lado do compartilhar; depois: nós abaixo dos botões } */
   function passaporte(P, opts = {}) {
     const box = document.createElement("div");
     const mk = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
@@ -456,11 +456,18 @@ const BiomasUI = (() => {
       if (opts.capa) {
         const lv = mk("div", "livreto" + (aberta ? " aberto" : "")), cv = mk("button", "capa"); lv.style.aspectRatio = `${P.vb[2]} / ${P.vb[3]}`;
         cv.type = "button"; cv.setAttribute("aria-label", "Abrir o passaporte"); cv.innerHTML = capaSvg(P); if (aberta) cv.hidden = true;
+        let timer = 0;
         const abrir = () => {
-          if (aberta) return; aberta = true; lv.classList.add("aberto");
-          setTimeout(() => { cv.hidden = true; entrada(box); }, reduzido() ? 0 : 1000);
+          if (aberta) return; aberta = true; lv.classList.add("aberto"); fo.tabIndex = 0; fo.setAttribute("role", "button"); fo.setAttribute("aria-label", "Fechar o passaporte");
+          clearTimeout(timer); timer = setTimeout(() => { cv.hidden = true; entrada(box); }, reduzido() ? 0 : 1000);
+        };
+        const fechar = () => {   // clicar no passaporte aberto devolve a capa
+          if (!aberta) return; aberta = false; clearTimeout(timer); fo.removeAttribute("tabindex"); fo.removeAttribute("role"); fo.removeAttribute("aria-label");
+          cv.hidden = false; void cv.offsetWidth; lv.classList.remove("aberto"); cv.focus({ preventScroll: true });
         };
         cv.addEventListener("click", abrir);
+        fo.addEventListener("click", fechar); fo.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); fechar(); } });
+        if (aberta) { fo.tabIndex = 0; fo.setAttribute("role", "button"); fo.setAttribute("aria-label", "Fechar o passaporte"); }
         lv.append(fo, cv); box.appendChild(lv);
       } else box.appendChild(fo);
       const ac = mk("div", "pass-acoes");

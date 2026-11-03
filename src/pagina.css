@@ -443,3 +443,5 @@ html { overflow-x: clip; }   /* o 100vw conta a barra de rolagem; sem isto a pá
 .fmt-op:focus-visible, .fmt-cancelar:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
 .fmt-cancelar { margin-top: 14px; min-height: 40px; padding: 6px 16px; cursor: pointer; color: var(--muted); background: none; border: 1px solid var(--rule); }
 .fmt-cancelar:hover { color: var(--ink); background: rgba(255,255,255,.08); }
+.livreto.aberto .folha { cursor: pointer; }
+.livreto.aberto .folha:focus-visible { outline: 3px solid var(--ink); outline-offset: 4px; }
