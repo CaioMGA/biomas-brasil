@@ -2,12 +2,6 @@
 
 Mapa 3D com relevo real dos seis biomas do IBGE, com camadas (relevo, divisas estaduais, rios, capitais, centros urbanos) e um efeito de fundo para cada bioma.
 
-## Testar
-
-    cd ~/projs/biomas-brasil && python3 build/build.py && (sleep 1; xdg-open http://localhost:8000 >/dev/null 2>&1 &) && python3 -m http.server 8000
-
-Abre em http://localhost:8000 (Ctrl+C no terminal para parar). Precisa de internet para o three.js e as fontes.
-
 ## Estrutura
 
 - `src/template.html`: o mapa 3D (HTML, CSS, JS e shaders).
