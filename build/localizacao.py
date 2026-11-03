@@ -76,8 +76,9 @@ def rot_graus(v, pos, neg):
 def referencias_loc(P, S, vx, vy):
     """Grade a cada 10°, Linha do Equador, Trópico de Capricórnio, nomes dos oceanos e seta do norte (SVG estático, em unidades do viewBox)."""
     F = max(S // 34, 1)   # corpo do texto: ~11 px na figura de 380 px
-    lons = list(range(-80, -30, 10)); lats = list(range(-50, 20, 10))
     x0, x1, y0, y1 = vx, vx + S, vy, vy + S
+    lons = [v for v in range(-80, 0, 10) if x0 + S * .02 < P(v, 0)[0] < x1 - S * .02]   # todos os meridianos que cabem na moldura quadrada (que mostra oceano além do continente)
+    lats = list(range(-50, 20, 10))
     g = "".join(f"M{P(v, 0)[0]} {y0}V{y1}" for v in lons) + "".join(f"M{x0} {P(0, v)[1]}H{x1}" for v in lats if v != 0)
     out = [f'<path class="loc-grade" d="{g}"/>']
     ye, yt = P(0, 0)[1], P(0, TROPICO)[1]
