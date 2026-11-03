@@ -22,6 +22,8 @@
   const lida = r => nLidas(r.id) >= r.secoes;
 
   const carimbadoR = r => !!BiomasUI.carimbos()[r.id];
+  const MES = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
+  const dataCarimbo = r => { const c = BiomasUI.carimbos()[r.id], m = /^(\d{4})-(\d\d)-(\d\d)/.exec((c && c.em) || ""); return m ? `${+m[3]} ${MES[+m[2] - 1]} ${m[1]}` : ""; };
   function estado(r) {
     if (carimbadoR(r)) return "";   // o mini-carimbo do card já diz que está carimbado
     if (lida(r)) return "Lido";
@@ -33,7 +35,8 @@
     let mini = a.querySelector(".mini-carimbo"); if (ok && !mini) { mini = el("span", { class: "mini-carimbo", "aria-label": "Carimbado" }, "Carimbado"); a.appendChild(mini); } else if (!ok && mini) mini.remove();
     const meta = a.querySelector(".meta"); if (!meta) return;
     meta.replaceChildren(); const est = estado(r); if (est) meta.appendChild(el("span", { class: "selo", style: "margin-left:0" }, est));
-    if (!ok) meta.appendChild(el("span", { class: "dica-quiz" }, r.id === "brasil" ? "Faça o Quiz final para carimbar \u2192" : "Faça o quiz para carimbar \u2192"));
+    if (ok) { const d = dataCarimbo(r); meta.appendChild(el("span", { class: "data-carimbo" }, d ? `Carimbado em ${d}` : "Carimbado")); }
+    else meta.appendChild(el("span", { class: "dica-quiz" }, r.id === "brasil" ? "Faça o Quiz final para carimbar \u2192" : "Faça o quiz para carimbar \u2192"));
   }
   function cartao(r) {
     const li = el("li"); const a = el("a", { class: "card", href: r.url, style: `--col:${r.cor}` });
@@ -159,26 +162,10 @@
   }
   // primeiro bioma da fila (na ordem do site) que ainda não tem carimbo; o Brasil (Quiz final) fica por último
   const proximoSemCarimbo = () => { const cs = BiomasUI.carimbos(); return regioes.find(r => r.id !== "brasil" && !cs[r.id]) || (cs.brasil ? null : regioes.find(r => r.id === "brasil")); };
-  // checklist: um slot por carimbo (os 7 biomas e o Quiz final); o carimbado mostra a data, o vazio leva ao quiz
-  function checklist() {
-    const ul = el("ul", { class: "pass-lista", "aria-label": "Carimbos do passaporte" });
-    const MES = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
-    const data = iso => { const m = /^(\d{4})-(\d\d)-(\d\d)/.exec(iso || ""); return m ? `${+m[3]} ${MES[+m[2] - 1]} ${m[1]}` : ""; };
-    const desenhar = () => {
-      const cs = BiomasUI.carimbos(); ul.replaceChildren();
-      regioes.forEach(r => {
-        const ok = !!cs[r.id], a = el("a", { class: "pass-slot " + (ok ? "carimbado" : "vazio"), href: r.url, style: `--col:${r.cor}` });
-        const nome = r.id === "brasil" ? "Brasil" : r.nome, sub = ok ? (data(cs[r.id].em) || "Carimbado") : (r.id === "brasil" ? "Fazer o Quiz final \u2192" : "Fazer o quiz \u2192");
-        a.append(el("span", { class: "pass-slot-ico", "aria-hidden": "true" }, ok ? "\u2713" : ""), (() => { const t = el("span", { class: "pass-slot-txt" }); t.append(el("b", {}, nome), el("small", {}, sub)); return t; })());
-        const li = el("li"); li.appendChild(a); ul.appendChild(li);
-      });
-    };
-    desenhar(); addEventListener("biomas:carimbos", desenhar); return ul;
-  }
   function jornada(box) {
     const intro = document.getElementById("jornada-intro"), v = verCarimbos();
     const texto = () => { if (intro) intro.textContent = BiomasUI.carimbos().completa ? "Parabéns! Seu passaporte está completo. Revisite qualquer bioma quando quiser." : "Aqui ficam os carimbos que você reuniu. Vença o quiz de cada bioma, e o Quiz final do Brasil, para completar seu passaporte. Você consegue?"; };
-    passaporte(box, { capa: true, kicker: false, extra: [v.b], depois: [v.msg, checklist()], proximo: () => { const r = proximoSemCarimbo(); return r && { nome: r.id === "brasil" ? "Brasil (Quiz final)" : r.nome, href: r.url }; } });
+    passaporte(box, { capa: true, kicker: false, extra: [v.b], depois: [v.msg], proximo: () => { const r = proximoSemCarimbo(); return r && { nome: r.id === "brasil" ? "Brasil (Quiz final)" : r.nome, href: r.url }; } });
     texto(); addEventListener("biomas:carimbos", texto);
   }
 
