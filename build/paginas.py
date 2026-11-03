@@ -180,7 +180,7 @@ class Site:
         voltar = f'<a class="voltar" href="/#{"" if id == "brasil" else id}"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">{mapa}</svg>Ver no mapa</a>'
         return (f'<header class="hero{" hero-foto" if f else ""}">{img}<div class="hero-in"><div class="hero-txt">'
                 f'<p class="kicker">{kicker}</p><h1>{E(nome)}</h1><p class="intro">{E(intro)}</p>'
-                f'<p class="hero-meta"><span class="tm">{minutos} de leitura</span>{voltar}</p>{cred}</div><div class="hero-loc">{loc}</div></div></header>')
+                f'<p class="hero-meta"><span class="tm">{minutos} de leitura</span>{voltar}</p>{cred}</div><div class="hero-loc">{loc}{"<p class=\"loc-dica\">Clique para ampliar</p>" if loc else ""}</div></div></header>')
 
     def nome(self, id):
         return "Brasil" if id == "brasil" else self.byId[id]["name"]
