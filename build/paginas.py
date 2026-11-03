@@ -281,7 +281,7 @@ class Site:
     def foot(self):
         bio = "".join(f'<li><a href="{r["url"]}">{E(r["nome"])}</a></li>' for r in self.regioes)
         return (f'<nav class="rodape-links" aria-label="Rodapé"><div><h2>Biomas</h2><ul>{bio}</ul></div>'
-                f'<div><h2>Site</h2><ul><li><a href="/">Mapa interativo</a></li><li><a href="/biomas/jornada/">Passaporte</a></li><li><a href="/biomas/#sec-creditos">Créditos e fontes</a></li><li><a href="/sobre/">Sobre</a></li></ul>'
+                f'<div><h2>Site</h2><ul><li><a href="/">Mapa interativo</a></li><li><a href="/biomas/">Todos os biomas</a></li><li><a href="/biomas/jornada/">Passaporte</a></li><li><a href="/biomas/#sec-creditos">Créditos e fontes</a></li><li><a href="/sobre/">Sobre</a></li></ul>'
                 f'<p>Fotos de licença livre do Wikimedia Commons: autor, licença e fonte aparecem junto de cada foto.</p></div></nav>'
                 f'<div class="brfoot"><span>Site criado por Caio Amaral</span>'
                 f'<img class="brchad" src="{self.brchad}" width="80" height="15" alt="brchad 2026"></div>')
