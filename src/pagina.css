@@ -298,7 +298,7 @@ html { overflow-x: clip; }   /* o 100vw conta a barra de rolagem; sem isto a pá
 
 /* ---------- Abertura (hero) das páginas de bioma ---------- */
 .hero { position: relative; isolation: isolate; display: flex; align-items: flex-end; min-height: 36vh; overflow: hidden; background: radial-gradient(ellipse at 15% 0, color-mix(in srgb, var(--accent) 16%, transparent), transparent 62%); }
-.hero-foto { min-height: 80vh; min-height: 80svh; background: var(--bg); }
+.hero-foto { min-height: 60vh; min-height: 60svh; background: var(--bg); }
 .hero-img { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; }
 .hero-foto::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(to top, #0b100c, transparent 60%); }   /* o título fica legível sobre a foto */
 .hero-foto::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,.35)); }   /* vinheta */
