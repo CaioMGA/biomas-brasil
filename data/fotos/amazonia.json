@@ -1,0 +1,102 @@
+{
+ "Panthera onca": {
+  "arquivo": "panthera-onca.jpg",
+  "w": 1200,
+  "h": 800,
+  "alt": "Onça-pintada de frente, com a cabeça apoiada na forquilha de um tronco coberto de líquen.",
+  "autor": "Thiagomarcelcampi",
+  "licenca": "CC BY-SA 4.0",
+  "licenca_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "fonte_url": "https://commons.wikimedia.org/wiki/File:On%C3%A7a-pintada-PE_Encontro_das_%C3%81guas-Thiagomarcelcampi(001).jpg",
+  "arquivo_commons": "Onça-pintada-PE Encontro das Águas-Thiagomarcelcampi(001).jpg"
+ },
+ "Inia geoffrensis": {
+  "arquivo": "inia-geoffrensis.jpg",
+  "w": 1200,
+  "h": 800,
+  "alt": "Boto-cor-de-rosa visto de cima, com o focinho comprido e a pele rosada emergindo da água escura.",
+  "autor": "Nortondefeis",
+  "licenca": "CC BY-SA 4.0",
+  "licenca_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "fonte_url": "https://commons.wikimedia.org/wiki/File:Boto-cor-de-rosa_(Inia_geoffrensis).jpg",
+  "arquivo_commons": "Boto-cor-de-rosa (Inia geoffrensis).jpg"
+ },
+ "Harpia harpyja": {
+  "arquivo": "harpia-harpyja.jpg",
+  "w": 1200,
+  "h": 800,
+  "alt": "Harpia em voo, de asas abertas, levando uma presa nas garras.",
+  "autor": "Jiang Chunsheng",
+  "licenca": "CC BY 4.0",
+  "licenca_url": "https://creativecommons.org/licenses/by/4.0",
+  "fonte_url": "https://commons.wikimedia.org/wiki/File:Harpia_chega_ao_ninho_com_um_macaco-prego.jpg",
+  "arquivo_commons": "Harpia chega ao ninho com um macaco-prego.jpg"
+ },
+ "Arapaima gigas": {
+  "arquivo": "arapaima-gigas.jpg",
+  "w": 1200,
+  "h": 800,
+  "alt": "Dois pirarucus nadando em um aquário, de corpo longo coberto de escamas grandes.",
+  "autor": "Ginkgo100",
+  "licenca": "CC BY-SA 3.0",
+  "licenca_url": "http://creativecommons.org/licenses/by-sa/3.0/",
+  "fonte_url": "https://commons.wikimedia.org/wiki/File:Arapaima049.JPG",
+  "arquivo_commons": "Arapaima049.JPG"
+ },
+ "Pteronura brasiliensis": {
+  "arquivo": "pteronura-brasiliensis.jpg",
+  "w": 1200,
+  "h": 800,
+  "alt": "Ariranha de pé na margem, com a mancha clara de pelos no pescoço.",
+  "autor": "Dirk Meyer",
+  "licenca": "CC BY-SA 4.0",
+  "licenca_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "fonte_url": "https://commons.wikimedia.org/wiki/File:Giant_otter_(Pteronura_brasiliensis).JPG",
+  "arquivo_commons": "Giant otter (Pteronura brasiliensis).JPG"
+ },
+ "Victoria amazonica": {
+  "arquivo": "victoria-amazonica.jpg",
+  "w": 1200,
+  "h": 800,
+  "alt": "Vitórias-régias de folhas circulares com a borda erguida, cobrindo a superfície de um lago, com a mata ao fundo.",
+  "autor": "Richard N Horne",
+  "licenca": "CC BY-SA 4.0",
+  "licenca_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "fonte_url": "https://commons.wikimedia.org/wiki/File:Victoria_Amazonia_Giant_water_lilies_near_Manaus,_Brazil.jpg",
+  "arquivo_commons": "Victoria Amazonia Giant water lilies near Manaus, Brazil.jpg"
+ },
+ "Bertholletia excelsa": {
+  "arquivo": "bertholletia-excelsa.jpg",
+  "w": 1200,
+  "h": 800,
+  "alt": "Fruto da castanheira, o ouriço, de casca dura, arredondada e rachada, sobre fundo branco.",
+  "autor": "Roger Culos",
+  "licenca": "CC BY-SA 4.0",
+  "licenca_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "fonte_url": "https://commons.wikimedia.org/wiki/File:Bertholletia_excelsa_MHNT.BOT.2017.10.2.jpg",
+  "arquivo_commons": "Bertholletia excelsa MHNT.BOT.2017.10.2.jpg"
+ },
+ "Euterpe oleracea": {
+  "arquivo": "euterpe-oleracea.jpg",
+  "w": 1200,
+  "h": 800,
+  "alt": "Cacho de frutos de açaí em um açaizeiro, com um tucano pousado entre os cachos, contra o céu azul.",
+  "autor": "JULIO CESAR BALDIM",
+  "licenca": "CC BY-SA 4.0",
+  "licenca_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "fonte_url": "https://commons.wikimedia.org/wiki/File:UM_TUCANO_NO_A%C3%87AIZEIRO_11.JPG",
+  "arquivo_commons": "UM TUCANO NO AÇAIZEIRO 11.JPG"
+ },
+ "_vista_aerea": {
+  "arquivo": "vista-aerea.jpg",
+  "w": 1600,
+  "h": 900,
+  "alt": "Vista aérea de um rio de águas barrentas em curvas fechadas, cercado por floresta contínua.",
+  "legenda": "Vista aérea do Rio Solimões, que serpenteia pela floresta amazônica.",
+  "autor": "lubasi",
+  "licenca": "CC BY-SA 2.0",
+  "licenca_url": "https://creativecommons.org/licenses/by-sa/2.0",
+  "fonte_url": "https://commons.wikimedia.org/wiki/File:Aerial_view_of_the_Amazon_Rainforest.jpg",
+  "arquivo_commons": "Aerial view of the Amazon Rainforest.jpg"
+ }
+}
