@@ -254,3 +254,11 @@ html { scroll-behavior: smooth; }
 @media (prefers-reduced-motion: reduce) and (max-width: 860px) { .toc-painel { animation: none; } }
 
 .rd-main .prox-nav { max-width: none; margin: 56px 0 0; padding: 0; }   /* a cópia antes dos créditos fica na coluna do texto */
+
+/* Faixa "Próximo bioma: Nome" logo abaixo do cabeçalho */
+.prox-topo { max-width: 1040px; margin: 0 auto; padding: 10px 24px 0; font-size: 14px; }
+.prox-topo a { display: inline-flex; align-items: baseline; flex-wrap: wrap; gap: 6px; padding: 6px 12px; text-decoration: none; border-left: 3px solid var(--col); background: rgba(255,255,255,.04); }
+.prox-topo a:hover { background: color-mix(in srgb, var(--col) 14%, transparent); }
+.prox-topo .prox-rotulo { font-size: 12px; }
+.prox-topo b { font-weight: 600; }
+@media (max-width: 860px) { .prox-topo { padding: 10px 16px 0; } }

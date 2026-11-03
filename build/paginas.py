@@ -315,6 +315,7 @@ class Site:
             partes.insert(len(partes) - 1, self.bloco_proximo(id))
         secs = "".join(partes)
         corpo = f"""<div class="rd-bar"><i></i></div>
+{self.link_proximo_topo(id)}
 <div class="rd-wrap">
 <nav class="rd-toc" aria-label="Seções">{toc}</nav>
 <main class="rd-main">
@@ -351,6 +352,19 @@ class Site:
         return (f'<nav class="prox-nav" aria-label="{rotulo}"><a class="prox-link" href="{href}" style="--col:{cor}">{sil}'
                 f'<span class="prox-txt"><span class="prox-rotulo">{rotulo}</span><span class="prox-nome">{E(nome)}</span>'
                 f'<span class="prox-intro">{E(intro)}</span></span><span class="prox-seta" aria-hidden="true">→</span></a></nav>')
+
+    def link_proximo_topo(self, id):
+        """Faixa curta logo abaixo do cabeçalho: "Próximo bioma: Nome →", sem descrição. Só nos biomas da sequência."""
+        if id not in ORDEM:
+            return ""
+        i = ORDEM.index(id)
+        if i + 1 < len(ORDEM):
+            r = self.regiao(ORDEM[i + 1])
+            rotulo, nome, href, cor = "Próximo bioma", r["nome"], r["url"], r["cor"]
+        else:
+            rotulo, nome, href, cor = "Fim da jornada", "Seu passaporte", "/biomas/jornada/", "var(--ink)"
+        return (f'<div class="prox-topo"><a href="{href}" style="--col:{cor}"><span class="prox-rotulo">{rotulo}:</span> '
+                f'<b>{E(nome)}</b> <span aria-hidden="true">→</span></a></div>')
 
     def cartao(self, r):
         return (f'<li><a class="card" href="{r["url"]}" data-id="{r["id"]}" style="--col:{r["cor"]}">{self.silhueta(r["id"])}'
