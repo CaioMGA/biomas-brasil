@@ -203,7 +203,7 @@ def receita(raw):
                 "opcoes": [["", "Todos os afluentes"], ["brasileiro", "Afluentes brasileiros"], ["estrangeiro", "Afluentes estrangeiros"]]},
                {"id": "margem", "titulo": "Margem do Amazonas", "camada": "rios", "campo": "margem",
                 "opcoes": [["", "Todas"], ["esquerda", "Margem esquerda (norte)"], ["direita", "Margem direita (sul)"]]}]
-    return {"id": "amazonia", "oceano": True, "titulo": "O Rio Amazonas e seus afluentes (bioma amazônico inteiro, em nove países)",
+    return {"id": "amazonia", "oceano": True, "secao_titulo": "Afluentes do Rio Amazonas", "titulo": "O Rio Amazonas e seus afluentes (bioma amazônico inteiro, em nove países)",
             "aviso_escopo": "Este mapa trata só do Rio Amazonas e dos afluentes principais. O limite do bioma é uma aproximação (ecorregiões RESOLVE) com o limite oficial do IBGE por cima no Brasil; os dois vêm de bases diferentes e não coincidem exatamente.",
             "bbox": [round(v, 3) for v in bbox], "limite": limite, "limite_contorno": contorno, "limite_nome": "Amazônia (ecorregiões, RESOLVE 2017)",
             "limite_oficial": oficial, "limite_oficial_nome": "Limite oficial no Brasil (IBGE 2025)",

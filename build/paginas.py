@@ -97,11 +97,11 @@ def biomas_do_template(root):
     return json.loads(subprocess.run(["node", "-e", js], capture_output=True, text=True, check=True).stdout)
 
 
-def plano(id, c, mapa=False):
+def plano(id, c, mapa=None):
     """Seções da página, na mesma ordem e com os mesmos minutos do antigo modo leitura."""
     p = [{"id": s["id"], "titulo": s["titulo"], "min": rmin(words(s["p"])), "kind": "texto", "s": s} for s in c.get("secoes", [])]
     if mapa and p:   # mapa temático (plano, com camadas e filtros) logo depois da primeira seção; só existe se houver data/mapas/<id>.json
-        p.insert(1, {"id": "mapa", "titulo": "Mapa temático", "min": 2, "kind": "mapa"})
+        p.insert(1, {"id": "mapa", "titulo": mapa.get("secao_titulo") or mapa.get("titulo") or "Mapa", "min": 2, "kind": "mapa"})   # o título diz o que o mapa mostra
     if c.get("especies"):
         p.append({"id": "especies", "titulo": "Fichas de espécies", "kind": "especies",
                   "min": rmin(len(c["especies"]) / 8 * SPECIES_MIN + words([e["d"] for e in c["especies"]]) * .6)})
@@ -136,7 +136,7 @@ class Site:
         self.outl = json.load(open(os.path.join(root, "data/outlines.json")))
         self.mapas = {i: m for i, m in ((i, mapas.carregar(root, i)) for i in self.C) if m}   # mapas temáticos por bioma (opcional)
         self.fotos = {i: f for i, f in ((i, self.carregar_fotos(i)) for i in self.C) if f}   # fotos das espécies (opcional): data/fotos/<id>.json, por nome científico
-        self.plan = {i: plano(i, self.C[i], i in self.mapas) for i in self.C}
+        self.plan = {i: plano(i, self.C[i], self.mapas.get(i)) for i in self.C}
         self.total = {i: sum(s["min"] for s in p) for i, p in self.plan.items()}
         self.regioes = [self.regiao(i) for i in ["brasil"] + ORDEM if i in self.C]
         self.P = passaporte(root, br_path)
@@ -164,23 +164,24 @@ class Site:
                 f'<span class="car-n" aria-live="polite">1 de {n}</span><button type="button" class="car-next" aria-label="Próxima espécie">→</button></div>'
                 f'<ul class="car-track" tabindex="0" aria-label="Espécies, use as setas do teclado ou deslize">{"".join(slides)}</ul></div>')
 
-    def hero(self, id, nome, kicker, intro, minutos):
+    def hero(self, id, nome, kicker, intro, minutos, foto=None):
         """Abertura da página: foto de tela cheia (a vista aérea do bioma, se houver) com o título embaixo à esquerda, mini-mapa de localização
         no canto e o botão "Ver no mapa". Sem foto (Brasil, Costeiro), vira só o bloco de título, com um brilho na cor do bioma."""
-        f = (self.fotos.get(id) or {}).get("_vista_aerea")
-        loc = localizacao.figura(self.root, id, nome)
+        simples = minutos is None   # Sobre: capa com foto e título, sem mini-mapa, tempo de leitura nem "Ver no mapa"
+        f = foto or (self.fotos.get(id) or {}).get("_vista_aerea")
+        loc = "" if simples else localizacao.figura(self.root, id, nome)
         fonte = re.search(r'<span class="loc-fonte">.*?</span>', loc, re.S)   # as fontes do mini-mapa seguem na linha de créditos do hero
         loc = re.sub(r'<figcaption>.*?</figcaption>|<span class="loc-leg">.*?</span>', "", loc, flags=re.S)
         cred = ""
         if f:
             cred = (f'<p class="hero-leg fig-leg">{E(f["legenda"])}</p><p class="hero-cred fig-cred">Foto: {E(f["autor"])} · <a href="{E(f["licenca_url"])}" target="_blank" rel="noopener">{E(f["licenca"])}</a> · '
                     f'<a href="{E(f["fonte_url"])}" target="_blank" rel="noopener">Wikimedia Commons</a>' + (f' · Mapa: {fonte.group(0)}' if fonte else "") + '</p>')
-        img = (f'<img class="hero-img" src="/assets/fotos/{id}/{E(f["arquivo"])}" width="{f["w"]}" height="{f["h"]}" alt="{E(f["alt"])}" fetchpriority="high" decoding="async">') if f else ""
+        img = (f'<img class="hero-img" src="/assets/fotos/{id}/{E(f["arquivo"])}" width="{f["w"]}" height="{f["h"]}" alt="{E(f["alt"])}"{f' style="object-position:{E(f["pos"])}"' if f.get("pos") else ""} fetchpriority="high" decoding="async">') if f else ""
         mapa = '<path d="M9 4 3 6.5v13L9 17l6 2.5 6-2.5v-13L15 6.5 9 4Zm0 0v13m6-10.5v13" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"/>'
         voltar = f'<a class="voltar" href="/#{"" if id == "brasil" else id}"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">{mapa}</svg>Ver no mapa</a>'
         return (f'<header class="hero{" hero-foto" if f else ""}">{img}<div class="hero-in"><div class="hero-txt">'
                 f'<p class="kicker">{kicker}</p><h1>{E(nome)}</h1><p class="intro">{E(intro)}</p>'
-                f'<p class="hero-meta"><span class="tm">{minutos} de leitura</span>{voltar}</p>{cred}</div><div class="hero-loc">{loc}{"<button type=\"button\" class=\"loc-dica\" aria-haspopup=\"dialog\">Mais detalhes</button>" if loc else ""}</div></div></header>')
+                f'{"" if simples else f"<p class=\"hero-meta\"><span class=\"tm\">{minutos} de leitura</span>{voltar}</p>"}{cred}</div><div class="hero-loc">{loc}{"<button type=\"button\" class=\"loc-dica\" aria-haspopup=\"dialog\">Mais detalhes</button>" if loc else ""}</div></div></header>')
 
     def foto_secao(self, id, sec):
         """Foto de abertura de uma seção de texto (opcional: chave "_secoes" -> id da seção em data/fotos/<id>.json), com legenda em itálico e crédito."""
@@ -223,9 +224,9 @@ class Site:
         return f'<svg viewBox="{x0 - pad:.0f} {y0 - pad:.0f} {x1 - x0 + 2 * pad:.0f} {y1 - y0 + 2 * pad:.0f}" aria-hidden="true" preserveAspectRatio="xMidYMid meet"><path d="{d}"/></svg>'
 
     # ---- peças de HTML ----
-    def casca(self, titulo, descricao, corpo, ativo, accent="var(--ink)", dados=None, extra_body="", extra_head=""):
+    def casca(self, titulo, descricao, corpo, ativo, accent="var(--ink)", dados=None, extra_body="", extra_head="", classe=""):
         nav = "".join(f'<a class="nav" href="{h}"{" aria-current=\"page\"" if k == ativo else ""}>{t}</a>'
-                      for k, h, t in [("mapa", "/", "Mapa"), ("biomas", "/biomas/", "Biomas"), ("sobre", "/sobre/", "Sobre"), ("tutorial", "/?tutorial", "Tutorial")])
+                      for k, h, t in [("mapa", "/", "Mapa interativo"), ("biomas", "/biomas/", "Biomas"), ("passaporte", "/biomas/jornada/", "Passaporte"), ("sobre", "/sobre/", "Sobre"), ("tutorial", "/?tutorial", "Tutorial")])
         js = f'<script id="dados" type="application/json">{json.dumps(dados, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")}</script>\n' if dados else ""
         return f"""<!DOCTYPE html>
 <html lang="pt-BR">
@@ -240,7 +241,7 @@ class Site:
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/site.css">
 {extra_head}</head>
-<body style="--accent:{accent}">
+<body{f' class="{classe}"' if classe else ""} style="--accent:{accent}">
 <header class="topo"><a class="marca" href="/">Biomas do Brasil{BARRA_MARCA}</a>{nav}</header>
 {corpo}
 {js}<script src="/assets/site.js"></script>
@@ -349,7 +350,7 @@ class Site:
         desc = c.get("intro", "") or f"{nome}: conteúdo do site Biomas do Brasil."
         mt = id in self.mapas   # só as páginas com mapa carregam o CSS/JS dele
         return self.casca(f"{nome} — Biomas do Brasil", desc, corpo, "biomas" if id != "brasil" else "biomas", self.cor(id), dados,
-                          extra_body='<script src="/assets/mapa-tematico.js" defer></script>\n' if mt else "", extra_head='<link rel="stylesheet" href="/assets/mapa-tematico.css">\n' if mt else "")
+                          extra_body='<script src="/assets/mapa-tematico.js" defer></script>\n' if mt else "", extra_head='<link rel="stylesheet" href="/assets/mapa-tematico.css">\n' if mt else "", classe="pg-brasil" if id == "brasil" else "")
 
     def bloco_proximo(self, id):
         """Fim da página: Brasil mantém passaporte e cards (preenchidos pelo JS); cada bioma aponta sempre para o próximo da ORDEM, e o último, para a página final da jornada."""
@@ -371,6 +372,13 @@ class Site:
                 f'<h3>{E(r["nome"])}</h3><p>{E(r["intro"])}</p>'
                 f'<span class="meta"><span class="estado"></span></span></a></li>')
 
+    def cartao_passaporte(self):
+        """Card do passaporte entre os cards dos biomas: mostra a folha com os carimbos do visitante (só leitura, o JS preenche #card-folha) e leva à página do passaporte."""
+        return ('<li class="card-pass-li"><a class="card card-pass" href="/biomas/jornada/" style="--col:var(--ink)">'
+                '<div class="card-folha" id="card-folha" aria-hidden="true"></div>'
+                '<h3>Passaporte</h3><p>Cada quiz de bioma vencido rende um carimbo. Reúna os sete e complete sua jornada pelos Biomas do Brasil.</p>'
+                '<span class="meta">Abrir o passaporte →</span></a></li>')
+
     def hub(self):
         corpo = f"""<div class="hub">
 <div class="hub-topo">
@@ -379,9 +387,8 @@ class Site:
 <h1>Biomas do Brasil</h1>
 <p class="intro">Seis biomas continentais e o sistema costeiro-marinho, em textos, espécies, vídeos e quizzes. Comece por onde tiver mais curiosidade.</p>
 </div>
-<div class="pass-bloco" id="passaporte"></div>
 </div>
-<ul class="cards">{"".join(self.cartao(r) for r in self.regioes)}</ul>
+<ul class="cards">{"".join(self.cartao(r) for r in self.regioes)}{self.cartao_passaporte()}</ul>
 <section id="sec-creditos" class="hub-creditos">{self.dobra("Créditos e fontes", self.creditos())}</section>
 </div>
 <div class="rodape">{self.foot()}</div>"""
@@ -399,7 +406,7 @@ class Site:
 <ul class="cards">{"".join(self.cartao(r) for r in self.regioes)}</ul>
 </div>
 <div class="rodape">{self.foot()}</div>"""
-        return self.casca("Seu passaporte — Biomas do Brasil", "Fim da jornada: o passaporte com os carimbos dos biomas e os cartões para revisitar cada um.", corpo, "biomas", "var(--ink)", {"id": "jornada", "regioes": self.regioes, "passaporte": self.P})
+        return self.casca("Seu passaporte — Biomas do Brasil", "Fim da jornada: o passaporte com os carimbos dos biomas e os cartões para revisitar cada um.", corpo, "passaporte", "var(--ink)", {"id": "jornada", "regioes": self.regioes, "passaporte": self.P})
 
     def lab_carimbo(self):
         """Lab para ajustar o timing das animações de carimbo e a intensidade e duração do tremor (só no build de desenvolvimento)."""
@@ -453,11 +460,10 @@ class Site:
         sobre = json.load(open(os.path.join(self.root, "data/sobre.json"), encoding="utf-8"))   # textos do Sobre
         tecno = [(x["t"], x["d"]) for x in sobre["tecnologias"]]
         lt = "".join(f"<dt>{E(a)}</dt><dd>{E(b)}</dd>" for a, b in tecno)
-        corpo = f"""<div class="rd-wrap simples">
+        capa = (json.load(open(os.path.join(self.root, "data/fotos/sobre.json"), encoding="utf-8")) if os.path.exists(os.path.join(self.root, "data/fotos/sobre.json")) else {}).get("capa")
+        corpo = f"""{self.hero("sobre", "Como foi feito", "Sobre", sobre["intro"], None, capa)}
+<div class="rd-wrap simples">
 <main class="rd-main">
-<p class="kicker">Sobre</p>
-<h1>Como foi feito</h1>
-<p class="intro">{E(sobre["intro"])}</p>
 <section id="sec-tecnologias"><h2>Tecnologias</h2><dl class="gl">{lt}</dl></section>
 <section id="sec-contato"><h2>Contato</h2>
 <p>Site criado por Caio Amaral.</p>
@@ -493,6 +499,10 @@ class Site:
                 os.makedirs(os.path.join(self.dest, "assets/fotos", i), exist_ok=True)
                 for f in os.listdir(os.path.join(self.root, "data/fotos", i)):
                     shutil.copy(os.path.join(self.root, "data/fotos", i, f), os.path.join(self.dest, "assets/fotos", i, f))
+        if os.path.exists(os.path.join(self.root, "data/fotos/sobre")):   # capa do Sobre (não é uma região, então fica fora de self.fotos)
+            os.makedirs(os.path.join(self.dest, "assets/fotos/sobre"), exist_ok=True)
+            for f in os.listdir(os.path.join(self.root, "data/fotos/sobre")):
+                shutil.copy(os.path.join(self.root, "data/fotos/sobre", f), os.path.join(self.dest, "assets/fotos/sobre", f))
         if self.mapas:   # mapas temáticos: CSS/JS próprios (nada disso entra no HERO MAP) e um JSON por bioma, carregado sob demanda
             os.makedirs(os.path.join(self.dest, "assets/mapas"), exist_ok=True)
             for f in ("mapa-tematico.css", "mapa-tematico.js"):

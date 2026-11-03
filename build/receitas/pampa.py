@@ -220,7 +220,7 @@ def receita(raw):
         {"id": "grupo", "titulo": "Proteção", "camada": "ucs", "campo": "grupo", "opcoes": [["", "Todas"], ["PI", "Proteção integral"], ["US", "Uso sustentável"]]},
         {"id": "esfera", "titulo": "Esfera", "camada": "ucs", "campo": "esfera", "opcoes": [["", "Todas"], ["Federal", "Federal"], ["Estadual", "Estadual"], ["Municipal", "Municipal"]]},
     ]
-    return {"id": "pampa", "oceano": True, "titulo": "Mapa dos Pampas: lagoas, rios e unidades de conservação",
+    return {"id": "pampa", "oceano": True, "secao_titulo": "Lagoas, rios e unidades de conservação dos Pampas", "titulo": "Mapa dos Pampas: lagoas, rios e unidades de conservação",
             "nome_exibido": "Pampas", "plural": True,
             "aviso_escopo": "O limite do bioma mostra a extensão completa do Pampa: a ecorregião RESOLVE \"Uruguayan savanna\" (Rio Grande do Sul e Uruguai) mais a \"Humid Pampas\" (Argentina), com o limite oficial do IBGE por cima na parte brasileira; os dois vêm de bases diferentes e não coincidem exatamente. As camadas detalhadas (lagoas, rios, unidades de conservação) existem só para o lado brasileiro.",
             "bbox": [round(v, 3) for v in bbox], "limite": limite, "limite_nome": "Pampas (ecorregiões, RESOLVE 2017)",

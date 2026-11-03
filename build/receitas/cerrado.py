@@ -147,7 +147,7 @@ def receita(raw):
                     "itens": rios})
     presentes = [b for b in BACIAS if any(r_["attrs"]["bacia"] == b for r_ in rios)]
     filtros = [{"id": "bacia", "titulo": "Bacia hidrográfica", "camada": "rios", "campo": "bacia", "opcoes": [["", "Todas as bacias"]] + [[b, b] for b in presentes]}]
-    return {"id": "cerrado", "oceano": True, "titulo": "Rios e bacias do Cerrado, o berço das águas",
+    return {"id": "cerrado", "oceano": True, "secao_titulo": "Rios e bacias do Cerrado", "titulo": "Rios e bacias do Cerrado, o berço das águas",
             "aviso_escopo": "Este mapa trata só dos principais rios que nascem ou correm pelo Cerrado e das bacias para onde vão. O limite do bioma é a ecorregião RESOLVE com o limite oficial do IBGE por cima; os dois vêm de bases diferentes e não coincidem exatamente.",
             "bbox": [round(v, 3) for v in bbox], "limite": limite, "limite_nome": "Cerrado (ecorregião, RESOLVE 2017)",
             "limite_oficial": oficial, "limite_oficial_nome": "Limite oficial (IBGE 2025)",

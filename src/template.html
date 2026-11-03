@@ -47,7 +47,7 @@ main { position: relative; z-index: 1; }
 .sitenav a { padding: 3px 10px; font-size: 12px; line-height: 1.2; text-decoration: none; color: var(--muted); border-bottom: 2px solid transparent; }
 .sitenav a:hover { color: var(--ink); }
 .sitenav a[aria-current="page"] { color: var(--ink); border-bottom-color: var(--ink); }
-@media (max-width: 860px) { .sitenav { position: relative; right: auto; top: auto; z-index: 6; width: max-content; margin: 8px auto 0; padding: 3px; background: none; } .sitenav a { padding: 5px 14px; font-size: 13px; } }
+@media (max-width: 860px) { .sitenav { position: relative; right: auto; top: auto; z-index: 6; width: max-content; max-width: 100%; flex-wrap: wrap; justify-content: center; margin: 8px auto 0; padding: 3px; background: none; } .sitenav a, .sitenav button { padding: 5px 8px; font-size: 13px; } }
 html.navhide .sitenav { opacity: 0; pointer-events: none; }
 html.nav-in .sitenav { animation: bin .4s cubic-bezier(.2,.8,.3,1) backwards; }
 .brand { position: absolute; left: 24px; top: 22px; pointer-events: none; isolation: isolate; }
@@ -382,7 +382,7 @@ body.lab-rios .rl:not(.gl) { pointer-events: auto; cursor: pointer; }
 </style>
 </head>
 <body>
-<nav class="sitenav" aria-label="Site"><a href="/" aria-current="page">Mapa</a><a href="/biomas/">Biomas</a><a href="/sobre/">Sobre</a><button type="button" id="tutBtn">Tutorial</button></nav>
+<nav class="sitenav" aria-label="Site"><a href="/" aria-current="page">Mapa interativo</a><a href="/biomas/">Biomas</a><a href="/biomas/jornada/">Passaporte</a><a href="/sobre/">Sobre</a><button type="button" id="tutBtn">Tutorial</button></nav>
 <div id="loader" role="status" aria-live="polite" aria-label="Carregando o mapa">
   <svg viewBox="__BRVB__" aria-hidden="true">
     <defs><path id="ldBase" d="__BRD__" pathLength="1" fill="none"/></defs>
@@ -604,6 +604,7 @@ function select(id, fromHash) {
   renderPanel();
   document.querySelectorAll(".chip").forEach(c => c.setAttribute("aria-pressed", String(c.dataset.id === (id || "brasil"))));
   onSelect(id);
+  if (fromHash && id) frameRegion(byId[id].n);   // chegou por #bioma: além de selecionar, posiciona a câmera (mesma função do botão de mira)
   if (!fromHash) { try { history.replaceState(null, "", id ? "#" + id : location.pathname + location.search); } catch (e) {} }
 }
 const toggle = id => select(current === id ? null : id);
@@ -1931,6 +1932,7 @@ async function init3d() {
   gl3 = true;
   ldp(.97);
   onSelect(current);  // aplica a seleção que veio do #hash antes do 3D carregar
+  if (current) frameRegion(byId[current].n);   // e posiciona a câmera nele, como o botão de mira
   requestAnimationFrame(() => requestAnimationFrame(() => revealSite()));   // 1º quadro já renderizado: pode revelar
 }
 
@@ -2279,7 +2281,7 @@ function drawFx(dt) {
     { sel: "#exag", title: "Escala vertical", text: "Exagera a altura do relevo. Arraste para ajustar; 1× é a escala real do terreno." },
     { sel: "#panel", title: "Painel de informações", text: "Números, clima, chuvas e a espécie mais emblemática do bioma selecionado. O botão Mergulhar abre a página de leitura completa." },
     { sel: "#tools", title: "Controles e screenshot", text: "Oculte os controles para ver só o mapa, ou gere um screenshot dele com o título do site. O texto de ajuda não entra na imagem." },
-    { sel: ".sitenav", title: "Navegação do site", text: "Biomas reúne os textos, vídeos e quizzes de cada bioma sem precisar do mapa. Sobre conta como o site foi feito e como falar com o autor." }
+    { sel: ".sitenav", title: "Navegação do site", text: "Biomas reúne os textos, vídeos e quizzes de cada bioma sem precisar do mapa. Passaporte guarda os carimbos que você ganha nos quizzes. Sobre conta como o site foi feito e como falar com o autor." }
   ];
   let tut = null;
   function startTutorial() {

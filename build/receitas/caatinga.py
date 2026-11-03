@@ -181,7 +181,7 @@ def receita(raw):
                     "nota": "Os principais rios do bioma, da Disponibilidade Hídrica Superficial da ANA. Cada rio é classificado pela fração do curso mostrado em que a vazão natural estimada é nula em 5% do tempo ou mais (Q95 = 0): sem vazão nula estimada (menos de 10% do curso), vazão nula em parte do curso (10% a 90%) e vazão nula em quase todo o curso (90% ou mais). É uma estimativa regionalizada de vazão natural, não uma observação: \"sem vazão nula estimada\" não quer dizer que o rio nunca seque (a ausência de zero depende do estudo regional que cobriu o rio), e muitos rios que secam na natureza correm o ano todo hoje porque têm açudes e barragens a montante. Toque num rio para ver os dados dele.",
                     "itens": rios})
     filtros = [{"id": "regime", "titulo": "Regime", "camada": "rios", "campo": "regime", "opcoes": [["", "Todos os rios"]] + [[k, v] for k, v in CLASSES.items() if any(r_["attrs"]["regime"] == k for r_ in rios)]}]
-    return {"id": "caatinga", "oceano": True, "titulo": "Os rios que secam na Caatinga",
+    return {"id": "caatinga", "oceano": True, "secao_titulo": "Os rios que secam na Caatinga", "titulo": "Os rios que secam na Caatinga",
             "aviso_escopo": "Este mapa trata só dos principais rios do bioma e de quanto do curso de cada um fica sem vazão natural. O limite do bioma é o oficial do IBGE (a Caatinga existe só no Brasil).",
             "bbox": [round(v, 3) for v in bbox], "limite": limite, "limite_nome": "Caatinga (IBGE 2025)",
             "camadas": camadas, "filtros": filtros,

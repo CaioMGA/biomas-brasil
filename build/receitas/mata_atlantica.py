@@ -205,7 +205,7 @@ def receita(raw):
         {"id": "grupo", "titulo": "Proteção", "camada": "ucs", "campo": "grupo", "opcoes": [["", "Todas"], ["PI", "Proteção integral"], ["US", "Uso sustentável"]]},
         {"id": "esfera", "titulo": "Esfera", "camada": "ucs", "campo": "esfera", "opcoes": [["", "Todas"], ["Federal", "Federal"], ["Estadual", "Estadual"], ["Municipal", "Municipal"]]},
     ]
-    return {"id": "mata-atlantica", "oceano": True, "titulo": "Mapa da Mata Atlântica inteira (Brasil, Paraguai e Argentina): unidades de conservação, rios e cidades",
+    return {"id": "mata-atlantica", "oceano": True, "secao_titulo": "Unidades de conservação, rios e cidades da Mata Atlântica", "titulo": "Mapa da Mata Atlântica inteira (Brasil, Paraguai e Argentina): unidades de conservação, rios e cidades",
             "aviso_escopo": "O limite cobre a Mata Atlântica inteira; as unidades de conservação existem só para o lado brasileiro. Os dois limites (ecorregiões RESOLVE e oficial do IBGE) vêm de bases diferentes e não coincidem exatamente. As ilhas oceânicas (Fernando de Noronha, São Pedro e São Paulo) ficam fora do recorte.",
             "bbox": [round(v, 3) for v in bbox], "limite": limite, "limite_contorno": contorno, "limite_nome": "Mata Atlântica (ecorregiões, RESOLVE 2017)",
             "limite_oficial": oficial, "limite_oficial_nome": "Limite oficial no Brasil (IBGE 2025)",

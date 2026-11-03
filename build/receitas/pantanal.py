@@ -201,7 +201,7 @@ def receita(raw):
         {"id": "tipo", "titulo": "Povos", "camada": "povos", "campo": "tipo",
          "opcoes": [["", "Todos"], ["indigena", "Indígenas"], ["quilombola", "Quilombolas"]]},
     ]
-    return {"id": "pantanal", "titulo": "Mapa do Pantanal inteiro (Brasil, Bolívia e Paraguai): água, áreas protegidas e povos",
+    return {"id": "pantanal", "secao_titulo": "Água, áreas protegidas e povos do Pantanal", "titulo": "Mapa do Pantanal inteiro (Brasil, Bolívia e Paraguai): água, áreas protegidas e povos",
             "aviso_escopo": "O limite cobre o Pantanal inteiro; as camadas detalhadas (rios com nome, lagoas, unidades de conservação, localidades) existem só para o lado brasileiro. Os dois limites (ecorregião RESOLVE e oficial do IBGE) vêm de bases diferentes e não coincidem exatamente.",
             "bbox": [round(v, 3) for v in bbox], "limite": limite, "limite_nome": "Pantanal (ecorregião, RESOLVE 2017)",
             "limite_oficial": oficial, "limite_oficial_nome": "Limite oficial no Brasil (IBGE 2025)",

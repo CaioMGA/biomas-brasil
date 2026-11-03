@@ -139,14 +139,17 @@ blockquote.lit cite { display: block; margin-top: 8px; font: 400 14px var(--body
 .rd-src { margin-top: 56px; padding-top: 14px; border-top: 1px solid var(--rule); font-size: 13px; color: var(--muted); }
 
 /* ---------- Páginas de conteúdo (estáticas) ---------- */
-.topo { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 18px; padding: 10px 24px; background: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent) 70%, #000)) 0 100% / 100% 3px no-repeat border-box border-box, color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(10px); border-bottom: 3px solid transparent; }
+/* --linha: o degradê da linha do header (e da barra de leitura); padrão = cor do bioma, e na página do Brasil vira o degradê de 4 cores da bandeira */
+body { --linha: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent) 70%, #000)); }
+body.pg-brasil { --linha: linear-gradient(90deg, #009c3b, #ffdf00 33.33%, #002776 66.67%, #fff); }
+.topo { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 18px; padding: 10px 24px; background: var(--linha) 0 100% / 100% 3px no-repeat border-box border-box, color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(10px); border-bottom: 3px solid transparent; }
 .topo .marca { display: inline-flex; flex-direction: column; gap: 3px; font: 400 22px/1.1 var(--display); text-decoration: none; margin-right: auto; }
 .marca-barra { display: block; width: 0; min-width: 100%; height: 4px; overflow: visible; }   /* width 0 + min-width 100%: a proporção do SVG não alarga a caixa, e a barra tem exatamente a largura do texto */   /* gradiente da bandeira com a textura de tinta do passaporte, no comprimento do nome */
 .topo a.nav { padding: 6px 12px; font-size: 14px; text-decoration: none; color: var(--muted); border-bottom: 2px solid transparent; }
 .topo a.nav:hover { color: var(--ink); background: rgba(255,255,255,.08); }
-.topo a.nav[aria-current="page"] { color: var(--ink); border-image: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent) 70%, #000)) 1; }
-.rd-bar { position: sticky; top: 59px; z-index: 9; height: 3px; background: var(--rule); }
-.rd-bar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent) 70%, #000)); }
+.topo a.nav[aria-current="page"] { color: var(--ink); border-image: var(--linha) 1; }
+.rd-bar { position: sticky; top: var(--topo-h, 59px); z-index: 9; height: 3px; background: var(--rule); }
+.rd-bar i { display: block; height: 100%; width: 0; background: var(--linha); }
 .rd-wrap { display: grid; grid-template-columns: 220px minmax(0, 68ch); gap: 48px; justify-content: center; padding: 40px 24px 60px; }
 .rd-wrap.simples { grid-template-columns: minmax(0, 68ch); }
 .rd-toc { position: sticky; top: 90px; align-self: start; display: grid; gap: 2px; font-size: 14px; }
@@ -172,8 +175,8 @@ blockquote.lit cite { display: block; margin-top: 8px; font: 400 14px var(--body
 .rodape { padding: 0 24px 40px; }
 .contato { display: grid; gap: 8px; margin: 18px 0 0; padding: 0; list-style: none; font-size: 18px; }
 @media (max-width: 860px) {
-  .topo { padding: 8px 14px; gap: 4px; } .topo .marca { font-size: 18px; white-space: nowrap; } .topo a.nav { padding: 5px 6px; font-size: 13px; }   /* o nome fica em uma linha (a barra acompanha o texto) e o menu é compacto para caber */
-  .rd-bar { top: 51px; }
+  .topo { flex-wrap: wrap; padding: 8px 14px; gap: 4px; } .topo .marca { font-size: 18px; white-space: nowrap; } .topo a.nav { padding: 5px 6px; font-size: 13px; }   /* o menu quebra de linha se não couber (--topo-h = altura real do header, medida em pagina.js); o nome fica em uma linha (a barra acompanha o texto) e o menu é compacto para caber */
+  .rd-bar { top: var(--topo-h, 51px); }
   .rd-wrap { grid-template-columns: minmax(0, 1fr); padding: 24px 16px 40px; gap: 12px; }
   .rd-toc { position: static; grid-auto-flow: column; grid-auto-columns: max-content; overflow-x: auto; } .rd-toc a { white-space: nowrap; } .rd-toc a small { display: none; }
   .rd-main p { font-size: 17px; }
@@ -338,6 +341,14 @@ html { overflow-x: clip; }   /* o 100vw conta a barra de rolagem; sem isto a pá
 .foto-sec .foto img { aspect-ratio: 16 / 9; }
 .foto-sec figcaption { margin-top: 8px; }
 .foto-sec .fig-leg { font-size: 17px; }
+
+/* card do passaporte no hub: ocupa duas colunas, com a folha dos carimbos (só leitura) */
+.card-pass-li { grid-column: span 2; }
+.card-pass .card-folha .folha { margin: 0; max-width: none; transform: none; box-shadow: 0 2px 3px rgba(0,0,0,.4), 0 8px 16px rgba(0,0,0,.4); }
+.card .card-folha { margin-bottom: 8px; pointer-events: none; }
+.card .card-folha svg { height: auto; fill: initial; fill-rule: nonzero; margin: 0; }
+.card-pass .meta { color: var(--ink); font-weight: 600; }
+@media (max-width: 620px) { .card-pass-li { grid-column: auto; } }
 
 /* Compartilhado pelo painel do mapa e pelas páginas: gráfico de chuva e folha do passaporte. */
 .chuva { margin-top: 14px; }
